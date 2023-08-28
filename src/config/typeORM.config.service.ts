@@ -13,7 +13,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
     const DATABASE_USER = this.configService.get<string>('DATABASE_USER')
     const DATABASE_PASSWORD = this.configService.get<string>('DATABASE_PASSWORD')
 
-    const synchronize = NODE_ENV === 'development' ? true : false;
+    const synchronize = NODE_ENV === 'development'
 
     return {
       type: 'mysql',
