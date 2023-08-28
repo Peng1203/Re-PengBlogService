@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
+import session from 'express-session';
 import { AppModule } from './app.module';
 import { TransformInterceptor } from './common/interceptor/transform.interceptor';
 import { DtoValidatePipe } from './common/pipe/dto-validate.pipe';
@@ -11,6 +12,15 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const APP_HOST = configService.get<string>('APP_HOST');
   const APP_PORT = configService.get<string>('APP_PORT');
+  const SESSION_SECRET = configService.get<string>('SESSION_SECRET');
+
+  app.use(
+    session({
+      secret: SESSION_SECRET,
+      resave: false,
+      saveUninitialized: false,
+    }),
+  );
 
   app.useGlobalInterceptors(new TransformInterceptor());
   app.useGlobalPipes(new DtoValidatePipe());
