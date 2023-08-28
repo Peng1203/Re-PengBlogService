@@ -1,17 +1,14 @@
 import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
 import { ConfigService } from '@nestjs/config';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService,
-    private readonly configService: ConfigService) { }
-
+  constructor(private readonly configService: ConfigService) { }
   @Get()
   getHello(): string {
     console.log('.env 加载变量 ----->', this.configService.get<string>('APP_HOST'))
     console.log('.env 加载变量 ----->', this.configService.get<string>('DATABASE_NAME'))
     console.log('ts配置文件加载变量 ----->', this.configService.get<string>('database'))
-    return this.appService.getHello();
+    return '你好';
   }
 }
