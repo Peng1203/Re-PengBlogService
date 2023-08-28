@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
-import { ConfigModule } from '@nestjs/config'
+import { ConfigModule } from '@nestjs/config';
 import configuration from './config/configuration';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigService } from './config/typeORM.config.service';
 import { CommonModule } from './shared/common.module';
+import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -14,12 +15,13 @@ import { CommonModule } from './shared/common.module';
       ],
       isGlobal: true,
       cache: true,
-      load: [configuration]
+      load: [configuration],
     }),
     TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService }),
-    CommonModule
+    CommonModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [],
 })
-export class AppModule { }
+export class AppModule {}
