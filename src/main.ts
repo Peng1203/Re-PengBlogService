@@ -7,8 +7,6 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const APP_HOST = configService.get<string>('APP_HOST')
   const APP_PORT = configService.get<string>('APP_PORT')
-  console.log('APP_HOST ----->', APP_HOST)
-  console.log('APP_PORT ----->', APP_PORT)
   await app.listen(APP_PORT, APP_HOST, () => console.log(`server is running: http://${APP_HOST}:${APP_PORT}  --${process.env.NODE_ENV}`));
 }
 bootstrap();

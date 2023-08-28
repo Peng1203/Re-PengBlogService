@@ -2,7 +2,8 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { ConfigModule } from '@nestjs/config'
 import configuration from './config/configuration';
-
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmConfigService } from './config/typeORM.config';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -13,7 +14,8 @@ import configuration from './config/configuration';
       isGlobal: true,
       cache: true,
       load: [configuration]
-    })
+    }),
+    TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService })
   ],
   controllers: [AppController],
   providers: [],
