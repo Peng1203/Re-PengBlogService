@@ -24,10 +24,8 @@ export class DtoValidatePipe implements PipeTransform {
   async transform(value: any, metadata: ArgumentMetadata) {
     // 转换部分query参数
     const { type, metatype } = metadata;
-    // console.log('type ----->', type, metatype)
-    // 当没有设置 Dto 时跳过校验
-    if (!Object.getPrototypeOf(metatype).toString().includes('class'))
-      return value;
+    // console.log('type ----->', type, metatype);
+
     // 当触发 params 或者 custom 校验直接跳过 或 没有传递Dto校验数据直接返回
     if (type === 'param' || type === 'custom' || !metatype) return value;
     else if (type === 'query') {
