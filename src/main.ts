@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import session from 'express-session';
 import { AppModule } from './app.module';
 import { TransformInterceptor } from './common/interceptor';
@@ -13,6 +14,8 @@ async function bootstrap() {
   const APP_HOST = configService.get<string>('APP_HOST');
   const APP_PORT = configService.get<string>('APP_PORT');
   const SESSION_SECRET = configService.get<string>('SESSION_SECRET');
+  const SWAGGER_PREFIX = configService.get<string>('SWAGGER_PREFIX');
+  const SWAGGER_VERSION = configService.get<string>('SWAGGER_VERSION');
 
   app.use(
     session({
@@ -26,6 +29,16 @@ async function bootstrap() {
   app.useGlobalPipes(new DtoValidatePipe());
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalFilters(new DataAccessFilter());
+
+  const options = new DocumentBuilder()
+    .setTitle('博客接口文档')
+    // .setDescription('博客接口示例')
+    .setVersion(SWAGGER_VERSION)
+    // .addTag('cats')
+    .build();
+
+  const document = SwaggerModule.createDocument(app, options);
+  SwaggerModule.setup(SWAGGER_PREFIX, app, document);
 
   await app.listen(APP_PORT, APP_HOST, () =>
     console.log(
