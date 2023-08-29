@@ -1,6 +1,15 @@
 import { TimestampedEntity } from '@/common/entities';
 import { UserEnabledEnum } from '@/helper/enums';
-import { Column, Entity, Index, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { Role } from '@/modules/role/entities';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  Unique,
+} from 'typeorm';
 
 @Entity({ name: 'user' })
 @Unique(['userName'])
@@ -15,9 +24,9 @@ export class User extends TimestampedEntity {
   @Column({ type: 'varchar', length: 255 })
   readonly password: string;
 
-  // @ManyToOne(() => Role, (role) => role.id)
-  // @JoinColumn()
-  // readonly role: Role;
+  @ManyToOne(() => Role, (role) => role.id)
+  @JoinColumn()
+  readonly role: Role;
 
   @Column({ type: 'varchar', nullable: true })
   readonly email: string;
