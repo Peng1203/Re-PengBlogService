@@ -2,10 +2,10 @@ import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import session from 'express-session';
 import { AppModule } from './app.module';
-import { TransformInterceptor } from './common/interceptor/transform.interceptor';
-import { DtoValidatePipe } from './common/pipe/dto-validate.pipe';
-import { DataAccessFilter } from './common/exceptions/data-access.filter';
-import { HttpExceptionFilter } from './common/exceptions/http-exception.filter';
+import { TransformInterceptor } from './common/interceptor';
+import { DtoValidatePipe } from './common/pipe';
+import { DataAccessFilter } from './common/exceptions';
+import { HttpExceptionFilter } from './common/exceptions';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
