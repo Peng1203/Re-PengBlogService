@@ -3,15 +3,15 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
-import { JwtConfigService } from '@/config';
-import { PassPortStrategyEnum } from '@/helper/enums';
+import { JwtConfigService, PassportConfigService } from '@/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    PassportModule.register({ defaultStrategy: [PassPortStrategyEnum.JWT] }),
+    PassportModule.registerAsync({ useClass: PassportConfigService }),
     JwtModule.registerAsync({ useClass: JwtConfigService }),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, ConfigService],
 })
 export class AuthModule {}

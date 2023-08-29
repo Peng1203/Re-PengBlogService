@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class HttpConfigService implements HttpModuleOptionsFactory {
-  constructor(private readonly configService: ConfigService) { }
+  constructor(private readonly configService: ConfigService) {}
   createHttpOptions(): HttpModuleOptions {
     return {
       timeout: this.configService.get('HTTP_TIMEOUT'),
