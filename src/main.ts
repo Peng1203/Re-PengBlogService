@@ -16,6 +16,7 @@ async function bootstrap() {
   const SESSION_SECRET = configService.get<string>('SESSION_SECRET');
   const SWAGGER_PREFIX = configService.get<string>('SWAGGER_PREFIX');
   const SWAGGER_VERSION = configService.get<string>('SWAGGER_VERSION');
+  const SWAGGER_TITLE = configService.get<string>('SWAGGER_TITLE');
 
   app.use(
     session({
@@ -31,7 +32,7 @@ async function bootstrap() {
   app.useGlobalFilters(new DataAccessFilter());
 
   const options = new DocumentBuilder()
-    .setTitle('博客接口文档')
+    .setTitle(SWAGGER_TITLE)
     // .setDescription('博客接口示例')
     .setVersion(SWAGGER_VERSION)
     // .addTag('cats')
