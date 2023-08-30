@@ -24,8 +24,8 @@ export class User extends TimestampedEntity {
   @Column({ type: 'varchar', length: 255 })
   readonly password: string;
 
-  @ManyToOne(() => Role, (role) => role.id)
-  @JoinColumn()
+  @ManyToOne(() => Role, (role) => role.id, { nullable: false })
+  // @JoinColumn({ name: 'roleId' })
   readonly role: Role;
 
   @Column({ type: 'varchar', nullable: true })
