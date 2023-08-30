@@ -12,11 +12,13 @@ import { UsersService } from './user.service';
 import { CreateUserDto, FindAllUserDto } from './dto';
 import { UpdateUserDto } from './dto';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import type { User } from "./types";
+import { ListResponse } from '@/common/interface';
 
 @ApiTags('User')
 @Controller('user')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
@@ -25,9 +27,9 @@ export class UsersController {
 
   @Get()
   @ApiOperation({ summary: '查询全部用户' })
-  async findAll(@Query() query: FindAllUserDto) {
+  async findAll(@Query() query: FindAllUserDto): Promise<ListResponse<User>> {
     const { list: data, total } = await this.usersService.findAll(query);
-    const list = data.map(({ role, ...user }) => ({
+    const list: User[] = data.map(({ role, password, ...user }) => ({
       ...user,
       roleId: role.id,
     }));
