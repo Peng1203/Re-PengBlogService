@@ -1,7 +1,10 @@
-import { IStrategyOptions, Strategy } from 'passport-local';
+import { Strategy } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from '../auth.service';
+import { User } from '@/modules/user/entities';
+import { Request } from 'express';
+import { ApiResponseCodeEnum } from '@/helper/enums';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -9,12 +12,19 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     super({
       usernameField: 'userName',
       passwordField: 'password',
-    } as IStrategyOptions);
+      session: true,
+      passReqToCallback: true
+    });
   }
 
-  async validate(userName: string, password: string): Promise<any> {
+  async validate(req: Request, userName: string, password: string): Promise<User> {
+    console.log('req ----->', req.body)
+    console.log('req ----->', req.session)
     console.log('userName ----->', userName);
     console.log('password ----->', password);
-    return 121;
+    const user = await this.authService.validateUser(userName, password)
+    if (!user) throw new UnauthorizedException({ code: ApiResponseCodeEnum.UNAUTHORIZED, msg: '账号或密码错误' })
+
+    return user
   }
 }
