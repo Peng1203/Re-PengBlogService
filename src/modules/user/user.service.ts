@@ -1,36 +1,51 @@
-import { Injectable } from '@nestjs/common';
-import { Like, Repository } from 'typeorm';
+import { BadRequestException, HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { FindManyOptions, Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { FindAllUserDto } from './dto';
 import { User } from './entities';
 import { ListResponse } from '@/common/interface';
+import { ApiResponseCodeEnum } from '@/helper/enums';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
-  ) {}
+  ) { }
   create(createUserDto: CreateUserDto) {
     return 'This action adds a new user';
   }
-  //
+
+  /**
+   * 查询全部用户
+   * @date 2023/8/30 - 10:41:38
+   * @author Peng
+   *
+   * @async
+   * @param {FindAllUserDto} params
+   * @returns {Promise<ListResponse<User>>}
+   */
   async findAll(params: FindAllUserDto): Promise<ListResponse<User>> {
-    const { page, pageSize, queryStr = '', column, order } = params;
-    const [list, total] = await this.userRepository.findAndCount({
-      where: {
-        userName: Like(`%${queryStr}%`),
-      },
-      skip: (page - 1) * pageSize,
-      take: pageSize,
-      order: { [column]: order },
-      relations: ['role'],
-    });
-    return { list, total };
+    try {
+      const { page, pageSize, queryStr = '', column, order } = params;
+      const [list, total] = await this.userRepository.findAndCount({
+        where: [
+          { userName: Like(`%${queryStr}%`) },
+          { nickName: Like(`%${queryStr}%`) },
+        ],
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+        order: { [column]: order },
+        relations: ['role'],
+      });
+      return { list, total };
+    } catch (e) {
+      throw new InternalServerErrorException({ e, code: ApiResponseCodeEnum.INTERNALSERVERERROR })
+    }
   }
 
-  findOne(id: number) {
+  findOne(id?: number) {
     return `This action returns a #${id} user`;
   }
 

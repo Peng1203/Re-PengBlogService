@@ -5,8 +5,7 @@ import session from 'express-session';
 import { AppModule } from './app.module';
 import { TransformInterceptor } from './common/interceptor';
 import { DtoValidatePipe } from './common/pipe';
-import { DataAccessFilter } from './common/exceptions';
-import { HttpExceptionFilter } from './common/exceptions';
+import { HttpExceptionFilter, DataAccessFilter } from './common/exceptions';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

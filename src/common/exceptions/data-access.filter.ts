@@ -1,4 +1,5 @@
 import { ServerError } from '@/common/errors/server.error';
+import { ApiResponseMessageEnum } from '@/helper/enums';
 import { formatDate } from '@/utils/date.util';
 import {
   ArgumentsHost,
@@ -13,7 +14,7 @@ import { Request, Response } from 'express';
 export class DataAccessFilter implements ExceptionFilter {
   catch(exception: HttpException & ServerError, host: ArgumentsHost) {
     // const [req, res, next]: [Request, Response, Function] = host.getArgs();
-
+    const exceptionRes = exception.getResponse() as any
     const ctx = host.switchToHttp();
     const res = ctx.getResponse<Response>();
     const req = ctx.getRequest<Request>();
@@ -34,13 +35,16 @@ export class DataAccessFilter implements ExceptionFilter {
         reason = '必需的字段缺少值。';
         break;
     }
+
+    console.log('触发 DAO层 异常过滤器 ----->', exceptionRes?.response, exception.message)
+
     // 写入错误的logger日志
 
     res.status(status).json({
-      code: status,
+      code: exceptionRes.response.code || status,
       path: req.url,
       methods: req.method,
-      message: exception.message ? `${exception.message}, ${reason}` : reason,
+      message: exceptionRes?.response.message || ApiResponseMessageEnum[exceptionRes?.response?.code] || exception.message ? `${exception.message}, ${reason}` : reason,
       timestamp: formatDate(),
     });
   }
