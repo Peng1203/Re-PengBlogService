@@ -16,14 +16,14 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const req = ctx.getRequest<Request>();
     const status = exception.getStatus();
 
-    console.log('触发 Http 异常过滤器 ----->', exceptionRes.response, exception.message)
+    console.log('触发 Http 异常过滤器 ----->', exceptionRes, exceptionRes.response, exception.message)
 
     res.status(status).json({
-      code: status,
-      error: exceptionRes!.error,
+      code: exceptionRes.code || status,
+      error: exception.message,
       path: req.url,
       method: req.method,
-      message: exception.message,
+      message: exceptionRes.msg,
       timestamp: formatDate(),
     });
   }

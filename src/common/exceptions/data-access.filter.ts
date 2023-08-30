@@ -41,10 +41,10 @@ export class DataAccessFilter implements ExceptionFilter {
     // 写入错误的logger日志
 
     res.status(status).json({
-      code: exceptionRes.response.code || status,
+      code: exceptionRes.code || status,
       path: req.url,
       methods: req.method,
-      message: exceptionRes?.response.message || ApiResponseMessageEnum[exceptionRes?.response?.code] || exception.message ? `${exception.message}, ${reason}` : reason,
+      message: exceptionRes?.message || ApiResponseMessageEnum[exceptionRes?.code] || exception.message ? `${exception.message}, ${reason}` : reason,
       timestamp: formatDate(),
     });
   }
