@@ -9,7 +9,7 @@ import { ListResponse } from '@/common/interface';
 import { ApiResponseCodeEnum } from '@/helper/enums';
 
 @Injectable()
-export class UsersService {
+export class UserService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) { }
@@ -55,5 +55,26 @@ export class UsersService {
 
   remove(id: number) {
     return `This action removes a #${id} user`;
+  }
+
+  /**
+   * 通过用户名密码查询
+   * @date 2023/8/30 - 16:36:06
+   * @author Peng
+   *
+   * @async
+   * @param {string} userName
+   * @param {string} password
+   * @returns {Promise<User | null>}
+   */
+  async findOneByUserNameAndPwd(userName: string, password: string): Promise<User | null> {
+    try {
+      return await this.userRepository.findOne({
+        where: { userName, password },
+        relations: ['role'],
+      })
+    } catch (e) {
+      throw new InternalServerErrorException({ code: ApiResponseCodeEnum.INTERNALSERVERERROR })
+    }
   }
 }

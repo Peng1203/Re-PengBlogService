@@ -8,7 +8,7 @@ import {
   Delete,
   Query,
 } from '@nestjs/common';
-import { UsersService } from './user.service';
+import { UserService } from './user.service';
 import { CreateUserDto, FindAllUserDto } from './dto';
 import { UpdateUserDto } from './dto';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -17,8 +17,8 @@ import { ListResponse } from '@/common/interface';
 
 @ApiTags('User')
 @Controller('user')
-export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+export class UserController {
+  constructor(private readonly usersService: UserService) { }
 
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
