@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UserService } from '@/modules/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { RedisService } from '@/shared/redis/redis.service';
 
 @Injectable()
 export class AuthService {
@@ -9,6 +10,7 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly redis: RedisService,
   ) {}
 
   /**
@@ -33,9 +35,7 @@ export class AuthService {
   }
 
   // 验证token
-  async verifyToken(
-    token: string,
-  ): Promise<boolean | { userName: string; id: number }> {
+  async verifyToken(token: string): Promise<boolean | { userName: string; id: number }> {
     try {
       const { sub, userName } = await this.jwtService.verifyAsync(token, {
         secret: this.configService.get<string>('JWT_SECRET'),
@@ -44,5 +44,9 @@ export class AuthService {
     } catch (e) {
       return false;
     }
+  }
+
+  async setTokenToRedis(key: string, token: string) {
+    await this.redis.setCache(key, token, this.configService.get<number>('JWT_EXPIRES'));
   }
 }
