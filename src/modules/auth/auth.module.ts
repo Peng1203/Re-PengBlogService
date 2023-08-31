@@ -6,12 +6,14 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtConfigService, PassportConfigService } from '@/config';
 import { LocalStrategy } from './strategys';
 import { UserModule } from '@/modules/user/user.module';
+import { CommonModule } from '@/shared/common.module';
 
 @Module({
   imports: [
     PassportModule.registerAsync({ useClass: PassportConfigService }),
     JwtModule.registerAsync({ useClass: JwtConfigService }),
     forwardRef(() => UserModule),
+    CommonModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, LocalStrategy],

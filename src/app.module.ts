@@ -9,6 +9,7 @@ import { RoleModule } from './modules/role/role.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './modules/auth/guards';
 import { JwtStrategy } from './modules/auth/strategys';
+import { CommonModule } from './shared/common.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -21,6 +22,7 @@ import { JwtStrategy } from './modules/auth/strategys';
     AuthModule,
     UserModule,
     RoleModule,
+    CommonModule,
   ],
   providers: [
     JwtStrategy,

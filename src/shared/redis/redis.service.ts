@@ -5,7 +5,7 @@ import { ApiResponseCodeEnum } from '@/helper/enums';
 
 @Injectable()
 export class RedisService {
-  constructor(@InjectRedis() private readonly redis: Redis) {}
+  constructor(@InjectRedis() private readonly redisClient: Redis) {}
 
   /**
    * 获取Redis实例
@@ -15,7 +15,7 @@ export class RedisService {
    * @returns {*}
    */
   getRedisRef() {
-    return this.redis;
+    return this.redisClient;
   }
 
   /**
@@ -33,9 +33,28 @@ export class RedisService {
     try {
       if (typeof value === 'object') value = JSON.stringify(value);
       const setResult =
-        seconds === undefined ? await this.redis.set(key, value) : await this.redis.setex(key, seconds, value);
+        seconds === undefined
+          ? await this.redisClient.set(key, value)
+          : await this.redisClient.setex(key, seconds, value);
       if (setResult !== 'OK') return false;
       return setResult === 'OK';
+    } catch (e) {
+      throw new InternalServerErrorException({ e, code: ApiResponseCodeEnum.INTERNALSERVERERROR });
+    }
+  }
+
+  /**
+   * 获取缓存
+   * @date 2023/8/31 - 18:43:34
+   * @author Peng
+   *
+   * @async
+   * @param {string} key
+   * @returns {unknown}
+   */
+  async getCache(key: string) {
+    try {
+      return await this.redisClient.get(key);
     } catch (e) {
       throw new InternalServerErrorException({ e, code: ApiResponseCodeEnum.INTERNALSERVERERROR });
     }

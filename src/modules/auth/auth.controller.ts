@@ -6,11 +6,12 @@ import { LocalAuthGuard } from './guards/local.auth.guard';
 import { Request } from 'express';
 import { Public } from '@/common/decorators';
 import { ApiResponseCodeEnum } from '@/helper/enums';
+import { RedisService } from '@/shared/redis/redis.service';
 
 @ApiTags('Auth')
-@Controller('auth')
+@Controller()
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService, private readonly redis: RedisService) {}
 
   @Public()
   @Post('login')
@@ -22,6 +23,9 @@ export class AuthController {
       throw new ForbiddenException({ code: ApiResponseCodeEnum.FORBIDDEN, msg: '账号已被禁用!请联系管理员' });
 
     const token = await this.authService.generateToken(user.id, user.userName);
+    await this.authService.setTokenToRedis(`user_token:${user.id}-${user.userName}`, token);
+
+    // redis 设置token
     return {
       token,
       ...user,
