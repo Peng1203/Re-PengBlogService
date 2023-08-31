@@ -23,8 +23,8 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     console.log('userName ----->', userName);
     console.log('password ----->', password);
     const user = await this.authService.validateUser(userName, password)
-    if (!user) throw new UnauthorizedException({ code: ApiResponseCodeEnum.UNAUTHORIZED, msg: '账号或密码错误' })
 
+    if (!user) throw new UnauthorizedException({ code: ApiResponseCodeEnum.UNAUTHORIZED, msg: '账号或密码错误' })
     return user
   }
 }

@@ -8,13 +8,11 @@ import { UserModule } from './modules/user/user.module';
 import { RoleModule } from './modules/role/role.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './modules/auth/guards';
+import { JwtStrategy } from './modules/auth/strategys';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: [
-        '.env',
-        process.env.NODE_ENV === 'development' ? '.env.dev' : '.env.prod',
-      ],
+      envFilePath: ['.env', process.env.NODE_ENV === 'development' ? '.env.dev' : '.env.prod'],
       isGlobal: true,
       cache: true,
       load: [configuration],
@@ -25,10 +23,11 @@ import { JwtAuthGuard } from './modules/auth/guards';
     RoleModule,
   ],
   providers: [
+    JwtStrategy,
     {
       provide: APP_GUARD,
-      useClass: JwtAuthGuard
-    }
+      useClass: JwtAuthGuard,
+    },
   ],
 })
-export class AppModule { }
+export class AppModule {}

@@ -37,6 +37,7 @@ async function bootstrap() {
     // .setDescription('博客接口示例')
     .setVersion(SWAGGER_VERSION)
     // .addTag('cats')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, options);
