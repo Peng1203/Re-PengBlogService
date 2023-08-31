@@ -1,3 +1,4 @@
+import { User } from '@/modules/user/entities';
 import {
   Request as ExpressRequest,
   Response as ExpressResponse,
@@ -9,6 +10,6 @@ declare module 'express' {
   }
 
   interface Request extends ExpressRequest {
-    user: any;
+    user: User;
   }
 }
