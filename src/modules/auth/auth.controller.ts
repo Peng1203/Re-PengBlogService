@@ -1,22 +1,54 @@
-import { Body, Controller, ForbiddenException, Get, HttpCode, HttpStatus, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  ForbiddenException,
+  Get,
+  Header,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Req,
+  Session,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiProduces, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserLoginDto } from './dto';
 import { LocalAuthGuard } from './guards/local.auth.guard';
 import { Request } from 'express';
 import { Public } from '@/common/decorators';
 import { ApiResponseCodeEnum } from '@/helper/enums';
-import { RedisService } from '@/shared/redis/redis.service';
+import { ConfigService } from '@nestjs/config';
 
 @ApiTags('Auth')
 @Controller()
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService, private readonly configService: ConfigService) {}
+
+  @Public()
+  @Get('login/captcha')
+  @Header('Content-Type', 'image/svg+xml')
+  @ApiOperation({ summary: '获取验证码' })
+  @ApiProduces('image/svg+xml') // 指定响应类型为SVG图像
+  getCaptcha(@Req() req: Request, @Session() session: Record<string, any>) {
+    const { text, data } = this.authService.generateCaptcha();
+    session.captcha = text;
+    const CAPTCHA_EXPIRES = Number(this.configService.get<string>('CAPTCHA_EXPIRES'));
+    // 设置验证码的生效时间
+
+    // 方案2 在生成验证码时记录一个时间戳 校验时对比2个时间戳
+    session.expirationTimestamp = Date.now() + CAPTCHA_EXPIRES;
+
+    console.log('session ----->', session);
+
+    return data;
+  }
 
   @Public()
   @Post('login')
   @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: '登录' })
   async login(@Req() req: Request, @Body() data: UserLoginDto) {
     const user = req.user;
     if (!user.userEnabled)

@@ -1,8 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from '@/modules/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { RedisService } from '@/shared/redis/redis.service';
+import * as svgCaptcha from 'svg-captcha';
+import { ApiResponseCodeEnum } from '@/helper/enums';
 
 @Injectable()
 export class AuthService {
@@ -88,5 +90,51 @@ export class AuthService {
    */
   redisTokenKeyStr(id: number, userName: string) {
     return `user_token:${id}-${userName}`;
+  }
+
+  private rn(min, max) {
+    return parseInt(Math.random() * (max - min) + min);
+  }
+
+  private rc(min, max, opacity) {
+    let r = this.rn(min, max);
+    let g = this.rn(min, max);
+    let b = this.rn(min, max);
+    return `rgba(${r},${g},${b},${opacity})`;
+  }
+
+  /**
+   * 生成验证码
+   * @date 2023/9/1 - 15:14:05
+   * @author Peng
+   *
+   * @returns {*}
+   */
+  generateCaptcha() {
+    // createMathExpr 创建一个 简单加法的 svg 验证码
+    return svgCaptcha.create({
+      size: 4, // 验证码长度
+      ignoreChars: 'OlI', // 排除字符
+      noise: 2, // 干扰线
+      color: false, // 验证码字符颜色
+      background: this.rc(130, 230, 0.3), // 验证码背景颜色
+      // background: "#cc9966" // 验证码背景颜色
+    });
+  }
+
+  /**
+   * 校验验证码
+   * @date 2023/9/1 - 16:42:08
+   * @author Peng
+   *
+   * @param {string} captcha
+   * @param {*} session
+   */
+  verifyCaptcha(captcha: string, session) {
+    if (!session?.expirationTimestamp || Date.now() > session.expirationTimestamp)
+      throw new UnauthorizedException({ code: ApiResponseCodeEnum.UNAUTHORIZED_CAPTCHA_EXPIRE, msg: '验证码已过期!' });
+
+    if (captcha.toLocaleLowerCase() !== session.captcha.toLocaleLowerCase())
+      throw new UnauthorizedException({ code: ApiResponseCodeEnum.UNAUTHORIZED_CAPTCHA_ERROR, msg: '验证码输入有误!' });
   }
 }
