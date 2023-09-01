@@ -1,38 +1,30 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto, FindAllUserDto } from './dto';
 import { UpdateUserDto } from './dto';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import type { User } from "./types";
+import type { User } from './types';
 import { ListResponse } from '@/common/interface';
+import { Public } from '@/common/decorators';
 
 @ApiTags('User')
 @ApiBearerAuth()
 @Controller('user')
 export class UserController {
-  constructor(private readonly usersService: UserService) { }
+  constructor(private readonly usersService: UserService) {}
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  create(@Body() data: CreateUserDto) {
+    return this.usersService.create(data);
   }
 
   @Get()
+  @Public()
   @ApiOperation({ summary: '查询全部用户' })
   async findAll(@Query() query: FindAllUserDto): Promise<ListResponse<User>> {
     const { list: data, total } = await this.usersService.findAll(query);
-    const list: User[] = data.map(({ role, password, ...user }) => ({
+    const list: User[] = data.map(({ password, ...user }) => ({
       ...user,
-      roleId: role.id,
     }));
     return { list, total };
   }

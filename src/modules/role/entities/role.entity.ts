@@ -1,13 +1,6 @@
 import { TimestampedEntity } from '@/common/entities';
 import { User } from '@/modules/user/entities';
-import {
-  Column,
-  Entity,
-  Index,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  Unique,
-} from 'typeorm';
+import { Column, Entity, Index, ManyToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
 @Entity({ name: 'role' })
 @Unique(['roleName'])
@@ -19,7 +12,7 @@ export class Role extends TimestampedEntity {
   @Column({ name: 'role_name', type: 'varchar' })
   readonly roleName: string;
 
-  @OneToMany(() => User, (user) => user.role)
+  @ManyToMany(() => User, (user) => user.roles)
   readonly users: User[];
 
   @Column({ name: 'role_describe', type: 'varchar', length: 255 })

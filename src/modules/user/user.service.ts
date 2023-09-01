@@ -1,5 +1,5 @@
-import { BadRequestException, HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { FindManyOptions, Like, Repository } from 'typeorm';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Brackets, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -10,9 +10,7 @@ import { ApiResponseCodeEnum } from '@/helper/enums';
 
 @Injectable()
 export class UserService {
-  constructor(
-    @InjectRepository(User) private readonly userRepository: Repository<User>,
-  ) { }
+  constructor(@InjectRepository(User) private readonly userRepository: Repository<User>) {}
   create(createUserDto: CreateUserDto) {
     return 'This action adds a new user';
   }
@@ -28,20 +26,43 @@ export class UserService {
    */
   async findAll(params: FindAllUserDto): Promise<ListResponse<User>> {
     try {
-      const { page, pageSize, queryStr = '', column, order } = params;
-      const [list, total] = await this.userRepository.findAndCount({
-        where: [
-          { userName: Like(`%${queryStr}%`) },
-          { nickName: Like(`%${queryStr}%`) },
-        ],
-        skip: (page - 1) * pageSize,
-        take: pageSize,
-        order: { [column]: order },
-        relations: ['role'],
-      });
+      const { page, pageSize, queryStr = '', column, order, roleId = '' } = params;
+      const queryBuilder = this.userRepository
+        .createQueryBuilder('user')
+        .leftJoinAndSelect('user.roles', 'role')
+        .andWhere(
+          new Brackets((qb) => {
+            qb.where('user.userName LIKE :queryStr', { queryStr: `%${queryStr}%` }).orWhere(
+              'user.nickName LIKE :queryStr',
+              { queryStr: `%${queryStr}%` },
+            );
+          }),
+        )
+        .orderBy(`user.${column}`, order || 'ASC')
+        .skip((page - 1) * pageSize)
+        .take(pageSize);
+      roleId && queryBuilder.where('role.id = :roleId', { roleId });
+      const [list, total] = await queryBuilder.getManyAndCount();
+
+      // let [list, total] = await this.userRepository.findAndCount({
+      //   where: [
+      //     { userName: Like(`%${queryStr}%`) },
+      //     { nickName: Like(`%${queryStr}%`) },
+      //     // ...roleFilter
+      //   ],
+      //   skip: (page - 1) * pageSize,
+      //   take: pageSize,
+      //   order: { [column]: order },
+      //   relations: ['roles'],
+      // });
+
       return { list, total };
     } catch (e) {
-      throw new InternalServerErrorException({ e, code: ApiResponseCodeEnum.INTERNALSERVERERROR })
+      throw new InternalServerErrorException({
+        e,
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR,
+        msg: '查询用户列表失败',
+      });
     }
   }
 
@@ -71,10 +92,10 @@ export class UserService {
     try {
       return await this.userRepository.findOne({
         where: { userName, password },
-        relations: ['role'],
-      })
+        relations: ['roles'],
+      });
     } catch (e) {
-      throw new InternalServerErrorException({ code: ApiResponseCodeEnum.INTERNALSERVERERROR })
+      throw new InternalServerErrorException({ code: ApiResponseCodeEnum.INTERNALSERVERERROR });
     }
   }
 }
