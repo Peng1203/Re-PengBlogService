@@ -43,7 +43,7 @@ export class JwtAuthGuard extends AuthGuard(PassPortStrategyEnum.JWT) {
       throw new UnauthorizedException({ code: ApiResponseCodeEnum.UNAUTHORIZED, msg: '登录信息已过期，请重新登录！' });
 
     // 单点登录 判断当前token 和 redis中存放的token是否一致
-    const redisToken = await this.redis.getCache(`user_token:${payload.id}-${payload.userName}`);
+    const redisToken = await this.redis.getCache(this.authService.redisTokenKeyStr(payload.id, payload.userName));
     if (!(token === redisToken))
       throw new UnauthorizedException({ code: ApiResponseCodeEnum.UNAUTHORIZED, msg: 'token已失效，请重新认证！' });
 

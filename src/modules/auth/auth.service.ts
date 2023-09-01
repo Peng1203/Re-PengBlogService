@@ -49,4 +49,8 @@ export class AuthService {
   async setTokenToRedis(key: string, token: string) {
     await this.redis.setCache(key, token, this.configService.get<number>('JWT_EXPIRES'));
   }
+
+  redisTokenKeyStr(id: number, userName: string) {
+    return `user_token:${id}-${userName}`;
+  }
 }

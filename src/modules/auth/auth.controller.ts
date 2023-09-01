@@ -11,7 +11,7 @@ import { RedisService } from '@/shared/redis/redis.service';
 @ApiTags('Auth')
 @Controller()
 export class AuthController {
-  constructor(private readonly authService: AuthService, private readonly redis: RedisService) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Public()
   @Post('login')
@@ -23,7 +23,8 @@ export class AuthController {
       throw new ForbiddenException({ code: ApiResponseCodeEnum.FORBIDDEN, msg: '账号已被禁用!请联系管理员' });
 
     const token = await this.authService.generateToken(user.id, user.userName);
-    await this.authService.setTokenToRedis(`user_token:${user.id}-${user.userName}`, token);
+
+    await this.authService.setTokenToRedis(this.authService.redisTokenKeyStr(user.id, user.userName), token);
 
     // redis 设置token
     return {
