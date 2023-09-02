@@ -17,7 +17,7 @@ export class User extends TimestampedEntity {
   readonly password: string;
 
   @ManyToMany(() => Role, (role) => role.users)
-  @JoinTable()
+  @JoinTable({ name: 'user_role_relation' })
   readonly roles: Role[];
 
   @Column({ type: 'varchar', nullable: true })
