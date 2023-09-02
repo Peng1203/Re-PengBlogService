@@ -6,10 +6,11 @@ import { TypeOrmConfigService } from './config';
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { RoleModule } from './modules/role/role.module';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtAuthGuard } from './modules/auth/guards';
 import { JwtStrategy } from './modules/auth/strategys';
 import { CommonModule } from './shared/common.module';
+import { TransformInterceptor } from './common/interceptor';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -26,9 +27,15 @@ import { CommonModule } from './shared/common.module';
   ],
   providers: [
     JwtStrategy,
+    // 全局JWT守卫
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
+    },
+    // 全局响应拦截器
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: TransformInterceptor,
     },
   ],
 })

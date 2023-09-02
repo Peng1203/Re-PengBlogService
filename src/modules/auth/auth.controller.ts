@@ -16,7 +16,7 @@ import { ApiOperation, ApiProduces, ApiResponse, ApiTags } from '@nestjs/swagger
 import { UserLoginDto } from './dto';
 import { LocalAuthGuard } from './guards/local.auth.guard';
 import { Request } from 'express';
-import { Public } from '@/common/decorators';
+import { Keep, Public } from '@/common/decorators';
 import { ApiResponseCodeEnum } from '@/helper/enums';
 import { ConfigService } from '@nestjs/config';
 
@@ -25,6 +25,7 @@ import { ConfigService } from '@nestjs/config';
 export class AuthController {
   constructor(private readonly authService: AuthService, private readonly configService: ConfigService) {}
 
+  @Keep()
   @Public()
   @Get('login/captcha')
   @Header('Content-Type', 'image/svg+xml')
