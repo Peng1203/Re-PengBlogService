@@ -19,9 +19,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 
   async validate(req: Request, userName: string, password: string): Promise<User> {
     console.log('req ----->', req.body);
-    console.log('req ----->', req.session);
-    console.log('userName ----->', userName);
-    console.log('password ----->', password);
+    console.log('req.session ----->', req.session);
     this.authService.verifyCaptcha(req.body.captcha, req.session);
     const user = await this.authService.validateUser(userName, password);
 

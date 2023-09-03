@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { RedisService } from '@/shared/redis/redis.service';
 import * as svgCaptcha from 'svg-captcha';
 import { ApiResponseCodeEnum } from '@/helper/enums';
+import { SessionInfo } from 'express-session';
 
 @Injectable()
 export class AuthService {
@@ -128,9 +129,9 @@ export class AuthService {
    * @author Peng
    *
    * @param {string} captcha
-   * @param {*} session
+   * @param {SessionInfo} session
    */
-  verifyCaptcha(captcha: string, session) {
+  verifyCaptcha(captcha: string, session: SessionInfo) {
     if (!session?.expirationTimestamp || Date.now() > session.expirationTimestamp)
       throw new UnauthorizedException({ code: ApiResponseCodeEnum.UNAUTHORIZED_CAPTCHA_EXPIRE, msg: '验证码已过期!' });
 

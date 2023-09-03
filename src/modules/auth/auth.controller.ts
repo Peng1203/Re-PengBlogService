@@ -19,6 +19,7 @@ import { Request } from 'express';
 import { Keep, Public } from '@/common/decorators';
 import { ApiResponseCodeEnum } from '@/helper/enums';
 import { ConfigService } from '@nestjs/config';
+import { SessionInfo } from 'express-session';
 
 @ApiTags('Auth')
 @Controller()
@@ -31,7 +32,7 @@ export class AuthController {
   @Header('Content-Type', 'image/svg+xml')
   @ApiOperation({ summary: '获取验证码' })
   @ApiProduces('image/svg+xml') // 指定响应类型为SVG图像
-  getCaptcha(@Req() req: Request, @Session() session: Record<string, any>) {
+  getCaptcha(@Session() session: SessionInfo) {
     const { text, data } = this.authService.generateCaptcha();
     session.captcha = text;
     const CAPTCHA_EXPIRES = Number(this.configService.get<string>('CAPTCHA_EXPIRES'));
@@ -50,7 +51,7 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '登录' })
-  async login(@Req() req: Request, @Body() data: UserLoginDto, @Session() session: any) {
+  async login(@Req() req: Request, @Body() data: UserLoginDto, @Session() session: SessionInfo) {
     const { password, ...user } = req.user;
     if (!user.userEnabled)
       throw new ForbiddenException({ code: ApiResponseCodeEnum.FORBIDDEN, msg: '账号已被禁用!请联系管理员' });
