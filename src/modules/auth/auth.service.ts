@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { UserService } from '@/modules/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -6,6 +6,8 @@ import { RedisService } from '@/shared/redis/redis.service';
 import * as svgCaptcha from 'svg-captcha';
 import { ApiResponseCodeEnum } from '@/helper/enums';
 import { SessionInfo } from 'express-session';
+import { JwtPayload } from 'passport-jwt';
+import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -67,6 +69,21 @@ export class AuthService {
   }
 
   /**
+   * 解析 token 信息
+   * @date 2023/9/3 - 21:39:01
+   * @author Peng
+   *
+   * @async
+   * @param {string} token
+   * @returns {unknown}
+   */
+  async parseToken(token: string): Promise<JwtPayload> {
+    return await this.jwtService.verifyAsync(token, {
+      secret: this.configService.get<string>('JWT_SECRET'),
+    });
+  }
+
+  /**
    * 设置 token到redis
    * @date 2023/9/1 - 14:52:29
    * @author Peng
@@ -91,6 +108,20 @@ export class AuthService {
    */
   redisTokenKeyStr(id: number, userName: string) {
     return `user_token:${id}-${userName}`;
+  }
+
+  /**
+   * 获取Redis中的token
+   * @date 2023/9/3 - 22:05:26
+   * @author Peng
+   *
+   * @async
+   * @param {number} id
+   * @param {string} userName
+   * @returns {Promise<string>}
+   */
+  async getRedisToken(id: number, userName: string): Promise<string> {
+    return await this.redis.getCache(this.redisTokenKeyStr(id, userName));
   }
 
   private rn(min, max) {
@@ -132,6 +163,12 @@ export class AuthService {
    * @param {SessionInfo} session
    */
   verifyCaptcha(captcha: string, session: SessionInfo) {
+    if (!session?.captcha)
+      throw new UnauthorizedException({
+        code: ApiResponseCodeEnum.UNAUTHORIZED_NOTFOUND_SESSION,
+        msg: '无法获取到Session信息!请确保请求携带cookie',
+      });
+
     if (!session?.expirationTimestamp || Date.now() > session.expirationTimestamp)
       throw new UnauthorizedException({ code: ApiResponseCodeEnum.UNAUTHORIZED_CAPTCHA_EXPIRE, msg: '验证码已过期!' });
 
@@ -150,5 +187,28 @@ export class AuthService {
    */
   validateUserByIdAndName(id: number, userName: string) {
     return this.userService.findOneByUserIdAndUserName(id, userName);
+  }
+
+  /**
+   * 刷新token
+   * @date 2023/9/3 - 23:50:11
+   * @author Peng
+   *
+   * @async
+   * @param {number} id
+   * @param {string} userName
+   * @param {Response} res
+   * @returns {*}
+   */
+  async refreshToken(id: number, userName: string): Promise<string> {
+    try {
+      // 生成新的token
+      const token = await this.generateToken(id, userName);
+      // 将新的token 设置到 redis中
+      await this.setTokenToRedis(this.redisTokenKeyStr(id, userName), token);
+      return token;
+    } catch (e) {
+      throw new InternalServerErrorException({ code: ApiResponseCodeEnum.INTERNALSERVERERROR, e });
+    }
   }
 }
