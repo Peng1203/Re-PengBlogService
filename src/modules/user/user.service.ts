@@ -38,7 +38,7 @@ export class UserService {
             );
           }),
         )
-        .orderBy(`user.${column}`, order || 'ASC')
+        .orderBy(`user.${column || 'id'}`, order || 'ASC')
         .skip((page - 1) * pageSize)
         .take(pageSize);
       roleId && queryBuilder.where('role.id = :roleId', { roleId });
