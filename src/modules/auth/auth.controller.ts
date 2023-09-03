@@ -50,16 +50,20 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '登录' })
-  async login(@Req() req: Request, @Body() data: UserLoginDto) {
-    const user = req.user;
+  async login(@Req() req: Request, @Body() data: UserLoginDto, @Session() session: any) {
+    const { password, ...user } = req.user;
     if (!user.userEnabled)
       throw new ForbiddenException({ code: ApiResponseCodeEnum.FORBIDDEN, msg: '账号已被禁用!请联系管理员' });
 
     const token = await this.authService.generateToken(user.id, user.userName);
 
+    // redis 设置token
     await this.authService.setTokenToRedis(this.authService.redisTokenKeyStr(user.id, user.userName), token);
 
-    // redis 设置token
+    // 登录成功 删除 session 设置的验证码和 过期日期
+    delete session.captcha;
+    delete session.expirationTimestamp;
+
     return {
       token,
       ...user,

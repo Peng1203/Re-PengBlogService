@@ -24,9 +24,7 @@ export class UserController {
   @ApiOperation({ summary: '查询全部用户' })
   async findAll(@Query() query: FindAllUserDto): Promise<ListResponse<User>> {
     const { list: data, total } = await this.usersService.findAll(query);
-    const list: User[] = data.map(({ password, ...user }) => ({
-      ...user,
-    }));
+    const list: User[] = data.map(({ password, ...user }) => user);
     return { list, total };
   }
 
