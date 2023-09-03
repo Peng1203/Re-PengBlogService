@@ -35,9 +35,9 @@ export class AuthController {
     const { text, data } = this.authService.generateCaptcha();
     session.captcha = text;
     const CAPTCHA_EXPIRES = Number(this.configService.get<string>('CAPTCHA_EXPIRES'));
-    // 设置验证码的生效时间
-
-    // 方案2 在生成验证码时记录一个时间戳 校验时对比2个时间戳
+    // 方案1 设置一个 setTimeout 到时自动删除 session对象的验证码字段
+    // 方案2 在生成验证码时记录一个过期时间戳 登录时进行时间戳对比
+    // 设置验证码的过期时间戳
     session.expirationTimestamp = Date.now() + CAPTCHA_EXPIRES;
 
     console.log('session ----->', session);
