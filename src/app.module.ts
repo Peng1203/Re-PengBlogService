@@ -11,6 +11,7 @@ import { JwtAuthGuard } from './modules/auth/guards';
 import { JwtStrategy } from './modules/auth/strategys';
 import { CommonModule } from './shared/common.module';
 import { TransformInterceptor } from './common/interceptor';
+import { RoleGuard } from './common/guards';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -31,6 +32,11 @@ import { TransformInterceptor } from './common/interceptor';
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
+    },
+    // 全局角色守卫
+    {
+      provide: APP_GUARD,
+      useClass: RoleGuard,
     },
     // 全局响应拦截器
     {
