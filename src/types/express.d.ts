@@ -6,6 +6,7 @@ import { SessionInfo } from 'express-session';
 // 扩展 Express 的 Request Response 对象的属性
 declare module 'express' {
   interface Response extends ExpressResponse {
+    // 用于 transform
     resMsg: string;
     success: boolean;
     apiResponseCode: ApiResponseCodeEnum;
