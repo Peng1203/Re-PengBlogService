@@ -25,6 +25,10 @@ async function bootstrap() {
   );
 
   app.enableCors();
+  // app.enableCors({
+  //   origin: 'http://localhost:8888',
+  //   credentials: true,
+  // });
 
   app.useGlobalPipes(new DtoValidatePipe());
   app.useGlobalFilters(new HttpExceptionFilter());
