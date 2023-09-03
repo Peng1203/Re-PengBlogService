@@ -137,4 +137,17 @@ export class AuthService {
     if (captcha.toLocaleLowerCase() !== session.captcha.toLocaleLowerCase())
       throw new UnauthorizedException({ code: ApiResponseCodeEnum.UNAUTHORIZED_CAPTCHA_ERROR, msg: '验证码输入有误!' });
   }
+
+  /**
+   * 通过用户ID和用户名查询用户
+   * @date 2023/9/3 - 16:33:51
+   * @author Peng
+   *
+   * @param {number} id
+   * @param {string} userName
+   * @returns {*}
+   */
+  validateUserByIdAndName(id: number, userName: string) {
+    return this.userService.findOneByUserIdAndUserName(id, userName);
+  }
 }

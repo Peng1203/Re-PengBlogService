@@ -1,11 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
 import { ExtractJwt, Strategy, StrategyOptions } from 'passport-jwt';
 import dayjs from '@/utils/date.util';
+import { AuthService } from '@/modules/auth/auth.service';
+import { ApiResponseCodeEnum } from '@/helper/enums';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private readonly configService: ConfigService) {
+  constructor(private readonly configService: ConfigService, private readonly authService: AuthService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
@@ -23,6 +25,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const nowS = dayjs().unix();
     console.log('token 剩余有效秒: ----->', payload.exp - nowS);
     //
-    return 1212;
+    const user = await this.authService.validateUserByIdAndName(Number(payload.sub), payload.userName);
+    if (!user) throw new UnauthorizedException({ code: ApiResponseCodeEnum.UNAUTHORIZED, msg: '非法token!' });
+    return user;
   }
 }

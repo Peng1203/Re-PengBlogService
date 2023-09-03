@@ -98,4 +98,25 @@ export class UserService {
       throw new InternalServerErrorException({ code: ApiResponseCodeEnum.INTERNALSERVERERROR });
     }
   }
+
+  /**
+   * 通过 id和 用户名查询用户信息
+   * @date 2023/9/3 - 16:04:17
+   * @author Peng
+   *
+   * @async
+   * @param {number} id
+   * @param {string} userName
+   * @returns {*}
+   */
+  async findOneByUserIdAndUserName(id: number, userName: string): Promise<User | null> {
+    try {
+      return await this.userRepository.findOne({
+        where: { id, userName },
+        relations: ['roles'],
+      });
+    } catch (e) {
+      throw new InternalServerErrorException({ code: ApiResponseCodeEnum.INTERNALSERVERERROR });
+    }
+  }
 }
