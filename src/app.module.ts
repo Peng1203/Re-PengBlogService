@@ -12,7 +12,7 @@ import { JwtStrategy } from './modules/auth/strategys';
 import { CommonModule } from './shared/common.module';
 import { RefreshTokenInterceptor, TransformInterceptor } from './common/interceptor';
 import { RoleGuard } from './common/guards';
-import { RefreshTokenMiddleware } from './common/middleware/refresh-token.middleware';
+import { RefreshTokenMiddleware } from './common/middleware';
 @Module({
   imports: [
     ConfigModule.forRoot({
