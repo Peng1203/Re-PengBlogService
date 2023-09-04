@@ -17,6 +17,10 @@ export enum ApiResponseCodeEnum {
   NOTFOUND = 40400,
 
   INTERNALSERVERERROR = 50000,
+  // 数据库操作失败
+  INTERNALSERVERERROR_SQL = 50001,
+  // Redis 操作失败
+  INTERNALSERVERERROR_REDIS = 50002,
 }
 
 export const ApiResponseMessageEnum = {

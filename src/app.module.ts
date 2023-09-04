@@ -12,7 +12,7 @@ import { JwtStrategy } from './modules/auth/strategys';
 import { CommonModule } from './shared/common.module';
 import { RefreshTokenInterceptor, TransformInterceptor } from './common/interceptor';
 import { RoleGuard } from './common/guards';
-import { RefreshTokenMiddleware } from './common/middleware';
+import { ExposeHeadersMiddleware, RefreshTokenMiddleware } from './common/middleware';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -54,5 +54,7 @@ import { RefreshTokenMiddleware } from './common/middleware';
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(RefreshTokenMiddleware).forRoutes({ path: '*', method: RequestMethod.ALL });
+
+    consumer.apply(ExposeHeadersMiddleware).forRoutes({ path: '*', method: RequestMethod.ALL });
   }
 }
