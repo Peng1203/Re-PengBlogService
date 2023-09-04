@@ -7,7 +7,6 @@ import * as svgCaptcha from 'svg-captcha';
 import { ApiResponseCodeEnum } from '@/helper/enums';
 import { SessionInfo } from 'express-session';
 import { JwtPayload } from 'passport-jwt';
-import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -55,16 +54,19 @@ export class AuthService {
    *
    * @async
    * @param {string} token
-   * @returns {Promise<boolean | { userName: string; id: number }>}
+   * @returns {Promise<JwtPayload>}
    */
-  async verifyToken(token: string): Promise<boolean | { userName: string; id: number }> {
+  async verifyToken(token: string): Promise<JwtPayload> {
     try {
-      const { sub, userName } = await this.jwtService.verifyAsync(token, {
+      return await this.jwtService.verifyAsync(token, {
         secret: this.configService.get<string>('JWT_SECRET'),
       });
-      return { id: sub, userName };
     } catch (e) {
-      return false;
+      throw new UnauthorizedException({
+        e,
+        code: ApiResponseCodeEnum.UNAUTHORIZED,
+        msg: '登录信息已过期，请重新登录！',
+      });
     }
   }
 
@@ -208,7 +210,20 @@ export class AuthService {
       await this.setTokenToRedis(this.redisTokenKeyStr(id, userName), token);
       return token;
     } catch (e) {
-      throw new InternalServerErrorException({ code: ApiResponseCodeEnum.INTERNALSERVERERROR, e });
+      throw new InternalServerErrorException({ code: ApiResponseCodeEnum.INTERNALSERVERERROR_REDIS, e });
     }
+  }
+
+  /**
+   * 获取token的TTL
+   * @date 2023/9/4 - 14:10:25
+   * @author Peng
+   *
+   * @async
+   * @param {string} token
+   * @returns {unknown}
+   */
+  async getTokenTTL(key: string) {
+    return await this.redis.getTTL(key);
   }
 }
