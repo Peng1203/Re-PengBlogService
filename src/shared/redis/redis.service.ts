@@ -39,7 +39,7 @@ export class RedisService {
       if (setResult !== 'OK') return false;
       return setResult === 'OK';
     } catch (e) {
-      throw new InternalServerErrorException({ e, code: ApiResponseCodeEnum.INTERNALSERVERERROR });
+      throw new InternalServerErrorException({ e, code: ApiResponseCodeEnum.INTERNALSERVERERROR_REDIS });
     }
   }
 
@@ -56,7 +56,24 @@ export class RedisService {
     try {
       return await this.redisClient.get(key);
     } catch (e) {
-      throw new InternalServerErrorException({ e, code: ApiResponseCodeEnum.INTERNALSERVERERROR });
+      throw new InternalServerErrorException({ e, code: ApiResponseCodeEnum.INTERNALSERVERERROR_REDIS });
+    }
+  }
+
+  /**
+   * 获取指定Key的TTL
+   * @date 2023/9/4 - 14:00:49
+   * @author Peng
+   *
+   * @async
+   * @param {string} key
+   * @returns {unknown}
+   */
+  async getTTL(key: string) {
+    try {
+      return await this.redisClient.ttl(key);
+    } catch (e) {
+      throw new InternalServerErrorException({ e, code: ApiResponseCodeEnum.INTERNALSERVERERROR_REDIS });
     }
   }
 }
