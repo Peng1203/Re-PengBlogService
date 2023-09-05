@@ -1,2 +1,2 @@
 export * from './refresh-token.middleware';
-export * from './expose-headers.middleware';
+export * from './response.headers.middleware';

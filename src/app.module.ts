@@ -10,9 +10,9 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtAuthGuard } from './modules/auth/guards';
 import { JwtStrategy } from './modules/auth/strategys';
 import { CommonModule } from './shared/common.module';
-import { RefreshTokenInterceptor, TransformInterceptor } from './common/interceptor';
+import { TransformInterceptor } from './common/interceptor';
 import { RoleGuard } from './common/guards';
-import { ExposeHeadersMiddleware, RefreshTokenMiddleware } from './common/middleware';
+import { ResponseHeadersMiddleware, RefreshTokenMiddleware } from './common/middleware';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -44,17 +44,12 @@ import { ExposeHeadersMiddleware, RefreshTokenMiddleware } from './common/middle
       provide: APP_INTERCEPTOR,
       useClass: TransformInterceptor,
     },
-    // 用于刷新token的响应拦截器
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: RefreshTokenInterceptor,
-    },
   ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(RefreshTokenMiddleware).forRoutes({ path: '*', method: RequestMethod.ALL });
 
-    consumer.apply(ExposeHeadersMiddleware).forRoutes({ path: '*', method: RequestMethod.ALL });
+    consumer.apply(ResponseHeadersMiddleware).forRoutes({ path: '*', method: RequestMethod.ALL });
   }
 }
