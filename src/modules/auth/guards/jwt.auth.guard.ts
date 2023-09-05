@@ -7,7 +7,6 @@ import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from '@/modules/auth/auth.service';
 import { ApiResponseCodeEnum, PassPortStrategyEnum } from '@/helper/enums';
 import { RedisService } from '@/shared/redis/redis.service';
-import { ConfigService } from '@nestjs/config';
 
 /**
  * 用于扩展 Passport JWT策略 会在 JwtStrategy 之前执行 canActivate 函数如果返回 false 或者抛出错误 则不会执行 JwtStrategy 策略 可以
@@ -18,7 +17,6 @@ export class JwtAuthGuard extends AuthGuard(PassPortStrategyEnum.JWT) {
     private readonly reflector: Reflector,
     private readonly authService: AuthService,
     private readonly redis: RedisService,
-    private readonly configService: ConfigService,
   ) {
     super();
   }
@@ -33,25 +31,18 @@ export class JwtAuthGuard extends AuthGuard(PassPortStrategyEnum.JWT) {
 
     const req = context.switchToHttp().getRequest<Request>();
     const token = this.extractToken(req);
-
-    if (!token)
+    console.log('token ----->', token);
+    if (!token || token === 'undefined')
       throw new UnauthorizedException({
         code: ApiResponseCodeEnum.UNAUTHORIZED,
         msg: 'Token cannot be empty',
       });
-
     const { sub: id, userName } = await this.authService.verifyToken(token);
 
-    // token有效时间
-    const JWT_EXPIRES = Number(this.configService.get<string>('JWT_EXPIRES'));
-    // 是否刚刷新过token
-    const hasRefreshToken =
-      JWT_EXPIRES - (await this.authService.getTokenTTL(this.authService.redisTokenKeyStr(id, userName))) < 5;
-    console.log('是否刚刷新过token ----->', hasRefreshToken);
     // 单点登录 判断当前token 和 redis中存放的token是否一致
     // 当用户token 在100秒内 刷新过token时 则无需判断
     const redisToken = await this.redis.getCache(this.authService.redisTokenKeyStr(id, userName));
-    if (!(token === redisToken) && !hasRefreshToken)
+    if (!(token === redisToken))
       throw new UnauthorizedException({ code: ApiResponseCodeEnum.UNAUTHORIZED, msg: 'token已失效，请重新认证！' });
 
     return this.activate(context);
