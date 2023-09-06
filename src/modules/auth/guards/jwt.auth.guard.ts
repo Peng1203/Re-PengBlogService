@@ -37,7 +37,7 @@ export class JwtAuthGuard extends AuthGuard(PassPortStrategyEnum.JWT) {
         code: ApiResponseCodeEnum.UNAUTHORIZED,
         msg: 'Token cannot be empty',
       });
-    const { sub: id, userName } = await this.authService.verifyToken(token);
+    const { sub: id, userName } = await this.authService.verifyAccessToken(token);
 
     // 单点登录 判断当前token 和 redis中存放的token是否一致
     // 当用户token 在100秒内 刷新过token时 则无需判断

@@ -31,7 +31,7 @@ export class AuthService {
   }
 
   /**
-   * 生成token
+   * 生成access_token
    * @date 2023/9/1 - 14:52:01
    * @author Peng
    *
@@ -40,7 +40,7 @@ export class AuthService {
    * @param {string} userName
    * @returns {unknown}
    */
-  async generateToken(id: number, userName: string) {
+  async generateAccessToken(id: number, userName: string) {
     return `${await this.jwtService.signAsync({
       sub: id,
       userName,
@@ -56,7 +56,7 @@ export class AuthService {
    * @param {string} token
    * @returns {Promise<JwtPayload>}
    */
-  async verifyToken(token: string): Promise<JwtPayload> {
+  async verifyAccessToken(token: string): Promise<JwtPayload> {
     try {
       return await this.jwtService.verifyAsync(token, {
         secret: this.configService.get<string>('JWT_SECRET'),
@@ -205,7 +205,7 @@ export class AuthService {
   async refreshToken(id: number, userName: string): Promise<string> {
     try {
       // 生成新的token
-      const token = await this.generateToken(id, userName);
+      const token = await this.generateAccessToken(id, userName);
       // 将新的token 设置到 redis中
       await this.setTokenToRedis(this.redisTokenKeyStr(id, userName), token);
       return token;

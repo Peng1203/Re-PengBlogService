@@ -56,7 +56,7 @@ export class AuthController {
     if (!user.userEnabled)
       throw new ForbiddenException({ code: ApiResponseCodeEnum.FORBIDDEN, msg: '账号已被禁用!请联系管理员' });
 
-    const token = await this.authService.generateToken(user.id, user.userName);
+    const token = await this.authService.generateAccessToken(user.id, user.userName);
 
     // redis 设置token
     await this.authService.setTokenToRedis(this.authService.redisTokenKeyStr(user.id, user.userName), token);
