@@ -60,7 +60,7 @@ export class UserService {
     } catch (e) {
       throw new InternalServerErrorException({
         e,
-        code: ApiResponseCodeEnum.INTERNALSERVERERROR,
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL,
         msg: '查询用户列表失败',
       });
     }
@@ -95,7 +95,7 @@ export class UserService {
         relations: ['roles'],
       });
     } catch (e) {
-      throw new InternalServerErrorException({ code: ApiResponseCodeEnum.INTERNALSERVERERROR });
+      throw new InternalServerErrorException({ code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL });
     }
   }
 
@@ -116,7 +116,24 @@ export class UserService {
         relations: ['roles'],
       });
     } catch (e) {
-      throw new InternalServerErrorException({ code: ApiResponseCodeEnum.INTERNALSERVERERROR });
+      throw new InternalServerErrorException({ code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL });
+    }
+  }
+
+  /**
+   * 通过 id查询用户
+   * @date 2023/9/5 - 10:48:11
+   * @author Peng
+   *
+   * @async
+   * @param {number} id
+   * @returns {Promise<User | null>}
+   */
+  async findOneById(id: number): Promise<User | null> {
+    try {
+      return await this.userRepository.findOne({ where: { id } });
+    } catch (e) {
+      throw new InternalServerErrorException({ code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL });
     }
   }
 }
