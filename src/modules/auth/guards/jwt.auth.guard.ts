@@ -31,7 +31,6 @@ export class JwtAuthGuard extends AuthGuard(PassPortStrategyEnum.JWT) {
 
     const req = context.switchToHttp().getRequest<Request>();
     const token = this.extractToken(req);
-    console.log('token ----->', token);
     if (!token || token === 'undefined')
       throw new UnauthorizedException({
         code: ApiResponseCodeEnum.UNAUTHORIZED,
