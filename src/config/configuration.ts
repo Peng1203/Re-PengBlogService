@@ -1,8 +1,7 @@
 // ts文件配置项 会加载到 process.env 中
 export default () => ({
-  port: parseInt(process.env.PORT, 10) || 3000,
-  database: {
-    host: process.env.DATABASE_HOST,
-    port: parseInt(process.env.DATABASE_PORT, 10) || 3306,
-  },
+  // access_token 有效时间 单位秒
+  JWT_ACCESS_TOKEN_EXPIRES_IN: 60 * 60 * 3, // 3小时
+  // refresh_token 有效时间 单位秒
+  JWT_REFRESH_TOKEN_EXPIRES_IN: 60 * 60 * 24 * 7, // 7天
 });
