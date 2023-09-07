@@ -1,6 +1,6 @@
 import { Role } from '@/modules/role/entities';
 
-export interface User {
+export interface UserData {
   id: number;
   userName: string;
   // password: string

@@ -10,7 +10,7 @@ export class JwtConfigService implements JwtOptionsFactory {
       secret: this.configService.get<string>('JWT_SECRET'),
       global: true,
       signOptions: {
-        expiresIn: Number(this.configService.get<string>('JWT_EXPIRES')),
+        expiresIn: this.configService.get<number>('JWT_ACCESS_TOKEN_EXPIRES_IN'),
         issuer: this.configService.get<string>('JWT_ISSUER'),
       },
     };

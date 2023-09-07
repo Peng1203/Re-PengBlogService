@@ -3,10 +3,11 @@ import { UserService } from './user.service';
 import { CreateUserDto, FindAllUserDto } from './dto';
 import { UpdateUserDto } from './dto';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import type { User } from './types';
-import { ListResponse } from '@/common/interface';
-import { Public, Roles } from '@/common/decorators';
+import type { UserData } from './types';
+import { Roles, ReqUser } from '@/common/decorators';
 import { RoleEnum } from '@/helper/enums';
+import { User } from './entities';
+import { Role } from '../role/entities';
 
 @ApiTags('User')
 @ApiBearerAuth()
@@ -22,9 +23,11 @@ export class UserController {
   @Get()
   @Roles(RoleEnum.ADMINISTRATOR, RoleEnum.USER)
   @ApiOperation({ summary: '查询全部用户' })
-  async findAll(@Query() query: FindAllUserDto): Promise<ListResponse<User>> {
+  async findAll(@Query() query: FindAllUserDto, @ReqUser() user: User, @ReqUser('roles') roles: Role[]) {
+    console.log('ReqUser ----->', user);
+    console.log('roles ----->', roles);
     const { list: data, total } = await this.usersService.findAll(query);
-    const list: User[] = data.map(({ password, ...user }) => user);
+    const list: UserData[] = data.map(({ password, ...user }) => user);
     return { list, total };
   }
 
