@@ -5,6 +5,7 @@ export enum ApiResponseCodeEnum {
   NOCONTENT = 20400,
 
   BADREQUEST = 40000,
+
   UNAUTHORIZED = 40100,
   // 验证码过期
   UNAUTHORIZED_CAPTCHA_EXPIRE = 40101,
@@ -12,8 +13,16 @@ export enum ApiResponseCodeEnum {
   UNAUTHORIZED_CAPTCHA_ERROR = 40102,
   // 无法获取 Session信息
   UNAUTHORIZED_NOTFOUND_SESSION = 40103,
+  // access_token 过期
+  UNAUTHORIZED_ACCESS_TOKEN = 40104,
+  // refresh_token 过期
+  UNAUTHORIZED_REFRESH_TOKEN = 40105,
+
   // 权限不足
   FORBIDDEN = 40300,
+  // 账号被锁定
+  FORBIDDEN_USER_DISABLED = 40301,
+
   NOTFOUND = 40400,
 
   INTERNALSERVERERROR = 50000,

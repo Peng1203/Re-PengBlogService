@@ -31,7 +31,7 @@ export class AuthService {
   }
 
   /**
-   * 生成access_token
+   * 生成accessToken
    * @date 2023/9/1 - 14:52:01
    * @author Peng
    *
@@ -64,7 +64,49 @@ export class AuthService {
     } catch (e) {
       throw new UnauthorizedException({
         e,
-        code: ApiResponseCodeEnum.UNAUTHORIZED,
+        code: ApiResponseCodeEnum.UNAUTHORIZED_ACCESS_TOKEN,
+        msg: '身份认证信息失效，请重新认证！',
+      });
+    }
+  }
+
+  /**
+   * 生成refreshToken
+   * @date 2023/9/7 - 15:26:40
+   * @author Peng
+   *
+   * @async
+   * @param {number} id
+   * @returns {unknown}
+   */
+  async generateRefreshToken(id: number) {
+    return await this.jwtService.signAsync(
+      { sub: id },
+      {
+        secret: this.configService.get<string>('JWT_SECRET'),
+        expiresIn: this.configService.get<number>('JWT_REFRESH_TOKEN_EXPIRES_IN'),
+      },
+    );
+  }
+
+  /**
+   * 验证 refresh_token
+   * @date 2023/9/7 - 18:04:51
+   * @author Peng
+   *
+   * @async
+   * @param {string} token
+   * @returns {Promise<JwtPayload | null>}
+   */
+  async verifyRefresToken(token: string): Promise<JwtPayload> {
+    try {
+      return await this.jwtService.verifyAsync(token, {
+        secret: this.configService.get<string>('JWT_SECRET'),
+      });
+    } catch (e) {
+      throw new UnauthorizedException({
+        e,
+        code: ApiResponseCodeEnum.UNAUTHORIZED_REFRESH_TOKEN,
         msg: '登录信息已过期，请重新登录！',
       });
     }
@@ -96,7 +138,7 @@ export class AuthService {
    * @returns {*}
    */
   async setTokenToRedis(key: string, token: string) {
-    await this.redis.setCache(key, token, this.configService.get<number>('JWT_EXPIRES'));
+    await this.redis.setCache(key, token, this.configService.get<number>('JWT_ACCESS_TOKEN_EXPIRES_IN'));
   }
 
   /**
@@ -202,7 +244,7 @@ export class AuthService {
    * @param {Response} res
    * @returns {*}
    */
-  async refreshToken(id: number, userName: string): Promise<string> {
+  async refreshAccessToken(id: number, userName: string): Promise<string> {
     try {
       // 生成新的token
       const token = await this.generateAccessToken(id, userName);
@@ -225,5 +267,9 @@ export class AuthService {
    */
   async getTokenTTL(key: string) {
     return await this.redis.getTTL(key);
+  }
+
+  async findUserById(id: number) {
+    return await this.userService.findOneById(id);
   }
 }

@@ -6,14 +6,15 @@ import {
   Header,
   HttpCode,
   HttpStatus,
+  Patch,
   Post,
   Req,
   Session,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ApiOperation, ApiProduces, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { UserLoginDto } from './dto';
+import { ApiOperation, ApiProduces, ApiTags } from '@nestjs/swagger';
+import { RefreshTokenDto, UserLoginDto } from './dto';
 import { LocalAuthGuard } from './guards/local.auth.guard';
 import { Request } from 'express';
 import { Keep, Public } from '@/common/decorators';
@@ -54,20 +55,50 @@ export class AuthController {
   async login(@Req() req: Request, @Body() data: UserLoginDto, @Session() session: SessionInfo) {
     const { password, ...user } = req.user;
     if (!user.userEnabled)
-      throw new ForbiddenException({ code: ApiResponseCodeEnum.FORBIDDEN, msg: '账号已被禁用!请联系管理员' });
+      throw new ForbiddenException({
+        code: ApiResponseCodeEnum.FORBIDDEN_USER_DISABLED,
+        msg: '账号已被禁用!请联系管理员',
+      });
 
-    const token = await this.authService.generateAccessToken(user.id, user.userName);
+    const access_token = await this.authService.generateAccessToken(user.id, user.userName);
+    const refresh_token = await this.authService.generateRefreshToken(user.id);
 
     // redis 设置token
-    await this.authService.setTokenToRedis(this.authService.redisTokenKeyStr(user.id, user.userName), token);
+    await this.authService.setTokenToRedis(this.authService.redisTokenKeyStr(user.id, user.userName), access_token);
 
     // 登录成功 删除 session 设置的验证码和 过期日期
     delete session.captcha;
     delete session.expirationTimestamp;
 
     return {
-      token,
       ...user,
+      access_token,
+      refresh_token,
+    };
+  }
+
+  @Public()
+  @Patch('auth/refreshAccessToekn')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: '刷新accessToken' })
+  async refreshAccessToken(@Body() data: RefreshTokenDto) {
+    const payload = await this.authService.verifyRefresToken(data.refresh_token);
+    const user = await this.authService.findUserById(payload.sub);
+    if (!user.userEnabled)
+      throw new ForbiddenException({
+        code: ApiResponseCodeEnum.FORBIDDEN_USER_DISABLED,
+        msg: '账号已被禁用!请联系管理员',
+      });
+
+    const access_token = await this.authService.generateAccessToken(user.id, user.userName);
+    const refresh_token = await this.authService.generateRefreshToken(user.id);
+
+    // redis 设置token
+    await this.authService.setTokenToRedis(this.authService.redisTokenKeyStr(user.id, user.userName), access_token);
+
+    return {
+      access_token,
+      refresh_token,
     };
   }
 }
