@@ -151,7 +151,7 @@ export class AuthService {
       ignoreChars: 'OlI', // 排除字符
       noise: 2, // 干扰线
       color: false, // 验证码字符颜色
-      background: this.rc(130, 230, 0.3), // 验证码背景颜色
+      background: this.rc(180, 230, 0.3), // 验证码背景颜色
       // background: "#cc9966" // 验证码背景颜色
     });
   }
