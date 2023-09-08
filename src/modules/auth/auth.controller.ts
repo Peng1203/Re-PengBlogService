@@ -12,7 +12,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ApiOperation, ApiProduces, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { RefreshTokenDto, UserLoginDto } from './dto';
 import { LocalAuthGuard } from './guards/local.auth.guard';
 import { Request } from 'express';
