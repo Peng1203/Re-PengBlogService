@@ -1,13 +1,6 @@
-import {
-  ArgumentMetadata,
-  BadRequestException,
-  Injectable,
-  PipeTransform,
-  ValidationPipe,
-} from '@nestjs/common';
+import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
 import { validate } from '@nestjs/class-validator';
 import { plainToClass } from '@nestjs/class-transformer';
-import { Reflector } from '@nestjs/core';
 
 // 转换参数列表
 const convertProps: string[] = ['page', 'pageSize', 'roleId'];
@@ -27,6 +20,7 @@ export class DtoValidatePipe implements PipeTransform {
     // console.log('type ----->', type, metatype);
 
     // 当触发 params 或者 custom 校验直接跳过 或 没有传递Dto校验数据直接返回
+    // 当使用自定义的参数装饰器 或者 @Session 的装饰器 都会返回custom类型
     if (type === 'param' || type === 'custom' || !metatype) return value;
     else if (type === 'query') {
       // 当为query查询时 转换部分字段的 数据类型
