@@ -8,11 +8,14 @@ import { ApiResponseCodeEnum } from '@/helper/enums';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private readonly configService: ConfigService, private readonly authService: AuthService) {
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly authService: AuthService,
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: configService.get<string>('JWT_SECRET'),
+      secretOrKey: configService.get<string>('JWT_ACCESS_TOKEN_SECRET'),
       issuer: configService.get<string>('JWT_ISSUER'),
     } as StrategyOptions);
   }
@@ -22,8 +25,15 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     // token 无感刷新
     // 当前秒
 
-    const user = await this.authService.validateUserByIdAndName(Number(payload.sub), payload.userName);
-    if (!user) throw new UnauthorizedException({ code: ApiResponseCodeEnum.UNAUTHORIZED, msg: '非法token!' });
+    const user = await this.authService.validateUserByIdAndName(
+      Number(payload.sub),
+      payload.userName,
+    );
+    if (!user)
+      throw new UnauthorizedException({
+        code: ApiResponseCodeEnum.UNAUTHORIZED,
+        msg: '非法token!',
+      });
     return user;
   }
 }
