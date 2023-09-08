@@ -1,4 +1,9 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Brackets, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -95,11 +100,10 @@ export class UserService {
         relations: ['roles'],
       });
       if (user) return user;
-      else
-        throw new NotFoundException({
-          code: ApiResponseCodeEnum.UNAUTHORIZED_UNAME_OR_PWD_NOMATCH,
-          msg: '用户名或密码错误',
-        });
+      throw new UnauthorizedException({
+        code: ApiResponseCodeEnum.UNAUTHORIZED_UNAME_OR_PWD_NOMATCH,
+        msg: '用户名或密码错误',
+      });
     } catch (e) {
       this.handleFindOneError(e);
     }
@@ -156,9 +160,21 @@ export class UserService {
    */
   handleFindOneError(e) {
     if (e instanceof NotFoundException) throw e;
-    else throw new InternalServerErrorException({ code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL, e });
+    else if (e instanceof UnauthorizedException) throw e;
+    else
+      throw new InternalServerErrorException({
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL,
+        e,
+      });
   }
 
+  /**
+   * 处理查询未找到错误
+   * @date 2023/9/8 - 14:51:11
+   * @author Peng
+   *
+   * @param {?*} [e]
+   */
   handleFindOneNotFoundError(e?) {
     if (e instanceof NotFoundException) throw e;
     throw new NotFoundException({ code: ApiResponseCodeEnum.NOTFOUND_USER });
