@@ -29,7 +29,7 @@ export class AuthController {
 
   @Get('login/captcha')
   @CaptchaAggregation()
-  getCaptcha(session: SessionInfo) {
+  getCaptcha(@Session() session: SessionInfo) {
     const { text, data } = this.authService.generateCaptcha();
     session.captcha = text;
     const CAPTCHA_EXPIRES = Number(this.configService.get<string>('CAPTCHA_EXPIRES'));
