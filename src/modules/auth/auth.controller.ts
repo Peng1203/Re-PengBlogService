@@ -3,7 +3,6 @@ import {
   Controller,
   ForbiddenException,
   Get,
-  Header,
   HttpCode,
   HttpStatus,
   Patch,
@@ -17,23 +16,20 @@ import { ApiOperation, ApiProduces, ApiTags } from '@nestjs/swagger';
 import { RefreshTokenDto, UserLoginDto } from './dto';
 import { LocalAuthGuard } from './guards/local.auth.guard';
 import { Request } from 'express';
-import { Keep, Public } from '@/common/decorators';
+import { Public } from '@/common/decorators';
 import { ApiResponseCodeEnum } from '@/helper/enums';
 import { ConfigService } from '@nestjs/config';
 import { SessionInfo } from 'express-session';
+import { CaptchaAggregation } from './decorator';
 
 @ApiTags('Auth')
 @Controller()
 export class AuthController {
   constructor(private readonly authService: AuthService, private readonly configService: ConfigService) {}
 
-  @Keep()
-  @Public()
   @Get('login/captcha')
-  @Header('Content-Type', 'image/svg+xml')
-  @ApiOperation({ summary: '获取验证码' })
-  @ApiProduces('image/svg+xml') // 指定响应类型为SVG图像
-  getCaptcha(@Session() session: SessionInfo) {
+  @CaptchaAggregation()
+  getCaptcha(session: SessionInfo) {
     const { text, data } = this.authService.generateCaptcha();
     session.captcha = text;
     const CAPTCHA_EXPIRES = Number(this.configService.get<string>('CAPTCHA_EXPIRES'));
