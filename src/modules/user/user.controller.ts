@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto, FindAllUserDto } from './dto';
 import { UpdateUserDto } from './dto';
@@ -8,7 +8,7 @@ import { Roles, ReqUser } from '@/common/decorators';
 import { RoleEnum } from '@/helper/enums';
 import { User } from './entities';
 import { Role } from '../role/entities';
-import { ParseFloatParamPipe, ParseIntParamPipe } from '@/common/pipe';
+import { ParseIntParamPipe } from '@/common/pipe';
 
 @ApiTags('User')
 @ApiBearerAuth()
@@ -24,10 +24,11 @@ export class UserController {
   @Get()
   @Roles(RoleEnum.ADMINISTRATOR, RoleEnum.USER)
   @ApiOperation({ summary: '查询全部用户' })
-  async findAll(@Query() query: FindAllUserDto, @ReqUser() user: User, @ReqUser('roles') roles: Role[]) {
-    console.log('ReqUser ----->', user);
-    console.log('roles ----->', roles);
-
+  async findAll(
+    @Query() query: FindAllUserDto,
+    @ReqUser() user: User,
+    @ReqUser('roles') roles: Role[],
+  ) {
     const { list: data, total } = await this.usersService.findAll(query);
     const list: UserData[] = data.map(({ password, ...user }) => user);
     return { list, total };
