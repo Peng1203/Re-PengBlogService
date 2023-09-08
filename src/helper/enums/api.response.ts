@@ -17,6 +17,8 @@ export enum ApiResponseCodeEnum {
   UNAUTHORIZED_ACCESS_TOKEN = 40104,
   // refresh_token 过期
   UNAUTHORIZED_REFRESH_TOKEN = 40105,
+  // 用户名或密码错误
+  UNAUTHORIZED_UNAME_OR_PWD_NOMATCH = 40106,
 
   // 权限不足
   FORBIDDEN = 40300,
@@ -24,6 +26,8 @@ export enum ApiResponseCodeEnum {
   FORBIDDEN_USER_DISABLED = 40301,
 
   NOTFOUND = 40400,
+  // 未找到用户
+  NOTFOUND_USER = 40401,
 
   INTERNALSERVERERROR = 50000,
   // 数据库操作失败
@@ -41,6 +45,7 @@ export const ApiResponseMessageEnum = {
   [ApiResponseCodeEnum.UNAUTHORIZED]: '未授权访问',
   [ApiResponseCodeEnum.FORBIDDEN]: '权限不足!禁止访问',
   [ApiResponseCodeEnum.NOTFOUND]: '资源不存在',
+  [ApiResponseCodeEnum.NOTFOUND_USER]: '未找到相关用户信息',
   [ApiResponseCodeEnum.INTERNALSERVERERROR]: '服务器内部错误',
 };
 
