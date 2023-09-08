@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Brackets, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -88,14 +88,20 @@ export class UserService {
    * @param {string} password
    * @returns {Promise<User | null>}
    */
-  async findOneByUserNameAndPwd(userName: string, password: string): Promise<User | null> {
+  async findOneByUserNameAndPwd(userName: string, password: string): Promise<User> {
     try {
-      return await this.userRepository.findOne({
+      const user = await this.userRepository.findOne({
         where: { userName, password },
         relations: ['roles'],
       });
+      if (user) return user;
+      else
+        throw new NotFoundException({
+          code: ApiResponseCodeEnum.UNAUTHORIZED_UNAME_OR_PWD_NOMATCH,
+          msg: '用户名或密码错误',
+        });
     } catch (e) {
-      throw new InternalServerErrorException({ code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL });
+      this.handleFindOneError(e);
     }
   }
 
@@ -109,14 +115,16 @@ export class UserService {
    * @param {string} userName
    * @returns {*}
    */
-  async findOneByUserIdAndUserName(id: number, userName: string): Promise<User | null> {
+  async findOneByUserIdAndUserName(id: number, userName: string): Promise<User> {
     try {
-      return await this.userRepository.findOne({
+      const user = await this.userRepository.findOne({
         where: { id, userName },
         relations: ['roles'],
       });
+      if (user) return user;
+      else this.handleFindOneNotFoundError();
     } catch (e) {
-      throw new InternalServerErrorException({ code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL });
+      this.handleFindOneError(e);
     }
   }
 
@@ -129,11 +137,30 @@ export class UserService {
    * @param {number} id
    * @returns {Promise<User | null>}
    */
-  async findOneById(id: number): Promise<User | null> {
+  async findOneById(id: number): Promise<User> {
     try {
-      return await this.userRepository.findOne({ where: { id } });
+      const user = await this.userRepository.findOne({ where: { id } });
+      if (user) return user;
+      else this.handleFindOneNotFoundError();
     } catch (e) {
-      throw new InternalServerErrorException({ code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL });
+      this.handleFindOneError(e);
     }
+  }
+
+  /**
+   * 处理查询单个用户抛出的错误
+   * @date 2023/9/8 - 11:31:22
+   * @author Peng
+   *
+   * @param {*} e
+   */
+  handleFindOneError(e) {
+    if (e instanceof NotFoundException) throw e;
+    else throw new InternalServerErrorException({ code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL, e });
+  }
+
+  handleFindOneNotFoundError(e?) {
+    if (e instanceof NotFoundException) throw e;
+    throw new NotFoundException({ code: ApiResponseCodeEnum.NOTFOUND_USER });
   }
 }
