@@ -1,13 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto, FindAllUserDto } from './dto';
 import { UpdateUserDto } from './dto';
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import type { UserData } from './types';
 import { Roles, ReqUser } from '@/common/decorators';
 import { RoleEnum } from '@/helper/enums';
 import { User } from './entities';
 import { Role } from '../role/entities';
+import { ParseFloatParamPipe, ParseIntParamPipe } from '@/common/pipe';
 
 @ApiTags('User')
 @ApiBearerAuth()
@@ -26,14 +27,15 @@ export class UserController {
   async findAll(@Query() query: FindAllUserDto, @ReqUser() user: User, @ReqUser('roles') roles: Role[]) {
     console.log('ReqUser ----->', user);
     console.log('roles ----->', roles);
+
     const { list: data, total } = await this.usersService.findAll(query);
     const list: UserData[] = data.map(({ password, ...user }) => user);
     return { list, total };
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  findOne(@Param('id', new ParseIntParamPipe('id参数有误')) id: number) {
+    return this.usersService.findOneById(id);
   }
 
   @Patch(':id/:aid')
