@@ -12,12 +12,27 @@ import { FindAllUserDto } from './dto';
 import { User } from './entities';
 import { ListResponse } from '@/common/interface';
 import { ApiResponseCodeEnum } from '@/helper/enums';
+import { RoleService } from './../role/role.service';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectRepository(User) private readonly userRepository: Repository<User>) {}
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  constructor(
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
+    private readonly roleService: RoleService,
+  ) {}
+  async create(data: CreateUserDto) {
+    try {
+      let { roleIds, ...userInfo } = data;
+      const roles = await Promise.all(roleIds.map((roleId) => this.roleService.findOne(roleId)));
+      const user = await this.userRepository.create({ roles, ...userInfo });
+      return await this.userRepository.save(user);
+    } catch (e) {
+      throw new InternalServerErrorException({
+        e,
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL,
+        msg: '创建用户失败',
+      });
+    }
   }
 
   /**

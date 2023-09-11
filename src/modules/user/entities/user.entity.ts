@@ -12,7 +12,7 @@ import {
 } from 'typeorm';
 
 @Entity({ name: 'user' })
-@Unique(['userName'])
+@Unique(['userName', 'email'])
 export class User extends TimestampedEntity {
   @PrimaryGeneratedColumn()
   readonly id: number;
@@ -28,6 +28,7 @@ export class User extends TimestampedEntity {
   @JoinTable({ name: 'user_role_relation' })
   readonly roles: Role[];
 
+  @Index('index_email')
   @Column({ type: 'varchar', nullable: true })
   readonly email: string;
 
