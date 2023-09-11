@@ -1,4 +1,5 @@
 import { TimestampedEntity } from '@/common/entities';
+import { Menu } from '@/modules/menu/entities';
 import { Permission } from '@/modules/permission/entities';
 import { User } from '@/modules/user/entities';
 import {
@@ -21,6 +22,9 @@ export class Role extends TimestampedEntity {
   @Column({ name: 'role_name', type: 'varchar' })
   readonly roleName: string;
 
+  @Column({ name: 'description', type: 'varchar', length: 255, nullable: true })
+  readonly description: string;
+
   @ManyToMany(() => User, (user) => user.roles)
   readonly users: User[];
 
@@ -28,6 +32,7 @@ export class Role extends TimestampedEntity {
   @JoinTable({ name: 'role_permission_relation' })
   readonly permissions: Permission[];
 
-  @Column({ name: 'description', type: 'varchar', length: 255, nullable: true })
-  readonly description: string;
+  @ManyToMany(() => Menu, (Menu) => Menu.roles)
+  @JoinTable({ name: 'role_menu_relation' })
+  readonly menus: Menu[];
 }

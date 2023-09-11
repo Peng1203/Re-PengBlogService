@@ -1,6 +1,7 @@
 import { TimestampedEntity } from '@/common/entities';
 import { StatusEnum } from '@/helper/enums';
-import { Column, Entity, Index, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { Role } from '@/modules/role/entities';
+import { Column, Entity, Index, ManyToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
 @Entity({ name: 'menu' })
 @Unique(['menuName', 'menuPath'])
@@ -30,4 +31,7 @@ export class Menu extends TimestampedEntity {
 
   @Column({ name: 'is_keepAlive', type: 'enum', enum: StatusEnum, default: StatusEnum.FALSE })
   readonly isKeepalive: StatusEnum;
+
+  @ManyToMany(() => Role, (Role) => Role.menus)
+  readonly roles: Role[];
 }
