@@ -13,6 +13,7 @@ import { CommonModule } from './shared/common.module';
 import { TransformInterceptor } from './common/interceptor';
 import { RoleGuard } from './common/guards';
 import { ResponseHeadersMiddleware, RefreshTokenMiddleware } from './common/middleware';
+import { PermissionModule } from './modules/permission/permission.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -26,6 +27,7 @@ import { ResponseHeadersMiddleware, RefreshTokenMiddleware } from './common/midd
     UserModule,
     RoleModule,
     CommonModule,
+    PermissionModule,
   ],
   providers: [
     JwtStrategy,
