@@ -3,17 +3,18 @@ import { ConfigModule } from '@nestjs/config';
 import configuration from './config/configuration';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigService } from './config';
-import { AuthModule } from './modules/auth/auth.module';
-import { UserModule } from './modules/user/user.module';
-import { RoleModule } from './modules/role/role.module';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtAuthGuard } from './modules/auth/guards';
 import { JwtStrategy } from './modules/auth/strategys';
-import { CommonModule } from './shared/common.module';
 import { TransformInterceptor } from './common/interceptor';
 import { RoleGuard } from './common/guards';
 import { ResponseHeadersMiddleware, RefreshTokenMiddleware } from './common/middleware';
+import { AuthModule } from './modules/auth/auth.module';
+import { UserModule } from './modules/user/user.module';
+import { RoleModule } from './modules/role/role.module';
+import { CommonModule } from './shared/common.module';
 import { PermissionModule } from './modules/permission/permission.module';
+import { MenuModule } from './modules/menu/menu.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -28,6 +29,7 @@ import { PermissionModule } from './modules/permission/permission.module';
     RoleModule,
     CommonModule,
     PermissionModule,
+    MenuModule,
   ],
   providers: [
     JwtStrategy,
