@@ -1,7 +1,15 @@
 import { TimestampedEntity } from '@/common/entities';
 import { UserEnabledEnum } from '@/helper/enums';
 import { Role } from '@/modules/role/entities';
-import { Column, Entity, Index, JoinTable, ManyToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+  Unique,
+} from 'typeorm';
 
 @Entity({ name: 'user' })
 @Unique(['userName'])
@@ -33,7 +41,7 @@ export class User extends TimestampedEntity {
     default: UserEnabledEnum.Enabled,
     comment: '0 禁用 1 启用',
   })
-  readonly userEnabled: number;
+  readonly userEnabled: UserEnabledEnum;
 
   @Column({ name: 'user_avatar', type: 'varchar', nullable: true })
   readonly userAvatar: string;
