@@ -1,6 +1,15 @@
 import { TimestampedEntity } from '@/common/entities';
+import { Permission } from '@/modules/permission/entities';
 import { User } from '@/modules/user/entities';
-import { Column, Entity, Index, ManyToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+  Unique,
+} from 'typeorm';
 
 @Entity({ name: 'role' })
 @Unique(['roleName'])
@@ -15,6 +24,10 @@ export class Role extends TimestampedEntity {
   @ManyToMany(() => User, (user) => user.roles)
   readonly users: User[];
 
-  @Column({ name: 'role_describe', type: 'varchar', length: 255 })
-  readonly roleDescribe: string;
+  @ManyToMany(() => Permission, (Permission) => Permission.roles)
+  @JoinTable({ name: 'role_permission_relation' })
+  readonly permissions: Permission[];
+
+  @Column({ name: 'description', type: 'varchar', length: 255, nullable: true })
+  readonly description: string;
 }

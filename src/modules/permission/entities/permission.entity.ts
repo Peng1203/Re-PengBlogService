@@ -1,7 +1,7 @@
 import { TimestampedEntity } from '@/common/entities';
 import { ActionTypeEnum } from '@/helper/enums';
-
-import { Column, Entity, Index, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { Role } from '@/modules/role/entities';
+import { Column, Entity, Index, ManyToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
 @Entity({ name: 'permission' })
 @Unique(['permissionName', 'permissionCode'])
@@ -22,4 +22,7 @@ export class Permission extends TimestampedEntity {
 
   @Column({ name: 'description', type: 'varchar', length: 60, nullable: true })
   readonly description: string;
+
+  @ManyToMany(() => Role, (Role) => Role.permissions)
+  readonly roles: Role[];
 }
