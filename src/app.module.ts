@@ -8,7 +8,7 @@ import { JwtAuthGuard } from './modules/auth/guards';
 import { JwtStrategy } from './modules/auth/strategys';
 import { TransformInterceptor } from './common/interceptor';
 import { RoleGuard } from './common/guards';
-import { ResponseHeadersMiddleware } from './common/middleware';
+import { LoggerMiddleware, ResponseHeadersMiddleware } from './common/middleware';
 import { CommonModule } from './shared/common.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
@@ -52,6 +52,8 @@ import { MenuModule } from './modules/menu/menu.module';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(ResponseHeadersMiddleware).forRoutes({ path: '*', method: RequestMethod.ALL });
+    consumer
+      .apply(ResponseHeadersMiddleware, LoggerMiddleware)
+      .forRoutes({ path: '*', method: RequestMethod.ALL });
   }
 }
