@@ -8,11 +8,11 @@ import { JwtAuthGuard } from './modules/auth/guards';
 import { JwtStrategy } from './modules/auth/strategys';
 import { TransformInterceptor } from './common/interceptor';
 import { RoleGuard } from './common/guards';
-import { ResponseHeadersMiddleware, RefreshTokenMiddleware } from './common/middleware';
+import { ResponseHeadersMiddleware } from './common/middleware';
+import { CommonModule } from './shared/common.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { RoleModule } from './modules/role/role.module';
-import { CommonModule } from './shared/common.module';
 import { PermissionModule } from './modules/permission/permission.module';
 import { MenuModule } from './modules/menu/menu.module';
 @Module({
@@ -24,10 +24,10 @@ import { MenuModule } from './modules/menu/menu.module';
       load: [configuration],
     }),
     TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService }),
+    CommonModule,
     AuthModule,
     UserModule,
     RoleModule,
-    CommonModule,
     PermissionModule,
     MenuModule,
   ],
@@ -52,8 +52,6 @@ import { MenuModule } from './modules/menu/menu.module';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(RefreshTokenMiddleware).forRoutes({ path: '*', method: RequestMethod.ALL });
-
     consumer.apply(ResponseHeadersMiddleware).forRoutes({ path: '*', method: RequestMethod.ALL });
   }
 }
