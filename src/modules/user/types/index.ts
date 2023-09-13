@@ -1,4 +1,4 @@
-import { Role } from '@/modules/role/entities';
+import { Role } from '@/common/entities';
 
 export interface UserData {
   id: number;

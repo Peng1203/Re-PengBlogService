@@ -6,8 +6,7 @@ import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger'
 import type { UserData } from './types';
 import { Roles, ReqUser } from '@/common/decorators';
 import { RoleEnum } from '@/helper/enums';
-import { User } from './entities';
-import { Role } from '../role/entities';
+import { User, Role } from '@/common/entities';
 import { ParseIntParamPipe } from '@/common/pipe';
 
 @ApiTags('User')
