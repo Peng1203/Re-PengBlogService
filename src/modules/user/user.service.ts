@@ -110,10 +110,18 @@ export class UserService {
    */
   async findOneByUserNameAndPwd(userName: string, password: string): Promise<User> {
     try {
-      const user = await this.userRepository.findOne({
-        where: { userName, password },
-        relations: ['roles'],
-      });
+      const user = await this.userRepository
+        .createQueryBuilder('user')
+        .where('user.userName = :userName', { userName })
+        .andWhere('user.password = :password', { password })
+        .leftJoinAndSelect('user.roles', 'roles')
+        .leftJoinAndSelect('roles.menus', 'menus')
+        .leftJoinAndSelect('roles.permissions', 'permissions')
+        .getOne();
+      // const user = await this.userRepository.findOne({
+      //   where: { userName, password },
+      //   relations: ['roles'],
+      // });
       if (user) return user;
       throw new UnauthorizedException({
         code: ApiResponseCodeEnum.UNAUTHORIZED_UNAME_OR_PWD_NOMATCH,
