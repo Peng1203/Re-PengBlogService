@@ -4,7 +4,7 @@ import { Role } from '@/modules/role/entities';
 import { Column, Entity, Index, ManyToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
 @Entity({ name: 'menu' })
-@Unique(['menuName', 'menuPath'])
+@Unique(['menuName', 'menuPath', 'menuUri'])
 export class Menu extends TimestampedEntity {
   @PrimaryGeneratedColumn()
   readonly id: number;
@@ -16,6 +16,10 @@ export class Menu extends TimestampedEntity {
   @Index('index_menu_path')
   @Column({ name: 'menu_path', type: 'varchar', length: 60 })
   readonly menuPath: string;
+
+  @Index('index_menu_uri')
+  @Column({ name: 'menu_uri', type: 'varchar', length: 60 })
+  readonly menuUri: string;
 
   @Column({ name: 'menu_icon', type: 'varchar', length: 20 })
   readonly menuIcon: string;
