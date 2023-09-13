@@ -1,6 +1,6 @@
 import { TimestampedEntity } from '@/common/entities';
 import { StatusEnum } from '@/helper/enums';
-import { Role } from '@/modules/role/entities';
+import { Role } from './';
 import { Column, Entity, Index, ManyToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
 @Entity({ name: 'menu' })

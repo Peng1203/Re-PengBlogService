@@ -1,7 +1,6 @@
 import { TimestampedEntity } from '@/common/entities';
-import { Menu } from '@/modules/menu/entities';
-import { Permission } from '@/modules/permission/entities';
-import { User } from '@/modules/user/entities';
+import { Menu, User, Permission } from './';
+
 import {
   Column,
   Entity,
