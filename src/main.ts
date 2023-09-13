@@ -5,6 +5,7 @@ import session from 'express-session';
 import { AppModule } from './app.module';
 import { DtoValidatePipe } from './common/pipe';
 import { HttpExceptionFilter, DataAccessFilter } from './common/exceptions';
+import { Logger } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -46,7 +47,7 @@ async function bootstrap() {
   SwaggerModule.setup(SWAGGER_PREFIX, app, document);
 
   await app.listen(APP_PORT, APP_HOST, () =>
-    console.log(`server is running: http://${APP_HOST}:${APP_PORT}  --${process.env.NODE_ENV}`),
+    Logger.debug(`server is running: http://${APP_HOST}:${APP_PORT}  --${process.env.NODE_ENV}`),
   );
 }
 bootstrap();

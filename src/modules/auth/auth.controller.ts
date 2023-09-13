@@ -92,7 +92,6 @@ export class AuthController {
   @ApiOperation({ summary: '刷新accessToken' })
   async refreshAccessToken(@Body() data: RefreshTokenDto) {
     const payload = await this.authService.verifyRefresToken(data.refresh_token);
-    console.log('payload ----->', payload);
     const user = await this.authService.findUserById(payload.sub);
     if (!user.userEnabled)
       throw new ForbiddenException({

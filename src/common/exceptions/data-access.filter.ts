@@ -1,7 +1,14 @@
 import { ServerError } from '@/common/errors/server.error';
 import { ApiResponseMessageEnum } from '@/helper/enums';
 import { formatDate } from '@/utils/date.util';
-import { ArgumentsHost, Catch, ExceptionFilter, InternalServerErrorException, HttpException } from '@nestjs/common';
+import {
+  ArgumentsHost,
+  Catch,
+  ExceptionFilter,
+  InternalServerErrorException,
+  HttpException,
+  Logger,
+} from '@nestjs/common';
 import { Request, Response } from 'express';
 // 处理 TypeORM 抛出错误
 @Catch(InternalServerErrorException)
@@ -30,7 +37,7 @@ export class DataAccessFilter implements ExceptionFilter {
         break;
     }
 
-    console.log('触发 DAO层 异常过滤器 ----->', exceptionRes.e, exception.message);
+    Logger.error('触发 DAO层 异常过滤器', exceptionRes.e, exception.message);
 
     // 写入错误的logger日志
 
