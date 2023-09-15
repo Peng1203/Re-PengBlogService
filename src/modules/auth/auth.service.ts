@@ -176,11 +176,11 @@ export class AuthService {
     return parseInt(Math.random() * (max - min) + min);
   }
 
-  private rc(min, max, opacity) {
+  private rc(min, max, opacity?: number) {
     let r = this.rn(min, max);
     let g = this.rn(min, max);
     let b = this.rn(min, max);
-    return `rgba(${r},${g},${b},${opacity})`;
+    return `rgba(${r},${g},${b},${opacity || 1})`;
   }
 
   /**
@@ -193,11 +193,13 @@ export class AuthService {
   generateCaptcha() {
     // createMathExpr 创建一个 简单加法的 svg 验证码
     return svgCaptcha.create({
+      width: 125,
+      height: 40,
       size: 4, // 验证码长度
-      ignoreChars: 'OlI', // 排除字符
+      ignoreChars: '0OlI', // 排除字符
       noise: 2, // 干扰线
-      color: false, // 验证码字符颜色
-      background: this.rc(180, 230, 0.3), // 验证码背景颜色
+      // color: false, // 验证码字符颜色
+      background: this.rc(180, 230), // 验证码背景颜色
       // background: "#cc9966" // 验证码背景颜色
     });
   }
@@ -211,7 +213,6 @@ export class AuthService {
    * @param {SessionInfo} session
    */
   verifyCaptcha(captcha: string, session: SessionInfo) {
-    return true;
     if (!session?.captcha)
       throw new UnauthorizedException({
         code: ApiResponseCodeEnum.UNAUTHORIZED_NOTFOUND_SESSION,
