@@ -1,3 +1,4 @@
+import { ApiResponseCodeEnum } from '@/helper/enums';
 import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
@@ -12,6 +13,9 @@ export class IsArrayNumber implements ValidatorConstraintInterface {
   }
 
   defaultMessage?(validationArguments?: ValidationArguments): string {
-    throw new BadRequestException('数字类型的数组有误');
+    throw new BadRequestException({
+      msg: '数字类型的数组有误',
+      code: ApiResponseCodeEnum.BADREQUEST,
+    });
   }
 }
