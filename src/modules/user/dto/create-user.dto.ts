@@ -4,13 +4,18 @@ import {
   IsArray,
   IsDefined,
   IsEmail,
+  IsEmpty,
   IsEnum,
+  IsInt,
+  IsNumber,
   IsOptional,
   IsString,
   Length,
   MaxLength,
   MinLength,
   Validate,
+  ValidateIf,
+  ValidateNested,
 } from '@nestjs/class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -28,11 +33,14 @@ export class CreateUserDto {
 
   @IsArray()
   @Validate(IsArrayNumber)
-  @ApiProperty({ description: '用户角色id数组' })
+  // @ValidateNested({ each: true })
+  // @IsNumber({}, { each: true })
+  @ApiProperty({ description: '用户角色id数组', default: [] })
   readonly roleIds: number[];
 
   @IsEmail()
   @IsOptional()
+  // @IsEmpty()
   @ApiProperty({ description: '邮箱' })
   readonly email?: string;
 
@@ -41,8 +49,10 @@ export class CreateUserDto {
   @ApiProperty({ description: '昵称' })
   readonly nickName?: string;
 
+  @IsInt()
+  @IsNumber()
   @IsEnum(UserEnabledEnum)
-  @ApiProperty({ description: '用户状态 0禁用 1启用' })
+  @ApiProperty({ description: '用户状态 0禁用 1启用', default: UserEnabledEnum.Enabled })
   readonly userEnabled?: UserEnabledEnum;
 
   @IsString()

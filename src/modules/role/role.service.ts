@@ -3,8 +3,10 @@ import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { Role } from '@/common/entities';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { ApiResponseCodeEnum } from '@/helper/enums';
+import { FindAllRoleDto } from './dto';
+import { ListResponse } from '@/common/interface';
 
 @Injectable()
 export class RoleService {
@@ -14,8 +16,24 @@ export class RoleService {
     return 'This action adds a new role';
   }
 
-  findAll() {
-    return `This action returns all role`;
+  async findAll(query: FindAllRoleDto): Promise<ListResponse<Role>> {
+    try {
+      const { page, pageSize, queryStr = '', column, order } = query;
+      const [list, total] = await this.roleRepository.findAndCount({
+        where: [{ roleName: Like(`%${queryStr}%`) }],
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+        order: { [column || 'id']: order || 'ASC' },
+        relations: ['menus', 'permissions'],
+      });
+      return { list, total };
+    } catch (e) {
+      throw new InternalServerErrorException({
+        e,
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL,
+        msg: '查询角色列表失败!',
+      });
+    }
   }
 
   async findOne(id: number): Promise<Role> {
