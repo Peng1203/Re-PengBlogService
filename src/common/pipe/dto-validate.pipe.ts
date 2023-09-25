@@ -1,6 +1,7 @@
 import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
 import { validate } from '@nestjs/class-validator';
 import { plainToClass } from '@nestjs/class-transformer';
+import { ApiResponseCodeEnum } from '@/helper/enums';
 
 // 转换参数列表
 const convertProps: string[] = ['page', 'pageSize', 'roleId'];
@@ -32,7 +33,7 @@ export class DtoValidatePipe implements PipeTransform {
     const errors = await validate(plainToClass(metatype, value), options);
     if (errors.length > 0) {
       const errorMessage = this.flattenErrors(errors);
-      throw new BadRequestException(errorMessage);
+      throw new BadRequestException({ code: ApiResponseCodeEnum.BADREQUEST, msg: errorMessage });
     }
 
     return value;
