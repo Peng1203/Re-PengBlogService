@@ -16,13 +16,14 @@ export class UserController {
   constructor(private readonly usersService: UserService) {}
 
   @Post()
+  @ApiOperation({ summary: '创建用户' })
   create(@Body() data: CreateUserDto) {
     return this.usersService.create(data);
   }
 
   @Get()
   @Roles(RoleEnum.ADMINISTRATOR, RoleEnum.USER)
-  @ApiOperation({ summary: '查询全部用户' })
+  @ApiOperation({ summary: '查询用户' })
   async findAll(
     @Query() query: FindAllUserDto,
     @ReqUser() user: User,
@@ -34,6 +35,7 @@ export class UserController {
   }
 
   @Get(':id')
+  @ApiOperation({ summary: '通过ID查询用户' })
   findOne(@Param('id', new ParseIntParamPipe('id参数有误')) id: number) {
     return this.usersService.findOneById(id);
   }
