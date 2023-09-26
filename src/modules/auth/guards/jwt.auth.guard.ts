@@ -1,4 +1,10 @@
-import { CanActivate, ExecutionContext, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Inject,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { IS_PUBLIC_KEY } from '@/common/decorators';
@@ -41,8 +47,11 @@ export class JwtAuthGuard extends AuthGuard(PassPortStrategyEnum.JWT) {
     // 单点登录 判断当前token 和 redis中存放的token是否一致
     // 当用户token 在100秒内 刷新过token时 则无需判断
     const redisToken = await this.redis.getCache(this.authService.redisTokenKeyStr(id, userName));
-    if (!(token === redisToken))
-      throw new UnauthorizedException({ code: ApiResponseCodeEnum.UNAUTHORIZED, msg: 'token已失效，请重新认证！' });
+    if (token !== redisToken)
+      throw new UnauthorizedException({
+        code: ApiResponseCodeEnum.UNAUTHORIZED_ACCESS_TOKEN,
+        msg: '身份认证信息失效，请重新认证！',
+      });
 
     return this.activate(context);
   }
