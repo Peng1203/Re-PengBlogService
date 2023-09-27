@@ -16,9 +16,10 @@ export class TransformInterceptor implements NestInterceptor {
     return next.handle().pipe(
       map((data) => {
         if (isKeep) return data;
-
         const res = context.switchToHttp().getResponse<Response>();
-        const code = res.apiResponseCode ?? ApiResponseCodeEnum.SUCCESS;
+        const code =
+          res.apiResponseCode ??
+          (res.statusCode === 200 ? ApiResponseCodeEnum.SUCCESS : ApiResponseCodeEnum.CREATED);
         const message = res.resMsg || ApiResponseMessageEnum[code];
         const success = res.success ?? true;
         // 当设置了响应头时 返回原始数据
