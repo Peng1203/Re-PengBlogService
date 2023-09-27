@@ -1,6 +1,9 @@
 export enum ApiResponseCodeEnum {
+  // 查询成功
   SUCCESS = 20000,
+  // 更新成功
   UPDATE = 20001,
+  // 创建成功
   CREATED = 20100,
   NOCONTENT = 20400,
 
@@ -30,10 +33,17 @@ export enum ApiResponseCodeEnum {
   NOTFOUND_USER = 40401,
 
   INTERNALSERVERERROR = 50000,
-  // 数据库操作失败
-  INTERNALSERVERERROR_SQL = 50001,
+  // 数据库 查询操作失败
+  INTERNALSERVERERROR_SQL_FIND = 50001,
+  // 数据库 创建操作失败
+  INTERNALSERVERERROR_SQL_CREATED = 50002,
+  // 数据库 更新操作失败
+  INTERNALSERVERERROR_SQL_UPDATE = 50003,
+  // 数据库 删除操作失败
+  INTERNALSERVERERROR_SQL_DELETE = 50004,
+
   // Redis 操作失败
-  INTERNALSERVERERROR_REDIS = 50002,
+  INTERNALSERVERERROR_REDIS = 50050,
 }
 
 export const ApiResponseMessageEnum = {
