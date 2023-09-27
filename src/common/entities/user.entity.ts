@@ -18,7 +18,7 @@ export class User extends TimestampedEntity {
   readonly id: number;
 
   @Index('index_user_name')
-  @Column({ name: 'user_name', type: 'varchar', length: 15 })
+  @Column({ name: 'user_name', type: 'varchar', length: 15, unique: true })
   readonly userName: string;
 
   @Column({ type: 'varchar', length: 255 })
@@ -29,7 +29,7 @@ export class User extends TimestampedEntity {
   readonly roles: Role[];
 
   @Index('index_email')
-  @Column({ type: 'varchar', nullable: true })
+  @Column({ type: 'varchar', nullable: true, unique: true })
   readonly email: string;
 
   @Column({ name: 'nick_name', type: 'varchar', nullable: true })
