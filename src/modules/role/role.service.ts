@@ -30,7 +30,7 @@ export class RoleService {
     } catch (e) {
       throw new InternalServerErrorException({
         e,
-        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL,
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
         msg: '查询角色列表失败!',
       });
     }
@@ -42,7 +42,7 @@ export class RoleService {
     } catch (e) {
       throw new InternalServerErrorException({
         e,
-        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL,
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
         msg: '查询角色失败',
       });
     }

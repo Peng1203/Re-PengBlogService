@@ -29,7 +29,7 @@ export class UserService {
     } catch (e) {
       throw new InternalServerErrorException({
         e,
-        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL,
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_CREATED,
         msg: '创建用户失败',
       });
     }
@@ -80,7 +80,7 @@ export class UserService {
     } catch (e) {
       throw new InternalServerErrorException({
         e,
-        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL,
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
         msg: '查询用户列表失败',
       });
     }
@@ -186,7 +186,7 @@ export class UserService {
     else if (e instanceof UnauthorizedException) throw e;
     else
       throw new InternalServerErrorException({
-        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL,
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
         e,
       });
   }
