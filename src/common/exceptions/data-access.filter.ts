@@ -22,7 +22,7 @@ export class DataAccessFilter implements ExceptionFilter {
     const status = exception.getStatus();
     let reason = '';
     // 当没有传入响应信息是 使用通用错误信息返回
-    switch (exception.errCode) {
+    switch (exceptionRes.e.code) {
       case 'ER_DUP_ENTRY':
         reason = '该记录已经存在。';
         break;
@@ -36,8 +36,11 @@ export class DataAccessFilter implements ExceptionFilter {
         reason = '必需的字段缺少值。';
         break;
     }
+    // Logger.error('触发 DAO层 异常过滤器 ', exception, exceptionRes.e, exception.message);
 
-    Logger.error('触发 DAO层 异常过滤器', exceptionRes.e, exception.message);
+    console.log('exception ------', exception, exception.errCode);
+    console.log('exceptionRes.e ------', exceptionRes.e.code);
+    console.log('exception.message ------', exception.message);
 
     // 写入错误的logger日志
 
@@ -46,7 +49,7 @@ export class DataAccessFilter implements ExceptionFilter {
       path: req.url,
       error: exception.message,
       methods: req.method,
-      message: exceptionRes.msg,
+      message: `${exceptionRes.msg}，${reason}`,
       timestamp: formatDate(),
     });
   }
