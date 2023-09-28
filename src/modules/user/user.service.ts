@@ -94,8 +94,18 @@ export class UserService {
     return `This action updates a #${id} user`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: number) {
+    try {
+      const delResult = await this.userRepository.delete(id);
+      console.log('delResult ------', delResult);
+      return `This action removes a #${id} user`;
+    } catch (e) {
+      throw new InternalServerErrorException({
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
+        e,
+        msg: '删除用户失败',
+      });
+    }
   }
 
   /**
@@ -166,8 +176,8 @@ export class UserService {
    */
   async findOneById(id: number): Promise<User> {
     try {
-      const user = await this.userRepository.findOne({ where: { id } });
-      if (user) return user;
+      const { password, ...user } = await this.userRepository.findOne({ where: { id } });
+      if (user) return user as User;
       else this.handleFindOneNotFoundError();
     } catch (e) {
       this.handleFindOneError(e);
@@ -188,6 +198,7 @@ export class UserService {
       throw new InternalServerErrorException({
         code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
         e,
+        msg: '查询用户失败',
       });
   }
 

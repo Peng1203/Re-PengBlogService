@@ -48,7 +48,8 @@ export class UserController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  @ApiOperation({ summary: '通过ID删除用户' })
+  async remove(@Param('id', new ParseIntParamPipe('id参数有误')) id: number) {
+    return this.usersService.remove(id);
   }
 }
