@@ -98,7 +98,7 @@ export class UserService {
     try {
       const delResult = await this.userRepository.delete(id);
       console.log('delResult ------', delResult);
-      return `This action removes a #${id} user`;
+      return !!delResult.affected;
     } catch (e) {
       throw new InternalServerErrorException({
         code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,

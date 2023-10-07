@@ -41,9 +41,6 @@ export class AuthController {
     // 方案2 在生成验证码时记录一个过期时间戳 登录时进行时间戳对比
     // 设置验证码的过期时间戳
     session.expirationTimestamp = Date.now() + CAPTCHA_EXPIRES;
-
-    console.log('session ----->', session);
-
     return data;
   }
 

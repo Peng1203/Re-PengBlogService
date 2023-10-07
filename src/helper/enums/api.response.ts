@@ -1,5 +1,5 @@
 export enum ApiResponseCodeEnum {
-  // 查询成功
+  // 成功
   SUCCESS = 20000,
   // 更新成功
   UPDATE = 20001,
