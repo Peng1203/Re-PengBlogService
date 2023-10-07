@@ -213,4 +213,16 @@ export class UserService {
     if (e instanceof NotFoundException) throw e;
     throw new NotFoundException({ code: ApiResponseCodeEnum.NOTFOUND_USER });
   }
+
+  async handleBatchRemove(ids: number[]): Promise<number> {
+    try {
+      return (await this.userRepository.delete(ids)).affected;
+    } catch (e) {
+      throw new InternalServerErrorException({
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_DELETE,
+        e,
+        msh: '批量删除操作失败',
+      });
+    }
+  }
 }

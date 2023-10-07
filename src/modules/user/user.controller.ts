@@ -11,7 +11,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto, FindAllUserDto } from './dto';
+import { CreateUserDto, DeleteUsersDto, FindAllUserDto } from './dto';
 import { UpdateUserDto } from './dto';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import type { UserData } from './types';
@@ -55,8 +55,8 @@ export class UserController {
 
   @Patch(':id/:aid')
   @ApiParam({ name: 'id', description: '用户ID', type: 'string' })
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  update(@Param('id') id: string, @Body() data: UpdateUserDto) {
+    return this.usersService.update(+id, data);
   }
 
   @Delete(':id')
@@ -75,5 +75,12 @@ export class UserController {
     if (!delResult) res.resMsg = '删除用户失败!';
     if (!delResult) res.success = false;
     else return '删除用户成功';
+  }
+
+  @Delete()
+  @ApiOperation({ summary: '通过ID批量删除用户' })
+  async removes(@Body() data: DeleteUsersDto) {
+    const delCount = await this.usersService.handleBatchRemove(data.ids);
+    return `成功删除${delCount}个用户`;
   }
 }
