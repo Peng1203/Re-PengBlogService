@@ -22,6 +22,7 @@ import { ApiResponseCodeEnum } from '@/helper/enums';
 import { ConfigService } from '@nestjs/config';
 import { SessionInfo } from 'express-session';
 import { CaptchaAggregation } from './decorator';
+import { CosService } from '@/shared/COS/cos.service';
 
 @ApiTags('Auth')
 @Controller()
@@ -29,6 +30,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly configService: ConfigService,
+    private readonly COS: CosService,
   ) {}
 
   @Get('login/captcha')
@@ -37,6 +39,7 @@ export class AuthController {
     const { text, data } = this.authService.generateCaptcha();
     session.captcha = text;
     const CAPTCHA_EXPIRES = Number(this.configService.get<string>('CAPTCHA_EXPIRES'));
+
     // 方案1 设置一个 setTimeout 到时自动删除 session对象的验证码字段
     // 方案2 在生成验证码时记录一个过期时间戳 登录时进行时间戳对比
     // 设置验证码的过期时间戳

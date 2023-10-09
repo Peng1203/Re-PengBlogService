@@ -44,6 +44,9 @@ export enum ApiResponseCodeEnum {
 
   // Redis 操作失败
   INTERNALSERVERERROR_REDIS = 50050,
+
+  // 云存储操作失败
+  INTERNALSERVERERROR_COS = 50060,
 }
 
 export const ApiResponseMessageEnum = {
