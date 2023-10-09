@@ -97,7 +97,6 @@ export class UserService {
   async remove(id: number) {
     try {
       const delResult = await this.userRepository.delete(id);
-      console.log('delResult ------', delResult);
       return !!delResult.affected;
     } catch (e) {
       throw new InternalServerErrorException({
