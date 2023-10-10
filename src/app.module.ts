@@ -15,6 +15,7 @@ import { UserModule } from './modules/user/user.module';
 import { RoleModule } from './modules/role/role.module';
 import { PermissionModule } from './modules/permission/permission.module';
 import { MenuModule } from './modules/menu/menu.module';
+import { ResourceModule } from './modules/resource/resource.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -30,6 +31,7 @@ import { MenuModule } from './modules/menu/menu.module';
     RoleModule,
     PermissionModule,
     MenuModule,
+    ResourceModule,
   ],
   providers: [
     JwtStrategy,
