@@ -18,13 +18,12 @@ export class NetDiskController {
   @Get()
   @Public()
   async getNetdist(@Query() params: FindNetdiskDirDto) {
-    const fullPath = join(
-      this.configService.get<string>('NETDISK_ROOT_DIR'),
-      params.path || '',
-    ).toString();
+    const rootDir = this.configService.get<string>('NETDISK_ROOT_DIR');
+    const fullPath = join(rootDir, (params.path || '').replaceAll('netdisk/', '')).toString();
     const result = await this.COSService.getDirBucket(fullPath);
     return {
-      path: (result as any).Prefix,
+      path:
+        (result as any).Prefix === rootDir ? '' : (result as any).Prefix.replaceAll('netdisk/', ''),
       list: result.data,
     };
   }

@@ -5,6 +5,7 @@ import COS, { type CosObject, GetBucketResult } from 'cos-nodejs-sdk-v5';
 import { DirFileDataItem, ExtendBucketResult } from './types';
 import { extname, basename } from 'path';
 import dayjs, { formatDate } from '@/utils/date.util';
+import { countOccurrences } from '@/utils/string.util';
 
 @Injectable()
 export class CosService {
@@ -12,13 +13,16 @@ export class CosService {
   private cos: COS;
   private Bucket: string;
   private Region: string;
+  private rootDir: string;
 
   constructor(private readonly configService: ConfigService) {
     const SecretId = this.configService.get<string>('COS_SECRET_ID');
     const SecretKey = this.configService.get<string>('COS_SECRET_KEY');
     const Bucket = this.configService.get<string>('COS_BUCKET');
     const Region = this.configService.get<string>('COS_REGION');
+    const rootDir = this.configService.get<string>('NETDISK_ROOT_DIR');
 
+    this.rootDir = rootDir;
     this.Bucket = Bucket;
     this.Region = Region;
 
@@ -62,11 +66,20 @@ export class CosService {
 
   // 处理目录查询响应的结构
   private handleDirData(result: GetBucketResult): ExtendBucketResult {
+    const prefixPath =
+      (result as any).Prefix === this.rootDir ? `${this.rootDir}/` : (result as any).Prefix;
     if (!result.Contents.length) return { ...result, data: [] };
     // 排除自身文件夹结果 并排除 其其它子目录中的内容
-    const data = result.Contents.slice(1).filter(
-      (item) => !item.Key.replace((result as any).Prefix, '').split('/')[2],
-    );
+    const data = result.Contents.slice(1).filter((item) => {
+      const str = item.Key.replace(prefixPath, '');
+      const count = countOccurrences(str, '/');
+      const lastLineChatIndex = str.lastIndexOf('/');
+      const isDir = lastLineChatIndex === str.length - 1;
+
+      if (isDir && count !== 1 && str[lastLineChatIndex + 1]) return false;
+
+      return !str.split('/')[2] && count <= 1;
+    });
 
     const formatData: DirFileDataItem[] = data.map((COSItem) => {
       const { Key, Size, LastModified } = COSItem;
@@ -83,6 +96,16 @@ export class CosService {
       };
     });
 
-    return { ...result, data: formatData };
+    return {
+      ...result,
+      data: formatData.sort((a, b) => {
+        // 首先按类型排序，文件夹在前，文件在后
+        if (a.type === 'dir' && b.type === 'file') return -1;
+        if (a.type === 'file' && b.type === 'dir') return 1;
+
+        // 如果类型相同，按名称排序
+        return a.name.localeCompare(b.name);
+      }),
+    };
   }
 }
