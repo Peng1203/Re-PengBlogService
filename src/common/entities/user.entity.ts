@@ -26,7 +26,7 @@ export class User extends TimestampedEntity {
 
   @ManyToMany(() => Role, (role) => role.users)
   @JoinTable({ name: 'user_role_relation' })
-  readonly roles: Role[];
+  roles: Role[];
 
   @Index('index_email')
   @Column({ type: 'varchar', nullable: true, unique: true })

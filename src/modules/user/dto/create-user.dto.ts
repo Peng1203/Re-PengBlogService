@@ -33,8 +33,6 @@ export class CreateUserDto {
 
   @IsArray()
   @Validate(IsArrayNumber)
-  // @ValidateNested({ each: true })
-  // @IsNumber({}, { each: true })
   @ApiProperty({ description: '用户角色id数组', default: [] })
   readonly roleIds: number[];
 

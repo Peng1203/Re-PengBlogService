@@ -13,6 +13,7 @@ import { User } from '@/common/entities';
 import { ListResponse } from '@/common/interface';
 import { ApiResponseCodeEnum } from '@/helper/enums';
 import { RoleService } from './../role/role.service';
+import { formatDate } from '@/utils/date.util';
 
 @Injectable()
 export class UserService {
@@ -86,12 +87,33 @@ export class UserService {
     }
   }
 
-  findOne(id?: number) {
-    return `This action returns a #${id} user`;
-  }
+  async update(id: number, data: UpdateUserDto) {
+    try {
+      const user = await this.findOneById(id);
+      const { roleIds, ...userInfo } = data;
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+      // 角色ID转换为 角色实例
+      const roles = roleIds?.length
+        ? await Promise.all(roleIds.map((roleId) => this.roleService.findOne(roleId)))
+        : [];
+
+      for (const key in userInfo) {
+        user[key] = userInfo[key];
+      }
+
+      roleIds?.length && (user.roles = roles);
+
+      // 更新多对多表的数据需要使用 save方法 save 方法无法触发 自动更新日期字段
+      user.updateTime = formatDate();
+
+      return this.userRepository.save(user);
+    } catch (e) {
+      throw new InternalServerErrorException({
+        e,
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_UPDATE,
+        msg: '更新用户失败',
+      });
+    }
   }
 
   async remove(id: number) {

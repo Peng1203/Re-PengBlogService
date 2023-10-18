@@ -9,6 +9,7 @@ import {
   Query,
   Res,
   NotFoundException,
+  Put,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto, DeleteUsersDto, FindAllUserDto } from './dto';
@@ -53,10 +54,34 @@ export class UserController {
     return this.usersService.findOneById(id);
   }
 
-  @Patch(':id/:aid')
-  @ApiParam({ name: 'id', description: '用户ID', type: 'string' })
-  update(@Param('id') id: string, @Body() data: UpdateUserDto) {
-    return this.usersService.update(+id, data);
+  @Patch(':id')
+  @ApiOperation({ summary: '更新用户信息' })
+  async update(
+    @Param('id', new ParseIntParamPipe('id参数有误')) id: number,
+    @Body() data: UpdateUserDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const updateRes = await this.usersService.update(id, data);
+    updateRes
+      ? (res.apiResponseCode = ApiResponseCodeEnum.UPDATE)
+      : (res.resMsg = '更新用户失败!') && (res.success = false);
+
+    return updateRes || '操作失败!';
+  }
+
+  @Put(':id')
+  @ApiOperation({ summary: '批量更新用户信息' })
+  async updateBatch(
+    @Param('id', new ParseIntParamPipe('id参数有误')) id: number,
+    @Body() data: UpdateUserDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const updateRes = await this.usersService.update(id, data);
+    updateRes
+      ? (res.apiResponseCode = ApiResponseCodeEnum.UPDATE)
+      : (res.resMsg = '更新用户失败!') && (res.success = false);
+
+    return updateRes || '操作失败!';
   }
 
   @Delete(':id')
