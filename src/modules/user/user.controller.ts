@@ -108,4 +108,10 @@ export class UserController {
     const delCount = await this.usersService.handleBatchRemove(data.ids);
     return `成功删除${delCount}个用户`;
   }
+
+  @Post('avater/:id')
+  @ApiOperation({ summary: '上传用户头像' })
+  uploadAvater() {
+    return '上传用户头像';
+  }
 }
