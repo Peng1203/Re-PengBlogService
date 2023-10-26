@@ -6,6 +6,8 @@ import { AppModule } from './app.module';
 import { DtoValidatePipe } from './common/pipe';
 import { HttpExceptionFilter, DataAccessFilter } from './common/exceptions';
 import { Logger } from '@nestjs/common';
+import userAgent from 'express-useragent';
+import requestIp from 'request-ip';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -24,6 +26,8 @@ async function bootstrap() {
       saveUninitialized: false,
     }),
   );
+  app.use(userAgent.express());
+  app.use(requestIp.mw());
 
   // app.enableCors();
   app.enableCors({

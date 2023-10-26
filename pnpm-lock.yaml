@@ -56,6 +56,9 @@ dependencies:
   express-session:
     specifier: ^1.17.3
     version: 1.17.3
+  express-useragent:
+    specifier: ^1.0.15
+    version: 1.0.15
   ioredis:
     specifier: ^5.3.2
     version: 5.3.2
@@ -77,6 +80,9 @@ dependencies:
   reflect-metadata:
     specifier: ^0.1.13
     version: 0.1.13
+  request-ip:
+    specifier: ^3.3.0
+    version: 3.3.0
   rxjs:
     specifier: ^7.8.1
     version: 7.8.1
@@ -106,6 +112,9 @@ devDependencies:
   '@types/express-session':
     specifier: ^1.17.7
     version: 1.17.7
+  '@types/express-useragent':
+    specifier: ^1.0.4
+    version: 1.0.4
   '@types/jest':
     specifier: ^29.5.2
     version: 29.5.2
@@ -121,6 +130,9 @@ devDependencies:
   '@types/passport-local':
     specifier: ^1.0.35
     version: 1.0.35
+  '@types/request-ip':
+    specifier: ^0.0.40
+    version: 0.0.40
   '@types/supertest':
     specifier: ^2.0.12
     version: 2.0.12
@@ -1330,6 +1342,12 @@ packages:
       '@types/express': 4.17.17
     dev: true
 
+  /@types/express-useragent@1.0.4:
+    resolution: {integrity: sha512-FQ36tttohu5dfugE/xxkjGgF0tdasRJs1daJqNifaNfsGNeAnPEvNHpvA1HCkgNoZr3eTAxWrGsYvUTJYwla6g==}
+    dependencies:
+      '@types/express': 4.17.17
+    dev: true
+
   /@types/express@4.17.17:
     resolution: {integrity: sha512-Q4FmmuLGBG58btUnfS1c1r/NQdlp3DMfGDGig8WhfpA2YRUtEkxAjkZb0yvplJGYdF1fsQ81iMDcH24sSCNC/Q==}
     dependencies:
@@ -1437,6 +1455,12 @@ packages:
 
   /@types/range-parser@1.2.4:
     resolution: {integrity: sha512-EEhsLsD6UsDM1yFhAvy0Cjr6VwmpMWqFBCb9w07wVugF7w9nfajxLuVmngTIpgS6svCnm6Vaw+MZhoDCKnOfsw==}
+    dev: true
+
+  /@types/request-ip@0.0.40:
+    resolution: {integrity: sha512-3pBKLRLlE5YwVWp2hQRqv6dOXWkoE3bEt+EXHTVd8Q3XNnIWFJx+VC2Dy8+DAnBI9MmSqHSljUZPeuTBMvsNYg==}
+    dependencies:
+      '@types/node': 20.3.1
     dev: true
 
   /@types/semver@7.5.0:
@@ -2902,6 +2926,11 @@ packages:
       uid-safe: 2.1.5
     transitivePeerDependencies:
       - supports-color
+    dev: false
+
+  /express-useragent@1.0.15:
+    resolution: {integrity: sha512-eq5xMiYCYwFPoekffMjvEIk+NWdlQY9Y38OsTyl13IvA728vKT+q/CSERYWzcw93HGBJcIqMIsZC5CZGARPVdg==}
+    engines: {node: '>=4.5'}
     dev: false
 
   /express@4.18.2:
@@ -5037,6 +5066,10 @@ packages:
     resolution: {integrity: sha512-PV0dzCYDNfRi1jCDbJzpW7jNNDRuCOG/jI5ctQcGKt/clZD+YcPS3yIlWuTJMmESC8aevCFmWJy5wjAFgNqN6w==}
     engines: {node: '>=0.10'}
     dev: true
+
+  /request-ip@3.3.0:
+    resolution: {integrity: sha512-cA6Xh6e0fDBBBwH77SLJaJPBmD3nWVAcF9/XAcsrIHdjhFzFiB5aNQFytdjCGPezU3ROwrR11IddKAM08vohxA==}
+    dev: false
 
   /request@2.88.2:
     resolution: {integrity: sha512-MsvtOrfG9ZcrOwAW+Qi+F6HbD0CWXEh9ou77uOb7FM2WPhwT7smM833PzanhJLsgXjN89Ir6V2PczXNnMpwKhw==}
