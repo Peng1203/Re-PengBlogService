@@ -17,12 +17,13 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { RefreshTokenDto, UserLoginDto } from './dto';
 import { LocalAuthGuard } from './guards/local.auth.guard';
 import { Request, Response } from 'express';
-import { Public } from '@/common/decorators';
+import { Public, UserAgent } from '@/common/decorators';
 import { ApiResponseCodeEnum } from '@/helper/enums';
 import { ConfigService } from '@nestjs/config';
 import { SessionInfo } from 'express-session';
 import { CaptchaAggregation } from './decorator';
 import { CosService } from '@/shared/COS/cos.service';
+import { Details } from 'express-useragent';
 
 @ApiTags('Auth')
 @Controller()
@@ -34,8 +35,9 @@ export class AuthController {
 
   @Get('login/captcha')
   @CaptchaAggregation()
-  getCaptcha(@Session() session: SessionInfo) {
-    const { text, data } = this.authService.generateCaptcha();
+  getCaptcha(@Session() session: SessionInfo, @UserAgent() ua: Details) {
+    const isPhone = ['Android', 'iPhone'].includes(ua.platform);
+    const { text, data } = this.authService.generateCaptcha(isPhone);
     session.captcha = text;
     const CAPTCHA_EXPIRES = Number(this.configService.get<string>('CAPTCHA_EXPIRES'));
 

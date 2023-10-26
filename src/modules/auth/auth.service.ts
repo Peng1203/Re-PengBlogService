@@ -190,10 +190,10 @@ export class AuthService {
    *
    * @returns {*}
    */
-  generateCaptcha() {
+  generateCaptcha(phone: boolean) {
     // createMathExpr 创建一个 简单加法的 svg 验证码
     return svgCaptcha.create({
-      width: 135,
+      width: phone ? 80 : 135,
       height: 40,
       size: 4, // 验证码长度
       ignoreChars: '0OlI', // 排除字符
