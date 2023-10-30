@@ -1,8 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { MenuService } from './menu.service';
-import { CreateMenuDto } from './dto';
+import { CreateMenuDto, FindAllMenuDto } from './dto';
 import { UpdateMenuDto } from './dto';
-
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+@ApiTags('Menu')
+@ApiBearerAuth()
 @Controller('menu')
 export class MenuController {
   constructor(private readonly menuService: MenuService) {}
@@ -13,8 +15,9 @@ export class MenuController {
   }
 
   @Get()
-  findAll() {
-    return this.menuService.findAll();
+  @ApiOperation({ summary: '查询菜单' })
+  findAll(@Query() query: FindAllMenuDto) {
+    return this.menuService.findAll(query);
   }
 
   @Get(':id')
