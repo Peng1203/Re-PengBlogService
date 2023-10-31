@@ -41,3 +41,21 @@ export class ListCommonParamsDto {
   @ApiProperty({ default: 'ASC', required: false, description: '排序方式' })
   readonly order?: 'ASC' | 'DESC' | '';
 }
+
+export class NoPageListCommonParamsDto {
+  @IsString()
+  @IsOptional()
+  @IsDefined()
+  @ApiProperty({ required: false, description: '搜索关键字' })
+  readonly queryStr?: string;
+
+  @IsString()
+  @ApiProperty({ default: 'id', required: false, description: '排序字段' })
+  readonly column?: string;
+
+  @IsString()
+  @IsIn(['ASC', 'DESC', ''])
+  @IsDefined()
+  @ApiProperty({ default: 'ASC', required: false, description: '排序方式' })
+  readonly order?: 'ASC' | 'DESC' | '';
+}
