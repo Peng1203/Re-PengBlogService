@@ -16,8 +16,10 @@ export class MenuController {
 
   @Get()
   @ApiOperation({ summary: '查询菜单' })
-  findAll(@Query() query: FindAllMenuDto) {
-    return this.menuService.findAll(query);
+  async findAll(@Query() query: FindAllMenuDto) {
+    const { list, total } = await this.menuService.findAll(query);
+    const menu = this.menuService.handleMenusResponse(list);
+    return { total, list: menu };
   }
 
   @Get(':id')

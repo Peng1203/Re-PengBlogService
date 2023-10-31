@@ -6,6 +6,7 @@ import { Menu } from '@/common/entities';
 import { Like, Repository } from 'typeorm';
 import { ApiResponseCodeEnum } from '@/helper/enums';
 import { FindAllMenuDto } from './dto';
+import { MenuItem } from './types';
 
 @Injectable()
 export class MenuService {
@@ -17,11 +18,10 @@ export class MenuService {
 
   async findAll(query: FindAllMenuDto) {
     try {
-      const { page, pageSize, queryStr = '', column, order } = query;
+      const { queryStr = '', column, order } = query;
+
       const [list, total] = await this.menuRepository.findAndCount({
         where: [{ menuName: Like(`%${queryStr}%`) }, { menuPath: Like(`%${queryStr}%`) }],
-        skip: (page - 1) * pageSize,
-        take: pageSize,
         order: { [column || 'id']: order || 'ASC' },
       });
       return { list, total };
@@ -32,6 +32,40 @@ export class MenuService {
         msg: '查询菜单列表失败!',
       });
     }
+  }
+
+  handleMenusResponse(menus: Menu[]): MenuItem[] {
+    const menuData: Menu[] = JSON.parse(JSON.stringify(menus)).sort(
+      (a, b) => b.parentId - a.parentId,
+    );
+    const menuMap = new Map<number, MenuItem>();
+    const formatMenus: MenuItem[] = [];
+    for (const menu of menuData) {
+      menuMap.set(menu.id, { ...menu, children: [] });
+    }
+
+    // console.log('menuData ------', menuData);
+    // console.log('menuMap ------', menuMap);
+
+    menuData.forEach((menu) => {
+      const { id, parentId } = menu;
+      // parentId 0 一级菜单
+      if (!parentId) return formatMenus.push(menuMap.get(id));
+
+      const parentMenu = menuMap.get(parentId);
+      // console.log('parentMenu ------', id, parentMenu);
+      parentMenu.children.push(menu);
+    });
+    this.handleOrderNumMenuData(formatMenus);
+    return formatMenus;
+  }
+
+  private handleOrderNumMenuData(menus: MenuItem[]) {
+    menus.sort((a, b) => a.orderNum - b.orderNum);
+    menus.forEach((menu) => {
+      if (!menu.children || !menu.children.length) return;
+      this.handleOrderNumMenuData(menu.children);
+    });
   }
 
   findOne(id: number) {
