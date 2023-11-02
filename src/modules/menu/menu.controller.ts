@@ -10,8 +10,9 @@ export class MenuController {
   constructor(private readonly menuService: MenuService) {}
 
   @Post()
-  create(@Body() createMenuDto: CreateMenuDto) {
-    return this.menuService.create(createMenuDto);
+  @ApiOperation({ summary: '添加菜单' })
+  create(@Body() data: CreateMenuDto) {
+    return this.menuService.create(data);
   }
 
   @Get()

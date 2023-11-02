@@ -12,8 +12,17 @@ import { MenuItem } from './types';
 export class MenuService {
   constructor(@InjectRepository(Menu) private readonly menuRepository: Repository<Menu>) {}
 
-  create(createMenuDto: CreateMenuDto) {
-    return 'This action adds a new menu';
+  async create(data: CreateMenuDto) {
+    try {
+      const menu = await this.menuRepository.create(data);
+      return await this.menuRepository.save(menu);
+    } catch (e) {
+      throw new InternalServerErrorException({
+        e,
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_CREATED,
+        msg: '添加菜单失败',
+      });
+    }
   }
 
   async findAll(query: FindAllMenuDto) {
