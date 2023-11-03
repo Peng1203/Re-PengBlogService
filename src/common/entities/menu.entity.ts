@@ -4,7 +4,10 @@ import { Role } from './';
 import { Column, Entity, Index, ManyToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
 @Entity({ name: 'menu' })
-@Unique(['menuName', 'menuPath', 'menuUri'])
+// @Unique(['menuName', 'menuPath', 'menuUri'])
+@Unique(['menuName'])
+@Unique(['menuPath'])
+@Unique(['menuUri'])
 export class Menu extends TimestampedEntity {
   @PrimaryGeneratedColumn()
   readonly id: number;
