@@ -44,29 +44,23 @@ export class MenuService {
   }
 
   handleMenusResponse(menus: Menu[]): MenuItem[] {
-    const menuData: Menu[] = JSON.parse(JSON.stringify(menus)).sort(
-      (a, b) => b.parentId - a.parentId,
-    );
-    const menuMap = new Map<number, MenuItem>();
-    const formatMenus: MenuItem[] = [];
-    for (const menu of menuData) {
-      menuMap.set(menu.id, { ...menu, children: [] });
-    }
+    const menuData: Menu[] = JSON.parse(JSON.stringify(menus));
+    const formatMenu = this.formatTreeMenu(menuData);
+    this.handleOrderNumMenuData(formatMenu);
+    return formatMenu;
+  }
 
-    // console.log('menuData ------', menuData);
-    // console.log('menuMap ------', menuMap);
-
-    menuData.forEach((menu) => {
-      const { id, parentId } = menu;
-      // parentId 0 一级菜单
-      if (!parentId) return formatMenus.push(menuMap.get(id));
-
-      const parentMenu = menuMap.get(parentId);
-      // console.log('parentMenu ------', id, parentMenu);
-      parentMenu.children.push(menu);
-    });
-    this.handleOrderNumMenuData(formatMenus);
-    return formatMenus;
+  formatTreeMenu(ary: MenuItem[], parentId?: number) {
+    return ary
+      .filter((item) =>
+        // 如果没有父id（第一次递归的时候）将所有父级查询出来
+        parentId === undefined ? item.parentId === 0 : item.parentId === parentId,
+      )
+      .map((item) => {
+        // 通过父节点ID查询所有子节点
+        item.children = this.formatTreeMenu(ary, item.id);
+        return item;
+      });
   }
 
   private handleOrderNumMenuData(menus: MenuItem[]) {
