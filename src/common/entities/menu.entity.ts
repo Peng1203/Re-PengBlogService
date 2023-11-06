@@ -21,10 +21,10 @@ export class Menu extends TimestampedEntity {
   readonly menuPath: string;
 
   @Index('index_menu_uri')
-  @Column({ name: 'menu_uri', type: 'varchar', length: 60 })
+  @Column({ name: 'menu_uri', type: 'varchar', length: 20, nullable: true })
   readonly menuUri: string;
 
-  @Column({ name: 'menu_icon', type: 'varchar', length: 20, nullable: true })
+  @Column({ name: 'menu_icon', type: 'varchar', length: 60, nullable: true })
   readonly menuIcon: string;
 
   @Column({ name: 'order_num', type: 'int', nullable: true })
