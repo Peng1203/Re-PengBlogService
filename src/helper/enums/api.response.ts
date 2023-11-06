@@ -32,6 +32,9 @@ export enum ApiResponseCodeEnum {
   // 未找到用户
   NOTFOUND_USER = 40401,
 
+  // 操作冲突
+  CONFLICT = 40900,
+
   INTERNALSERVERERROR = 50000,
   // 数据库 查询操作失败
   INTERNALSERVERERROR_SQL_FIND = 50001,
