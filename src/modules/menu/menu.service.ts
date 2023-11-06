@@ -71,15 +71,48 @@ export class MenuService {
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} menu`;
+  async findOne(id: number) {
+    try {
+      return await this.menuRepository.findOne({ where: { id } });
+    } catch (e) {
+      throw new InternalServerErrorException({
+        e,
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
+        msg: '查询菜单失败',
+      });
+    }
   }
 
-  update(id: number, updateMenuDto: UpdateMenuDto) {
+  update(id: number, data: UpdateMenuDto) {
     return `This action updates a #${id} menu`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} menu`;
+  async remove(id: number) {
+    try {
+      const delResult = await this.menuRepository.delete(id);
+      return !!delResult.affected;
+    } catch (e) {
+      throw new InternalServerErrorException({
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
+        e,
+        msg: '删除菜单失败',
+      });
+    }
+  }
+
+  /**
+   * 判断当前菜单是否有子菜单
+   */
+  async menuHasChildren(id: number): Promise<boolean> {
+    try {
+      const [list] = await this.menuRepository.findAndCount();
+      return list.some((menu) => menu.parentId === id);
+    } catch (e) {
+      throw new InternalServerErrorException({
+        e,
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
+        msg: '查询菜单失败',
+      });
+    }
   }
 }

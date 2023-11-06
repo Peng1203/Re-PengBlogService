@@ -1,8 +1,25 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  NotFoundException,
+  ConflictException,
+  Res,
+  Put,
+} from '@nestjs/common';
 import { MenuService } from './menu.service';
 import { CreateMenuDto, FindAllMenuDto } from './dto';
 import { UpdateMenuDto } from './dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ParseIntParamPipe } from '@/common/pipe';
+import { ApiResponseCodeEnum } from '@/helper/enums';
+import { Response } from 'express';
+import { Menu } from '@/common/entities';
 @ApiTags('Menu')
 @ApiBearerAuth()
 @Controller('menu')
@@ -23,18 +40,41 @@ export class MenuController {
     return { total, list: menu };
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.menuService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMenuDto: UpdateMenuDto) {
-    return this.menuService.update(+id, updateMenuDto);
+  @Put(':id')
+  @ApiOperation({ summary: '更新菜单信息' })
+  update(
+    @Param('id', new ParseIntParamPipe('id参数有误')) id: number,
+    @Body() data: UpdateMenuDto,
+  ) {
+    console.log(' ------', id);
+    console.log(' ------', data);
+    return this.menuService.update(id, data);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.menuService.remove(+id);
+  @ApiOperation({ summary: '删除菜单' })
+  async remove(
+    @Param('id', new ParseIntParamPipe('id参数有误')) id: number,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const menu = await this.menuService.findOne(id).catch(() => false);
+    if (!menu)
+      throw new NotFoundException({
+        code: ApiResponseCodeEnum.NOTFOUND_USER,
+        msg: '删除失败，未找到相关菜单信息',
+      });
+
+    // 判断当前删除的菜单是否包含子菜单
+    const isHave = await this.menuService.menuHasChildren((menu as Menu).id);
+    if (isHave)
+      throw new ConflictException({
+        code: ApiResponseCodeEnum.CONFLICT,
+        msg: '删除失败，请先处理相关的子菜单',
+      });
+
+    const delResult = await this.menuService.remove(id);
+    if (!delResult) res.resMsg = '删除菜单失败!';
+    if (!delResult) res.success = false;
+    else return '删除菜单成功';
   }
 }
