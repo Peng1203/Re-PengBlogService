@@ -23,6 +23,9 @@ export class DataAccessFilter implements ExceptionFilter {
     let reason = '';
     // 当没有传入响应信息是 使用通用错误信息返回
     switch (exceptionRes.e.code) {
+      case 'ER_DATA_TOO_LONG':
+        reason = '部分字段超出最大长度。';
+        break;
       case 'ER_DUP_ENTRY':
         reason = '该记录已经存在。';
         break;
