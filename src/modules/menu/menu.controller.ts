@@ -42,13 +42,18 @@ export class MenuController {
 
   @Put(':id')
   @ApiOperation({ summary: '更新菜单信息' })
-  update(
+  async update(
     @Param('id', new ParseIntParamPipe('id参数有误')) id: number,
     @Body() data: UpdateMenuDto,
+    @Res({ passthrough: true }) res: Response,
   ) {
-    console.log(' ------', id);
-    console.log(' ------', data);
-    return this.menuService.update(id, data);
+    const updateRes = await this.menuService.update(id, data);
+
+    updateRes
+      ? (res.apiResponseCode = ApiResponseCodeEnum.UPDATE)
+      : (res.resMsg = '更新菜单失败!') && (res.success = false);
+
+    return updateRes ? '更新菜单成功!' : '操作失败!';
   }
 
   @Delete(':id')
@@ -57,12 +62,7 @@ export class MenuController {
     @Param('id', new ParseIntParamPipe('id参数有误')) id: number,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const menu = await this.menuService.findOne(id).catch(() => false);
-    if (!menu)
-      throw new NotFoundException({
-        code: ApiResponseCodeEnum.NOTFOUND_USER,
-        msg: '删除失败，未找到相关菜单信息',
-      });
+    const menu = await this.menuService.findOne(id);
 
     // 判断当前删除的菜单是否包含子菜单
     const isHave = await this.menuService.menuHasChildren((menu as Menu).id);

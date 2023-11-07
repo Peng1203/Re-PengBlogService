@@ -83,8 +83,23 @@ export class MenuService {
     }
   }
 
-  update(id: number, data: UpdateMenuDto) {
-    return `This action updates a #${id} menu`;
+  async update(id: number, data: UpdateMenuDto) {
+    try {
+      // const menu = await this.findOne(id);
+      // for (const key in data) {
+      //   menu[key] = data[key];
+      // }
+      // return await this.menuRepository.save(menu);
+
+      const updateRes = await this.menuRepository.update(id, data);
+      return !!updateRes.affected;
+    } catch (e) {
+      throw new InternalServerErrorException({
+        e,
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_UPDATE,
+        msg: '更新菜单失败',
+      });
+    }
   }
 
   async remove(id: number) {
