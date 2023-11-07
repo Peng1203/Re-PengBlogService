@@ -106,7 +106,7 @@ export class UserService {
       // 更新多对多表的数据需要使用 save方法 save 方法无法触发 自动更新日期字段
       user.updateTime = formatDate();
 
-      return this.userRepository.save(user);
+      return await this.userRepository.save(user);
     } catch (e) {
       throw new InternalServerErrorException({
         e,
