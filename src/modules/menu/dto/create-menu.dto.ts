@@ -17,47 +17,47 @@ export class CreateMenuDto {
   @IsString()
   @MinLength(2)
   @ApiProperty({ description: '菜单名' })
-  menuName: string;
+  readonly menuName: string;
 
   @IsString()
   @MinLength(2)
   @ApiProperty({ description: '菜单路径', default: '/' })
-  menuPath: string;
+  readonly menuPath: string;
 
   @IsString()
   @MinLength(2)
   @ApiProperty({ description: '菜单唯一标识' })
-  menuUri: string;
+  readonly menuUri: string;
 
   @IsString()
   @IsOptional()
   @ApiProperty({ description: '菜单图标类名', default: '' })
-  menuIcon?: string | null;
+  readonly menuIcon?: string | null;
 
   @IsNumber()
   @IsInt()
   @Min(0)
   @Max(20)
   @ApiProperty({ description: '菜单排序', default: 0 })
-  orderNum: number;
+  readonly orderNum: number;
 
   @IsNumber()
   @IsInt()
   @Min(0)
   @ApiProperty({ description: '菜单父级id 0 为 父级菜单', default: 0 })
-  parentId: number;
+  readonly parentId: number;
 
   @IsInt()
   @IsNumber()
   @IsEnum(StatusEnum)
   @ApiProperty({ description: '菜单是否隐藏 0不隐藏 1隐藏', default: StatusEnum.FALSE })
-  isHidden: StatusEnum;
+  readonly isHidden: StatusEnum;
 
   @IsInt()
   @IsNumber()
   @IsEnum(StatusEnum)
   @ApiProperty({ description: '菜单是否隐藏 0不缓存 1缓存', default: StatusEnum.FALSE })
-  isKeepalive: StatusEnum;
+  readonly isKeepalive: StatusEnum;
 
   // @Type(() => CreateMenuDto)
   // @IsOptional()
