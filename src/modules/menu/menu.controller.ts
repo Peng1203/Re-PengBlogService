@@ -36,7 +36,7 @@ export class MenuController {
   @ApiOperation({ summary: '查询菜单' })
   async findAll(@Query() query: FindAllMenuDto) {
     const { list, total } = await this.menuService.findAll(query);
-    const menu = this.menuService.handleMenusResponse(list);
+    const menu = query.queryStr ? list : this.menuService.handleMenusResponse(list);
     return { total, list: menu };
   }
 
