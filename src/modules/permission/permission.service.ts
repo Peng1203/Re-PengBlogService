@@ -13,8 +13,17 @@ export class PermissionService {
     @InjectRepository(Permission) private readonly permissionRepository: Repository<Permission>,
   ) {}
 
-  create(createPermissionDto: CreatePermissionDto) {
-    return 'This action adds a new permission';
+  async create(data: CreatePermissionDto) {
+    try {
+      const permission = await this.permissionRepository.create(data);
+      return await this.permissionRepository.save(permission);
+    } catch (e) {
+      throw new InternalServerErrorException({
+        e,
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_CREATED,
+        msg: '添加操作权限失败',
+      });
+    }
   }
 
   async findAll(params: FindAllPermissionDto) {

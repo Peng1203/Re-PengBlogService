@@ -22,7 +22,7 @@ export class PermissionController {
   @ApiOperation({ summary: '获取权限' })
   async findAll(@Query() query: FindAllPermissionDto) {
     const { list: data, total } = await this.permissionService.findAll(query);
-    const list = this.permissionService.handlePermissionResponse(data);
+    const list = query.queryStr ? data : this.permissionService.handlePermissionResponse(data);
     return { list, total };
   }
 
