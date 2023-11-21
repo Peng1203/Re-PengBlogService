@@ -33,6 +33,7 @@ export class DataAccessFilter implements ExceptionFilter {
         reason = '无法找到关联的父级记录。';
         break;
       case 'ER_ROW_IS_REFERENCED':
+      case 'ER_ROW_IS_REFERENCED_2':
         reason = '操作被其他记录引用，无法执行删除或更新操作。';
         break;
       case 'ER_NO_DEFAULT_FOR_FIELD':
