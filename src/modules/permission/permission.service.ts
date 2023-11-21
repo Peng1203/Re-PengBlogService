@@ -54,8 +54,16 @@ export class PermissionService {
     return this.formatTree(data);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} permission`;
+  async findOne(id: number) {
+    try {
+      return await this.permissionRepository.findOne({ where: { id } });
+    } catch (e) {
+      throw new InternalServerErrorException({
+        e,
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
+        msg: '查询权限信息失败',
+      });
+    }
   }
 
   async update(id: number, data: UpdatePermissionDto) {
@@ -71,8 +79,17 @@ export class PermissionService {
     }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} permission`;
+  async remove(id: number) {
+    try {
+      const delResult = await this.permissionRepository.delete(id);
+      return !!delResult.affected;
+    } catch (e) {
+      throw new InternalServerErrorException({
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
+        e,
+        msg: '删除权限失败',
+      });
+    }
   }
 
   formatTree(ary: any[], parentId?: number) {
@@ -86,5 +103,18 @@ export class PermissionService {
         item.children = this.formatTree(ary, item.id);
         return item;
       });
+  }
+
+  async permissionHasChildren(id: number): Promise<boolean> {
+    try {
+      const [list] = await this.permissionRepository.findAndCount();
+      return list.some((menu) => menu.parentId === id);
+    } catch (e) {
+      throw new InternalServerErrorException({
+        e,
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
+        msg: '查询权限信息失败',
+      });
+    }
   }
 }

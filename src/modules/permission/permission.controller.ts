@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Res } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  Res,
+  ConflictException,
+} from '@nestjs/common';
 import { PermissionService } from './permission.service';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
@@ -16,7 +27,6 @@ export class PermissionController {
   @Post()
   @ApiOperation({ summary: '创建权限' })
   create(@Body() data: CreatePermissionDto) {
-    console.log('data ------', data);
     return this.permissionService.create(data);
   }
 
@@ -49,7 +59,22 @@ export class PermissionController {
   }
 
   @Delete(':id')
-  remove(@Param('id', new ParseIntParamPipe('id参数有误')) id: number) {
-    return this.permissionService.remove(+id);
+  @ApiOperation({ summary: '删除权限' })
+  async remove(
+    @Param('id', new ParseIntParamPipe('id参数有误')) id: number,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const permission = await this.permissionService.findOne(id);
+    const isHave = await this.permissionService.permissionHasChildren(permission.id);
+    if (isHave)
+      throw new ConflictException({
+        code: ApiResponseCodeEnum.CONFLICT,
+        msg: '删除失败，请先处理相关的权限标识',
+      });
+
+    const delResult = await this.permissionService.remove(id);
+    if (!delResult) res.resMsg = '删除权限标识失败!';
+    if (!delResult) res.success = false;
+    else return '删除权限标识成功';
   }
 }

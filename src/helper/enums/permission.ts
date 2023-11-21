@@ -1,4 +1,6 @@
 export enum PermissionEnum {
+  TEST = 'test_1',
+
   // 用户
   CREATE_USER = 'create_user',
   UPDATE_USER = 'update_user',
