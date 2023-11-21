@@ -9,7 +9,6 @@ import {
   Min,
 } from '@nestjs/class-validator';
 import { PermissionEnum } from '@/helper/enums/permission';
-import {} from 'module';
 import { ApiProperty } from '@nestjs/swagger';
 import { RequestMethodEnum } from '@/helper/enums/request.method';
 
