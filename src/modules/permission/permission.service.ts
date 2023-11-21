@@ -58,8 +58,17 @@ export class PermissionService {
     return `This action returns a #${id} permission`;
   }
 
-  update(id: number, updatePermissionDto: UpdatePermissionDto) {
-    return `This action updates a #${id} permission`;
+  async update(id: number, data: UpdatePermissionDto) {
+    try {
+      const updateRes = await this.permissionRepository.update(id, data);
+      return !!updateRes.affected;
+    } catch (e) {
+      throw new InternalServerErrorException({
+        e,
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_UPDATE,
+        msg: '更新权限信息失败!',
+      });
+    }
   }
 
   remove(id: number) {

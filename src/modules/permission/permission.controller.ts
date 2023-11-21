@@ -1,10 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Res } from '@nestjs/common';
 import { PermissionService } from './permission.service';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { FindAllPermissionDto } from './dto';
-
+import { ParseIntParamPipe } from '@/common/pipe';
+import { ApiResponseCodeEnum } from '@/helper/enums';
+import { Response } from 'express';
 @ApiTags('Permission')
 @ApiBearerAuth()
 @Controller('permission')
@@ -27,17 +29,27 @@ export class PermissionController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', new ParseIntParamPipe('id参数有误')) id: number) {
     return this.permissionService.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePermissionDto: UpdatePermissionDto) {
-    return this.permissionService.update(+id, updatePermissionDto);
+  @ApiOperation({ summary: '修改权限信息' })
+  async update(
+    @Param('id', new ParseIntParamPipe('id参数有误')) id: number,
+    @Body() data: UpdatePermissionDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const updateRes = await this.permissionService.update(id, data);
+    updateRes
+      ? (res.apiResponseCode = ApiResponseCodeEnum.UPDATE)
+      : (res.resMsg = '更新权限信息失败!') && (res.success = false);
+
+    return updateRes ? '更新权限信息成功!' : '操作失败!';
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id', new ParseIntParamPipe('id参数有误')) id: number) {
     return this.permissionService.remove(+id);
   }
 }
