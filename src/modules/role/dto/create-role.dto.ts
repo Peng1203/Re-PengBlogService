@@ -7,7 +7,7 @@ export class CreateRoleDto {
   @MinLength(2)
   @MaxLength(8)
   @ApiProperty({ description: '角色名称' })
-  readonly userName: string;
+  readonly roleName: string;
 
   @IsString()
   @IsOptional()

@@ -7,13 +7,39 @@ import { Like, Repository } from 'typeorm';
 import { ApiResponseCodeEnum } from '@/helper/enums';
 import { FindAllRoleDto } from './dto';
 import { ListResponse } from '@/common/interface';
+import { PermissionService } from '@/modules/permission/permission.service';
+import { MenuService } from '@/modules/menu/menu.service';
 
 @Injectable()
 export class RoleService {
-  constructor(@InjectRepository(Role) private readonly roleRepository: Repository<Role>) {}
+  constructor(
+    @InjectRepository(Role) private readonly roleRepository: Repository<Role>,
+    private readonly permissionService: PermissionService,
+    private readonly menuService: MenuService,
+  ) {}
 
-  create(createRoleDto: CreateRoleDto) {
-    return 'This action adds a new role';
+  async create(data: CreateRoleDto) {
+    try {
+      const { permissions: pIds, menus: menuIds, ...roleInfo } = data;
+
+      const permissions = await Promise.all(pIds.map((id) => this.permissionService.findOne(id)));
+
+      const menus = await Promise.all(menuIds.map((id) => this.menuService.findOne(id)));
+
+      const role = await this.roleRepository.create({
+        permissions,
+        menus,
+        ...roleInfo,
+      });
+      console.log('role ------', role);
+      return await this.roleRepository.save(role);
+    } catch (e) {
+      throw new InternalServerErrorException({
+        e,
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_CREATED,
+        msg: '创建角色失败',
+      });
+    }
   }
 
   async findAll(query: FindAllRoleDto): Promise<ListResponse<Role>> {
