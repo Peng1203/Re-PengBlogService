@@ -9,6 +9,7 @@ import { FindAllRoleDto } from './dto';
 import { ListResponse } from '@/common/interface';
 import { PermissionService } from '@/modules/permission/permission.service';
 import { MenuService } from '@/modules/menu/menu.service';
+import { formatDate } from '@/utils/date.util';
 
 @Injectable()
 export class RoleService {
@@ -31,7 +32,6 @@ export class RoleService {
         menus,
         ...roleInfo,
       });
-      console.log('role ------', role);
       return await this.roleRepository.save(role);
     } catch (e) {
       throw new InternalServerErrorException({
@@ -74,8 +74,35 @@ export class RoleService {
     }
   }
 
-  update(id: number, updateRoleDto: UpdateRoleDto) {
-    return `This action updates a #${id} role`;
+  async update(id: number, data: UpdateRoleDto) {
+    try {
+      const role = await this.findOne(id);
+      const { menus: menuIds, permissions: pIds, ...roleInfo } = data;
+
+      for (const key in roleInfo) {
+        role[key] = roleInfo[key];
+      }
+
+      const menus = menuIds.length
+        ? await Promise.all(menuIds.map((id) => this.menuService.findOne(id)))
+        : [];
+
+      const permissions = pIds.length
+        ? await Promise.all(pIds.map((id) => this.permissionService.findOne(id)))
+        : [];
+
+      role.menus = menus;
+      role.permissions = permissions;
+
+      role.updateTime = formatDate();
+      return await this.roleRepository.save(role);
+    } catch (e) {
+      throw new InternalServerErrorException({
+        e,
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_UPDATE,
+        msg: '更新角色失败',
+      });
+    }
   }
 
   remove(id: number) {

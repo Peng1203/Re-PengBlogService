@@ -15,23 +15,23 @@ import {
 @Unique(['roleName'])
 export class Role extends TimestampedEntity {
   @PrimaryGeneratedColumn()
-  readonly id: number;
+  id: number;
 
   @Index('index_role_name')
   @Column({ name: 'role_name', type: 'varchar' })
-  readonly roleName: string;
+  roleName: string;
 
   @Column({ name: 'description', type: 'varchar', length: 255, nullable: true })
-  readonly description: string;
+  description: string;
 
   @ManyToMany(() => User, (user) => user.roles)
-  readonly users: User[];
+  users: User[];
 
   @ManyToMany(() => Permission, (Permission) => Permission.roles)
   @JoinTable({ name: 'role_permission_relation' })
-  readonly permissions: Permission[];
+  permissions: Permission[];
 
   @ManyToMany(() => Menu, (Menu) => Menu.roles)
   @JoinTable({ name: 'role_menu_relation' })
-  readonly menus: Menu[];
+  menus: Menu[];
 }

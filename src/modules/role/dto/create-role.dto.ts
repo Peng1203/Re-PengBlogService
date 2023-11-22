@@ -1,11 +1,10 @@
-import { IsArrayNumber } from '@/common/validator';
 import { IsNumber, IsOptional, IsString, MaxLength, MinLength } from '@nestjs/class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateRoleDto {
   @IsString()
   @MinLength(2)
-  @MaxLength(8)
+  @MaxLength(20)
   @ApiProperty({ description: '角色名称' })
   readonly roleName: string;
 
