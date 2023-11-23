@@ -105,7 +105,16 @@ export class RoleService {
     }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} role`;
+  async remove(id: number) {
+    try {
+      const delResult = await this.roleRepository.delete(id);
+      return !!delResult.affected;
+    } catch (e) {
+      throw new InternalServerErrorException({
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
+        e,
+        msg: '删除角色失败',
+      });
+    }
   }
 }
