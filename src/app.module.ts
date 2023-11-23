@@ -7,7 +7,7 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtAuthGuard } from './modules/auth/guards';
 import { JwtStrategy } from './modules/auth/strategys';
 import { TransformInterceptor } from './common/interceptor';
-import { RoleGuard } from './common/guards';
+import { RoleGuard, PermissionGuard } from './common/guards';
 import { LoggerMiddleware, ResponseHeadersMiddleware } from './common/middleware';
 import { CommonModule } from './shared/common.module';
 import { AuthModule } from './modules/auth/auth.module';
@@ -44,6 +44,11 @@ import { ResourceModule } from './modules/resource/resource.module';
     {
       provide: APP_GUARD,
       useClass: RoleGuard,
+    },
+    // 全局权限守卫
+    {
+      provide: APP_GUARD,
+      useClass: PermissionGuard,
     },
     // 全局响应拦截器
     {

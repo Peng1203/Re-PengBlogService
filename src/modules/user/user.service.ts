@@ -175,10 +175,18 @@ export class UserService {
    */
   async findOneByUserIdAndUserName(id: number, userName: string): Promise<User> {
     try {
-      const user = await this.userRepository.findOne({
-        where: { id, userName },
-        relations: ['roles'],
-      });
+      // const user = await this.userRepository.findOne({
+      //   where: { id, userName },
+      //   relations: ['roles'],
+      // });
+      const user = await this.userRepository
+        .createQueryBuilder('user')
+        .where('user.id = :id', { id })
+        .where('user.userName = :userName', { userName })
+        .leftJoinAndSelect('user.roles', 'roles')
+        .leftJoinAndSelect('roles.menus', 'menus')
+        .leftJoinAndSelect('roles.permissions', 'permissions')
+        .getOne();
       if (user) return user;
       else this.handleFindOneNotFoundError();
     } catch (e) {

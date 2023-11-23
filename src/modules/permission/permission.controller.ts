@@ -16,8 +16,9 @@ import { UpdatePermissionDto } from './dto/update-permission.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { FindAllPermissionDto } from './dto';
 import { ParseIntParamPipe } from '@/common/pipe';
-import { ApiResponseCodeEnum } from '@/helper/enums';
+import { ApiResponseCodeEnum, PermissionEnum } from '@/helper/enums';
 import { Response } from 'express';
+import { RequirePermissions } from '@/common/decorators';
 @ApiTags('Permission')
 @ApiBearerAuth()
 @Controller('permission')
@@ -40,7 +41,7 @@ export class PermissionController {
 
   @Get(':id')
   findOne(@Param('id', new ParseIntParamPipe('id参数有误')) id: number) {
-    return this.permissionService.findOne(+id);
+    return this.permissionService.findOne(id);
   }
 
   @Patch(':id')
@@ -59,6 +60,7 @@ export class PermissionController {
   }
 
   @Delete(':id')
+  @RequirePermissions(PermissionEnum.DELETE_PERMISSION)
   @ApiOperation({ summary: '删除权限' })
   async remove(
     @Param('id', new ParseIntParamPipe('id参数有误')) id: number,

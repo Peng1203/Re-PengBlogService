@@ -9,4 +9,16 @@ export enum PermissionEnum {
   // 角色
   CREATE_ROLE = 'create_role',
   UPDATE_ROLE = 'update_role',
+  DELETE_ROLE = 'delete_role',
+
+  // 菜单
+  CREATE_MENU = 'create_menu',
+  UPDATE_MENU = 'update_menu',
+  DELETE_MENU = 'delete_menu',
+
+  // 权限标识
+  VIEW_PERMISSION = 'view_permission',
+  CREATE_PERMISSION = 'create_permission',
+  UPDATE_PERMISSION = 'update_permission',
+  DELETE_PERMISSION = 'delete_permission',
 }
