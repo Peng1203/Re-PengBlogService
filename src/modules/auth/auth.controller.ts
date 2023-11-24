@@ -14,16 +14,17 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { RefreshTokenDto, UserLoginDto } from './dto';
+import { RefreshTokenDto, UserLoginDto, UserLogoutDto } from './dto';
 import { LocalAuthGuard } from './guards/local.auth.guard';
 import { Request, Response } from 'express';
-import { Public, UserAgent } from '@/common/decorators';
+import { Public, ReqUser, UserAgent } from '@/common/decorators';
 import { ApiResponseCodeEnum } from '@/helper/enums';
 import { ConfigService } from '@nestjs/config';
 import { SessionInfo } from 'express-session';
 import { CaptchaAggregation } from './decorator';
 import { CosService } from '@/shared/COS/cos.service';
 import { Details } from 'express-useragent';
+import { User } from '@/common/entities';
 
 @ApiTags('Auth')
 @Controller()
@@ -113,5 +114,27 @@ export class AuthController {
       access_token,
       refresh_token,
     };
+  }
+
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: '退出登录' })
+  async logout(
+    @ReqUser() user: User,
+    @Body() data: UserLogoutDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    if (data.id !== user.id || data.userName !== user.userName)
+      throw new ForbiddenException({
+        code: ApiResponseCodeEnum.FORBIDDEN_USER,
+        msg: '操作用户信息不匹配!',
+      });
+
+    // 清除Redis中的token
+    this.authService.clearUserToken(data);
+
+    res.apiResponseCode = ApiResponseCodeEnum.SUCCESS;
+    res.resMsg = '退出登录成功';
+    return '操作成功';
   }
 }

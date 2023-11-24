@@ -7,6 +7,7 @@ import * as svgCaptcha from 'svg-captcha';
 import { ApiResponseCodeEnum } from '@/helper/enums';
 import { SessionInfo } from 'express-session';
 import { JwtPayload } from 'passport-jwt';
+import { UserLogoutDto } from './dto';
 
 @Injectable()
 export class AuthService {
@@ -286,5 +287,12 @@ export class AuthService {
 
   async findUserById(id: number) {
     return await this.userService.findOneById(id);
+  }
+
+  async clearUserToken(data: UserLogoutDto) {
+    const { id, userName } = data;
+    const key = this.redisTokenKeyStr(id, userName);
+    const val = await this.redis.clearCatch(key);
+    console.log('val ------', val);
   }
 }
