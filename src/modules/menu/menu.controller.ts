@@ -17,9 +17,10 @@ import { CreateMenuDto, FindAllMenuDto } from './dto';
 import { UpdateMenuDto } from './dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ParseIntParamPipe } from '@/common/pipe';
-import { ApiResponseCodeEnum } from '@/helper/enums';
+import { ApiResponseCodeEnum, PermissionEnum } from '@/helper/enums';
 import { Response } from 'express';
 import { Menu } from '@/common/entities';
+import { RequirePermissions } from '@/common/decorators';
 @ApiTags('Menu')
 @ApiBearerAuth()
 @Controller('menu')
@@ -27,6 +28,7 @@ export class MenuController {
   constructor(private readonly menuService: MenuService) {}
 
   @Post()
+  @RequirePermissions(PermissionEnum.CREATE_MENU)
   @ApiOperation({ summary: '添加菜单' })
   create(@Body() data: CreateMenuDto) {
     return this.menuService.create(data);
@@ -41,6 +43,7 @@ export class MenuController {
   }
 
   @Put(':id')
+  @RequirePermissions(PermissionEnum.UPDATE_MENU)
   @ApiOperation({ summary: '更新菜单信息' })
   async update(
     @Param('id', new ParseIntParamPipe('id参数有误')) id: number,
@@ -57,6 +60,7 @@ export class MenuController {
   }
 
   @Delete(':id')
+  @RequirePermissions(PermissionEnum.DELETE_MENU)
   @ApiOperation({ summary: '删除菜单' })
   async remove(
     @Param('id', new ParseIntParamPipe('id参数有误')) id: number,

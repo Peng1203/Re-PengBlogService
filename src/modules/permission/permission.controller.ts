@@ -26,6 +26,7 @@ export class PermissionController {
   constructor(private readonly permissionService: PermissionService) {}
 
   @Post()
+  @RequirePermissions(PermissionEnum.CREATE_PERMISSION)
   @ApiOperation({ summary: '创建权限' })
   create(@Body() data: CreatePermissionDto) {
     return this.permissionService.create(data);
@@ -45,6 +46,7 @@ export class PermissionController {
   }
 
   @Patch(':id')
+  @RequirePermissions(PermissionEnum.UPDATE_PERMISSION)
   @ApiOperation({ summary: '修改权限信息' })
   async update(
     @Param('id', new ParseIntParamPipe('id参数有误')) id: number,

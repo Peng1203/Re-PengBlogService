@@ -16,8 +16,9 @@ import { UpdateRoleDto } from './dto/update-role.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { FindAllRoleDto } from './dto';
 import { ParseIntParamPipe } from '@/common/pipe';
-import { ApiResponseCodeEnum } from '@/helper/enums';
+import { ApiResponseCodeEnum, PermissionEnum } from '@/helper/enums';
 import { Response } from 'express';
+import { RequirePermissions } from '@/common/decorators';
 
 @ApiTags('Role')
 @ApiBearerAuth()
@@ -27,6 +28,7 @@ export class RoleController {
 
   @Post()
   @ApiOperation({ summary: '创建角色' })
+  @RequirePermissions(PermissionEnum.CREATE_ROLE)
   create(@Body() data: CreateRoleDto) {
     return this.roleService.create(data);
   }
@@ -44,6 +46,7 @@ export class RoleController {
   }
 
   @Patch(':id')
+  @RequirePermissions(PermissionEnum.UPDATE_ROLE)
   @ApiOperation({ summary: '更新角色信息' })
   update(
     @Param('id', new ParseIntParamPipe('id参数有误')) id: number,
@@ -53,6 +56,7 @@ export class RoleController {
   }
 
   @Delete(':id')
+  @RequirePermissions(PermissionEnum.DELETE_ROLE)
   @ApiOperation({ summary: '删除角色' })
   async remove(
     @Param('id', new ParseIntParamPipe('id参数有误')) id: number,
@@ -61,13 +65,13 @@ export class RoleController {
     const role = await this.roleService.findOne(id).catch(() => false);
     if (!role)
       throw new NotFoundException({
-        code: ApiResponseCodeEnum.NOTFOUND_USER,
+        code: ApiResponseCodeEnum.NOTFOUND_ROLE,
         msg: '删除失败，未找到相关角色',
       });
 
     const delRes = await this.roleService.remove(id);
-    if (!delRes) res.resMsg = '删除用户失败!';
+    if (!delRes) res.resMsg = '删除角色失败!';
     if (!delRes) res.success = false;
-    else return '删除用户成功';
+    else return '删除角色成功';
   }
 }

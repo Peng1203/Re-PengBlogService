@@ -16,8 +16,8 @@ import { CreateUserDto, DeleteUsersDto, FindAllUserDto } from './dto';
 import { UpdateUserDto } from './dto';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import type { UserData } from './types';
-import { Roles, ReqUser } from '@/common/decorators';
-import { ApiResponseCodeEnum, RoleEnum } from '@/helper/enums';
+import { Roles, ReqUser, RequirePermissions } from '@/common/decorators';
+import { ApiResponseCodeEnum, PermissionEnum, RoleEnum } from '@/helper/enums';
 import { User, Role } from '@/common/entities';
 import { ParseIntParamPipe } from '@/common/pipe';
 import { Response } from 'express';
@@ -29,14 +29,15 @@ export class UserController {
   constructor(private readonly usersService: UserService) {}
 
   @Post()
+  @RequirePermissions(PermissionEnum.CREATE_USER)
   @ApiOperation({ summary: '创建用户' })
   async create(@Body() data: CreateUserDto) {
     const { password, ...user } = await this.usersService.create(data);
     return user;
   }
 
+  // @Roles(RoleEnum.ADMINISTRATOR, RoleEnum.USER)
   @Get()
-  @Roles(RoleEnum.ADMINISTRATOR, RoleEnum.USER)
   @ApiOperation({ summary: '查询用户' })
   async findAll(
     @Query() query: FindAllUserDto,
@@ -55,6 +56,7 @@ export class UserController {
   }
 
   @Patch(':id')
+  @RequirePermissions(PermissionEnum.UPDATE_USER)
   @ApiOperation({ summary: '更新用户信息' })
   async update(
     @Param('id', new ParseIntParamPipe('id参数有误')) id: number,
@@ -70,6 +72,7 @@ export class UserController {
   }
 
   @Put(':id')
+  @RequirePermissions(PermissionEnum.UPDATE_USER)
   @ApiOperation({ summary: '批量更新用户信息' })
   async updateBatch(
     @Param('id', new ParseIntParamPipe('id参数有误')) id: number,
@@ -85,6 +88,7 @@ export class UserController {
   }
 
   @Delete(':id')
+  @RequirePermissions(PermissionEnum.DELETE_USER)
   @ApiOperation({ summary: '通过ID删除用户' })
   async remove(
     @Param('id', new ParseIntParamPipe('id参数有误')) id: number,
@@ -103,6 +107,7 @@ export class UserController {
   }
 
   @Delete()
+  @RequirePermissions(PermissionEnum.DELETE_USER)
   @ApiOperation({ summary: '通过ID批量删除用户' })
   async removes(@Body() data: DeleteUsersDto) {
     const delCount = await this.usersService.handleBatchRemove(data.ids);
