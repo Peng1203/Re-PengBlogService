@@ -29,6 +29,9 @@ export class PermissionGuard implements CanActivate {
 
     const isPass = requirePermissions.every((key) => allowedPermissions.includes(key));
     if (isPass) return true;
-    throw new ForbiddenException({ code: ApiResponseCodeEnum.FORBIDDEN, msg: '操作权限不足!' });
+    throw new ForbiddenException({
+      code: ApiResponseCodeEnum.FORBIDDEN_PERMISSION,
+      msg: '操作权限不足!',
+    });
   }
 }

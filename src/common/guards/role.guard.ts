@@ -18,6 +18,6 @@ export class RoleGuard implements CanActivate {
     const { user } = context.switchToHttp().getRequest<Request>();
     const isPass = user.roles.some((role) => requireRoles.includes(role.roleName as RoleEnum));
     if (isPass) return true;
-    throw new ForbiddenException({ code: ApiResponseCodeEnum.FORBIDDEN, msg: '用户角色身份不足!' });
+    throw new ForbiddenException({ code: ApiResponseCodeEnum.FORBIDDEN_ROLE, msg: '用户角色身份不足!' });
   }
 }
