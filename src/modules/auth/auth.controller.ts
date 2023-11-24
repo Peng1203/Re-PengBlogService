@@ -5,6 +5,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
   Patch,
   Post,
   Req,
@@ -13,7 +14,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { RefreshTokenDto, UserLoginDto, UserLogoutDto } from './dto';
 import { LocalAuthGuard } from './guards/local.auth.guard';
 import { Request, Response } from 'express';
@@ -25,13 +26,17 @@ import { CaptchaAggregation } from './decorator';
 import { CosService } from '@/shared/COS/cos.service';
 import { Details } from 'express-useragent';
 import { User } from '@/common/entities';
+import { ParseIntParamPipe } from '@/common/pipe';
+import { UserService } from '../user/user.service';
 
 @ApiTags('Auth')
+@ApiBearerAuth()
 @Controller()
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly configService: ConfigService,
+    private readonly userService: UserService,
   ) {}
 
   @Get('login/captcha')
@@ -136,5 +141,11 @@ export class AuthController {
     res.apiResponseCode = ApiResponseCodeEnum.SUCCESS;
     res.resMsg = '退出登录成功';
     return '操作成功';
+  }
+
+  @Get('auth/menus/:id')
+  @ApiOperation({ summary: '获取用户菜单' })
+  async userMenu(@Param('id', new ParseIntParamPipe('id参数有误')) id: number) {
+    return this.userService.findUserMenus(id);
   }
 }

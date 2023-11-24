@@ -146,8 +146,8 @@ export class UserService {
         .where('user.userName = :userName', { userName })
         .andWhere('user.password = :password', { password })
         .leftJoinAndSelect('user.roles', 'roles')
-        .leftJoinAndSelect('roles.menus', 'menus')
-        .leftJoinAndSelect('roles.permissions', 'permissions')
+        // .leftJoinAndSelect('roles.menus', 'menus')
+        // .leftJoinAndSelect('roles.permissions', 'permissions')
         .getOne();
       // const user = await this.userRepository.findOne({
       //   where: { userName, password },
@@ -184,7 +184,7 @@ export class UserService {
         .where('user.id = :id', { id })
         .where('user.userName = :userName', { userName })
         .leftJoinAndSelect('user.roles', 'roles')
-        .leftJoinAndSelect('roles.menus', 'menus')
+        // .leftJoinAndSelect('roles.menus', 'menus')
         .leftJoinAndSelect('roles.permissions', 'permissions')
         .getOne();
       if (user) return user;
@@ -253,5 +253,41 @@ export class UserService {
         msh: '批量删除操作失败',
       });
     }
+  }
+
+  /**
+   * 获取用户菜单
+   */
+  async findUserMenus(id: number) {
+    try {
+      const user = await this.userRepository
+        .createQueryBuilder('user')
+        .where('user.id = :id', { id })
+        .leftJoinAndSelect('user.roles', 'roles')
+        .leftJoinAndSelect('roles.menus', 'menus')
+        .getOne();
+      return this.handleUserMenus(user);
+    } catch (e) {
+      throw new InternalServerErrorException({
+        e,
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
+        msg: '获取用户菜单失败',
+      });
+    }
+  }
+
+  private handleUserMenus({ roles }: User) {
+    // 多维数组菜单处理为一维菜单数组
+    const menus = [].concat(...roles.map((role) => role.menus));
+
+    // 菜单去重
+    const uniqueMap = new Map();
+    return menus.reduce((result, menu) => {
+      if (!uniqueMap.has(menu.id)) {
+        uniqueMap.set(menu.id, true);
+        result.push(menu);
+      }
+      return result;
+    }, []);
   }
 }
