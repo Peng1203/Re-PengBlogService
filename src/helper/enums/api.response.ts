@@ -31,6 +31,8 @@ export enum ApiResponseCodeEnum {
   NOTFOUND = 40400,
   // 未找到用户
   NOTFOUND_USER = 40401,
+  // 未找到角色
+  NOTFOUND_ROLE = 40402,
 
   // 操作冲突
   CONFLICT = 40900,
