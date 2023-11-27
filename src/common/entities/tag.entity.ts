@@ -8,7 +8,7 @@ export class Tag extends TimestampedEntity {
   id: number;
 
   @Index('index_tag_name')
-  @Column({ name: 'tag_name', type: 'varchar', unique: true })
+  @Column({ name: 'tag_name', type: 'varchar' })
   tagName: string;
 
   @Column({ type: 'varchar', nullable: true })
