@@ -1,4 +1,4 @@
-import { TimestampedEntity } from '@/common/entities';
+import { Article, TimestampedEntity } from '@/common/entities';
 import { UserEnabledEnum } from '@/helper/enums';
 import { Role } from './';
 import {
@@ -7,12 +7,14 @@ import {
   Index,
   JoinTable,
   ManyToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
 
 @Entity({ name: 'user' })
-@Unique(['userName', 'email'])
+@Unique(['userName'])
+@Unique(['email'])
 export class User extends TimestampedEntity {
   @PrimaryGeneratedColumn()
   readonly id: number;
@@ -46,4 +48,7 @@ export class User extends TimestampedEntity {
 
   @Column({ name: 'user_avatar', type: 'varchar', nullable: true })
   readonly userAvatar: string;
+
+  @OneToMany(() => Article, (Article) => Article.author)
+  articles: Article[];
 }
