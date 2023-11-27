@@ -4,11 +4,11 @@ import {
   Column,
   Entity,
   Index,
-  JoinColumn,
   ManyToOne,
   ManyToMany,
   PrimaryGeneratedColumn,
   Unique,
+  JoinTable,
 } from 'typeorm';
 
 @Entity({ name: 'article' })
@@ -61,6 +61,6 @@ export class Article extends TimestampedEntity {
   category: Category;
 
   @ManyToMany(() => Tag, (Tag) => Tag.articles)
-  @JoinColumn({ name: 'article_tag_relation' })
+  @JoinTable({ name: 'article_tag_relation' })
   tags: Tag[];
 }

@@ -8,7 +8,7 @@ export class Category extends TimestampedEntity {
   id: number;
 
   @Index('index_c_name')
-  @Column({ name: 'category_name', type: 'varchar', unique: true })
+  @Column({ name: 'category_name', type: 'varchar' })
   categoryName: string;
 
   @OneToMany(() => Article, (Article) => Article.category)
