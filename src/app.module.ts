@@ -18,6 +18,7 @@ import { MenuModule } from './modules/menu/menu.module';
 import { ResourceModule } from './modules/resource/resource.module';
 import { ArticleModule } from './modules/article/article.module';
 import { CategoryModule } from './modules/category/category.module';
+import { TagModule } from './modules/tag/tag.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -36,6 +37,7 @@ import { CategoryModule } from './modules/category/category.module';
     ResourceModule,
     ArticleModule,
     CategoryModule,
+    TagModule,
   ],
   providers: [
     JwtStrategy,
