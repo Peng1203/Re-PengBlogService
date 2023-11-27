@@ -6,6 +6,7 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  ManyToMany,
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
@@ -17,23 +18,11 @@ export class Article extends TimestampedEntity {
   id: number;
 
   @Index('index_title')
-  @Column({ type: 'varchar', length: 60, unique: true })
+  @Column({ type: 'varchar', length: 60 })
   title: string;
 
   @Column({ type: 'longtext' })
   content: string;
-
-  @ManyToOne(() => User, (User) => User.articles)
-  @JoinColumn({ name: 'article_author_relation' })
-  author: User;
-
-  @ManyToOne(() => Category, (Category) => Category.articles)
-  @JoinColumn({ name: 'article_category_relation' })
-  category: Category;
-
-  @ManyToOne(() => Tag, (Tag) => Tag.articles)
-  @JoinColumn({ name: 'article_tag_relation' })
-  tags: Tag[];
 
   @Column({ type: 'bigint', default: 0 })
   likes: number;
@@ -59,8 +48,19 @@ export class Article extends TimestampedEntity {
 
   @Column({
     name: 'is_top',
+    type: 'enum',
     enum: BolEnum,
     default: BolEnum.FALSE,
   })
   isTop: BolEnum;
+
+  @ManyToOne(() => User, (User) => User.articles)
+  author: User;
+
+  @ManyToOne(() => Category, (Category) => Category.articles)
+  category: Category;
+
+  @ManyToMany(() => Tag, (Tag) => Tag.articles)
+  @JoinColumn({ name: 'article_tag_relation' })
+  tags: Tag[];
 }
