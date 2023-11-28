@@ -29,4 +29,9 @@ export enum PermissionEnum {
   CREATE_TAG = 'create_tag',
   UPDATE_TAG = 'update_tag',
   DELETE_TAG = 'delete_tag',
+
+  /** 文章分类 */
+  CREATE_CATEGORY = 'create_category',
+  UPDATE_CATEGORY = 'update_category',
+  DELETE_CATEGORY = 'delete_category',
 }
