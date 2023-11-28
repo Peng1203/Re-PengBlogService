@@ -16,8 +16,7 @@ export class PermissionGuard implements CanActivate {
     ]);
     // 当没有设置 所需角色时 或者操作用户为 admin角色(id 1) 直接通过
     const { user } = context.switchToHttp().getRequest<Request>();
-    if (!requirePermissions) return true;
-    // || user.id === 1
+    if (!requirePermissions || user.id === 1) return true;
 
     // const allowedPermissions: string[] = [];
     // user.roles.forEach((role: Role) => {
