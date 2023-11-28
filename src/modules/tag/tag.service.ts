@@ -1,11 +1,26 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { UpdateTagDto } from './dto/update-tag.dto';
+import { Tag } from '@/common/entities';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ApiResponseCodeEnum } from '@/helper/enums';
 
 @Injectable()
 export class TagService {
-  create(createTagDto: CreateTagDto) {
-    return 'This action adds a new tag';
+  constructor(@InjectRepository(Tag) private readonly tagRepository: Repository<Tag>) {}
+
+  async create(data: CreateTagDto) {
+    try {
+      const tag = await this.tagRepository.create(data);
+      return await this.tagRepository.save(tag);
+    } catch (e) {
+      throw new InternalServerErrorException({
+        e,
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_CREATED,
+        msg: '添加标签失败',
+      });
+    }
   }
 
   findAll() {
