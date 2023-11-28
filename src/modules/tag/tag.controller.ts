@@ -1,10 +1,22 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  Res,
+  NotFoundException,
+} from '@nestjs/common';
 import { TagService } from './tag.service';
 import { CreateTagDto, UpdateTagDto, FindAllTagDto } from './dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { PermissionEnum } from '@/helper/enums';
+import { ApiResponseCodeEnum, PermissionEnum } from '@/helper/enums';
 import { RequirePermissions } from '@/common/decorators';
 import { ParseIntParamPipe } from '@/common/pipe';
+import { Response } from 'express';
 
 @ApiTags('Tag')
 @ApiBearerAuth()
@@ -35,7 +47,20 @@ export class TagController {
   @Delete(':id')
   @ApiOperation({ summary: '删除文章标签' })
   @RequirePermissions(PermissionEnum.DELETE_TAG)
-  remove(@Param('id', new ParseIntParamPipe('id参数有误')) id: number) {
-    return this.tagService.remove(+id);
+  async remove(
+    @Param('id', new ParseIntParamPipe('id参数有误')) id: number,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const role = await this.tagService.findOne(id).catch(() => false);
+    if (!role)
+      throw new NotFoundException({
+        code: ApiResponseCodeEnum.NOTFOUND_ROLE,
+        msg: '删除失败，未找到相关标签',
+      });
+
+    const delRes = await this.tagService.remove(id);
+    if (!delRes) res.resMsg = '删除标签失败!';
+    if (!delRes) res.success = false;
+    else return '删除标签成功';
   }
 }
