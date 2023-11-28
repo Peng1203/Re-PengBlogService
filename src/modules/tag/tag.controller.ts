@@ -51,8 +51,8 @@ export class TagController {
     @Param('id', new ParseIntParamPipe('id参数有误')) id: number,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const role = await this.tagService.findOne(id).catch(() => false);
-    if (!role)
+    const tag = await this.tagService.findOne(id).catch(() => false);
+    if (!tag)
       throw new NotFoundException({
         code: ApiResponseCodeEnum.NOTFOUND_ROLE,
         msg: '删除失败，未找到相关标签',
