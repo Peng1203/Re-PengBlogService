@@ -1,7 +1,6 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { TagService } from './tag.service';
-import { CreateTagDto } from './dto/create-tag.dto';
-import { UpdateTagDto } from './dto/update-tag.dto';
+import { CreateTagDto, UpdateTagDto, FindAllTagDto } from './dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { PermissionEnum } from '@/helper/enums';
 import { RequirePermissions } from '@/common/decorators';
@@ -21,8 +20,8 @@ export class TagController {
 
   @Get()
   @ApiOperation({ summary: '查询文章标签' })
-  findAll() {
-    return this.tagService.findAll();
+  findAll(@Query() params: FindAllTagDto) {
+    return this.tagService.findAll(params);
   }
 
   @Patch(':id')

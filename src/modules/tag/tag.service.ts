@@ -2,9 +2,10 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { UpdateTagDto } from './dto/update-tag.dto';
 import { Tag } from '@/common/entities';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ApiResponseCodeEnum } from '@/helper/enums';
+import { FindAllTagDto } from './dto';
 
 @Injectable()
 export class TagService {
@@ -23,8 +24,24 @@ export class TagService {
     }
   }
 
-  findAll() {
-    return `This action returns all tag`;
+  async findAll(query: FindAllTagDto) {
+    try {
+      const { page, pageSize, queryStr = '', column, order } = query;
+      const [list, total] = await this.tagRepository.findAndCount({
+        where: [{ tagName: Like(`%${queryStr}%`) }],
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+        order: { [column || 'id']: order || 'ASC' },
+        relations: ['articles'],
+      });
+      return { list, total };
+    } catch (e) {
+      throw new InternalServerErrorException({
+        e,
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
+        msg: '查询标签列表失败!',
+      });
+    }
   }
 
   findOne(id: number) {
