@@ -6,6 +6,7 @@ import { Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ApiResponseCodeEnum } from '@/helper/enums';
 import { FindAllTagDto } from './dto';
+import { formatDate } from '@/utils/date.util';
 
 @Injectable()
 export class TagService {
@@ -44,12 +45,35 @@ export class TagService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} tag`;
+  async findOne(id: number): Promise<Tag> {
+    try {
+      return await this.tagRepository.findOne({ where: { id } });
+    } catch (e) {
+      throw new InternalServerErrorException({
+        e,
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
+        msg: '查询标签失败',
+      });
+    }
   }
 
-  update(id: number, updateTagDto: UpdateTagDto) {
-    return `This action updates a #${id} tag`;
+  async update(id: number, data: UpdateTagDto) {
+    try {
+      const tag = await this.findOne(id);
+
+      for (const key in data) {
+        tag[key] = data[key];
+      }
+
+      tag.updateTime = formatDate();
+      return await this.tagRepository.save(tag);
+    } catch (e) {
+      throw new InternalServerErrorException({
+        e,
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_UPDATE,
+        msg: '更新标签失败',
+      });
+    }
   }
 
   remove(id: number) {

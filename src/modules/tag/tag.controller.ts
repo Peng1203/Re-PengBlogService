@@ -4,6 +4,7 @@ import { CreateTagDto, UpdateTagDto, FindAllTagDto } from './dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { PermissionEnum } from '@/helper/enums';
 import { RequirePermissions } from '@/common/decorators';
+import { ParseIntParamPipe } from '@/common/pipe';
 
 @ApiTags('Tag')
 @ApiBearerAuth()
@@ -27,14 +28,14 @@ export class TagController {
   @Patch(':id')
   @ApiOperation({ summary: '更新文章标签' })
   @RequirePermissions(PermissionEnum.UPDATE_TAG)
-  update(@Param('id') id: string, @Body() updateTagDto: UpdateTagDto) {
-    return this.tagService.update(+id, updateTagDto);
+  update(@Param('id', new ParseIntParamPipe('id参数有误')) id: number, @Body() data: UpdateTagDto) {
+    return this.tagService.update(id, data);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: '删除文章标签' })
   @RequirePermissions(PermissionEnum.DELETE_TAG)
-  remove(@Param('id') id: string) {
+  remove(@Param('id', new ParseIntParamPipe('id参数有误')) id: number) {
     return this.tagService.remove(+id);
   }
 }
