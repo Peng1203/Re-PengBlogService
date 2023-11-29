@@ -24,6 +24,9 @@ export class Article extends TimestampedEntity {
   @Column({ type: 'longtext' })
   content: string;
 
+  @Column({ type: 'char', nullable: true, comment: '文章封面' })
+  cover: string;
+
   @Column({ type: 'bigint', default: 0 })
   likes: number;
 
@@ -57,8 +60,8 @@ export class Article extends TimestampedEntity {
   @ManyToOne(() => User, (User) => User.articles)
   author: User;
 
-  @ManyToOne(() => Category, (Category) => Category.articles)
-  category: Category;
+  @ManyToOne(() => Category, (Category) => Category.articles, { nullable: true })
+  category: Category | null;
 
   @ManyToMany(() => Tag, (Tag) => Tag.articles)
   @JoinTable({ name: 'article_tag_relation' })
