@@ -34,4 +34,9 @@ export enum PermissionEnum {
   CREATE_CATEGORY = 'create_category',
   UPDATE_CATEGORY = 'update_category',
   DELETE_CATEGORY = 'delete_category',
+
+  /** 文章 */
+  CREATE_ARTICLE = 'create_article',
+  UPDATE_ARTICLE = 'update_article',
+  DELETE_ARTICLE = 'delete_article',
 }
