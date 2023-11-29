@@ -2,14 +2,22 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { ArticleService } from './article.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { UserService } from '@/modules/user/user.service';
 
+@ApiTags('Article')
+@ApiBearerAuth()
 @Controller('article')
 export class ArticleController {
-  constructor(private readonly articleService: ArticleService) {}
+  constructor(
+    private readonly articleService: ArticleService,
+    private readonly usersService: UserService,
+  ) {}
 
   @Post()
-  create(@Body() createArticleDto: CreateArticleDto) {
-    return this.articleService.create(createArticleDto);
+  async create(@Body() data: CreateArticleDto) {
+    await this.usersService.findOneById(data.authorId);
+    return this.articleService.create(data);
   }
 
   @Get()
