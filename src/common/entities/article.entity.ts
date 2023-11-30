@@ -24,7 +24,7 @@ export class Article extends TimestampedEntity {
   @Column({ type: 'longtext' })
   content: string;
 
-  @Column({ type: 'char', nullable: true, comment: '文章封面' })
+  @Column({ type: 'varchar', nullable: true, length: 60, comment: '文章封面' })
   cover: string;
 
   @Column({ type: 'bigint', default: 0 })
