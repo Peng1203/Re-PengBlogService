@@ -5,9 +5,10 @@ import { ApiResponseCodeEnum } from '@/helper/enums';
 import { TagService } from '@/modules/tag/tag.service';
 import { CategoryService } from './../category/category.service';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import { Article } from '@/common/entities';
 import { UserService } from '@/modules/user/user.service';
+import { FindAllArticleDto } from './dto';
 
 @Injectable()
 export class ArticleService {
@@ -41,8 +42,61 @@ export class ArticleService {
     }
   }
 
-  findAll() {
-    return `This action returns all article`;
+  async findAll(params: FindAllArticleDto) {
+    try {
+      const {
+        page,
+        pageSize,
+        queryStr = '',
+        column,
+        order,
+        type,
+        status,
+        authorId,
+        categoryId,
+        tagId,
+      } = params;
+
+      const queryBuilder = this.articleRepository
+        .createQueryBuilder('article')
+        .leftJoinAndSelect('article.tags', 'tags')
+        .leftJoinAndSelect('article.author', 'author')
+        .leftJoinAndSelect('article.category', 'category')
+        .andWhere(
+          new Brackets((qb) =>
+            qb.where('article.title LIKE :queryStr', { queryStr: `%${queryStr}%` }),
+          ),
+        )
+        .orderBy(`article.${column || 'id'}`, order || 'ASC')
+        .skip((page - 1) * pageSize)
+        .take(pageSize);
+
+      type && queryBuilder.andWhere('article.type = :type', { type });
+      // tagId && queryBuilder.andWhere('tag.id = :tagId', { tagId });
+      status && queryBuilder.andWhere('article.status = :status', { status });
+      authorId && queryBuilder.andWhere('article.authorId = :authorId', { authorId });
+      categoryId && queryBuilder.andWhere('article.categoryId = :categoryId', { categoryId });
+
+      const [list, total] = await queryBuilder.getManyAndCount();
+
+      // 排除用户密码
+      const dataList = list.map((article) => {
+        const { author, ...args } = article;
+        const { password, ...authorInfo } = author;
+        return {
+          ...args,
+          author: { ...authorInfo },
+        };
+      });
+
+      return { list: dataList, total };
+    } catch (e) {
+      throw new InternalServerErrorException({
+        e,
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
+        msg: '查询文章列表失败',
+      });
+    }
   }
 
   findOne(id: number) {
