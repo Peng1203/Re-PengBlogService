@@ -4,7 +4,16 @@ import { plainToClass } from '@nestjs/class-transformer';
 import { ApiResponseCodeEnum } from '@/helper/enums';
 
 // 转换参数列表
-const convertProps: string[] = ['page', 'pageSize', 'roleId'];
+const convertProps: string[] = [
+  'page',
+  'pageSize',
+  'roleId',
+  'authorId',
+  'categoryId',
+  'tagId',
+  'type',
+  'status',
+];
 
 const options = {
   whitelist: true,
