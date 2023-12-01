@@ -1,4 +1,9 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { ApiResponseCodeEnum } from '@/helper/enums';
@@ -9,6 +14,7 @@ import { Brackets, Repository } from 'typeorm';
 import { Article } from '@/common/entities';
 import { UserService } from '@/modules/user/user.service';
 import { FindAllArticleDto } from './dto';
+import { formatDate } from '@/utils/date.util';
 
 @Injectable()
 export class ArticleService {
@@ -96,12 +102,58 @@ export class ArticleService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} article`;
+  async findOne(id: number): Promise<Article> {
+    try {
+      return await this.articleRepository.findOne({
+        where: { id },
+        relations: ['author', 'tags', 'category'],
+      });
+    } catch (e) {
+      throw new InternalServerErrorException({
+        e,
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
+        msg: '查询文章详情失败',
+      });
+    }
   }
 
-  update(id: number, updateArticleDto: UpdateArticleDto) {
-    return `This action updates a #${id} article`;
+  async update(aid: number, data: UpdateArticleDto, uid: number) {
+    try {
+      const { category, tags: tagIds, ...args } = data;
+      const article = await this.findOne(aid);
+      if (article.author.id !== uid) throw new ForbiddenException();
+
+      for (const key in args) {
+        article[key] = args[key];
+      }
+
+      article.tags = tagIds.length
+        ? (await Promise.all(tagIds.map((id) => this.tagService.findOne(id)))).filter((tag) => tag)
+        : [];
+
+      article.category = await this.categoryService.findOne(category);
+
+      article.updateTime = formatDate();
+      return await this.articleRepository.save(article);
+    } catch (e) {
+      if (e instanceof ForbiddenException)
+        throw new ForbiddenException({
+          code: ApiResponseCodeEnum.FORBIDDEN_USER,
+          msg: '更新文章失败 身份信息有误！',
+        });
+      else if (e instanceof NotFoundException)
+        throw new NotFoundException({
+          e,
+          code: ApiResponseCodeEnum.NOTFOUND,
+          msg: (e as any).response.msg,
+        });
+      else
+        throw new InternalServerErrorException({
+          e,
+          code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_UPDATE,
+          msg: '更新文章失败',
+        });
+    }
   }
 
   remove(id: number) {
