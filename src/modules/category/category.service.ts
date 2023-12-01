@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateCategoryDto, UpdateCategoryDto, FindAllCategoryDto } from './dto';
 import { Category } from '@/common/entities';
 import { Like, Repository } from 'typeorm';
@@ -47,13 +47,21 @@ export class CategoryService {
 
   async findOne(id: number): Promise<Category> {
     try {
-      return await this.categoryRepository.findOne({ where: { id } });
+      const findRes = await this.categoryRepository.findOne({ where: { id } });
+      if (!findRes) throw new NotFoundException();
+      return findRes;
     } catch (e) {
-      throw new InternalServerErrorException({
-        e,
-        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
-        msg: '查询分类失败',
-      });
+      if (e instanceof NotFoundException)
+        throw new NotFoundException({
+          code: ApiResponseCodeEnum.NOTFOUND_ROLE,
+          msg: '查询失败，未找到相关分类',
+        });
+      else
+        throw new InternalServerErrorException({
+          e,
+          code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
+          msg: '查询分类失败',
+        });
     }
   }
 
