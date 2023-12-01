@@ -57,6 +57,7 @@ export class ArticleService {
         tagId,
       } = params;
 
+      // .leftJoinAndSelect('author.roles', 'role')
       const queryBuilder = this.articleRepository
         .createQueryBuilder('article')
         .leftJoinAndSelect('article.tags', 'tags')
@@ -72,7 +73,7 @@ export class ArticleService {
         .take(pageSize);
 
       type && queryBuilder.andWhere('article.type = :type', { type });
-      // tagId && queryBuilder.andWhere('tag.id = :tagId', { tagId });
+      tagId && queryBuilder.andWhere('tags.id = :tagId', { tagId });
       status && queryBuilder.andWhere('article.status = :status', { status });
       authorId && queryBuilder.andWhere('article.authorId = :authorId', { authorId });
       categoryId && queryBuilder.andWhere('article.categoryId = :categoryId', { categoryId });
@@ -80,14 +81,10 @@ export class ArticleService {
       const [list, total] = await queryBuilder.getManyAndCount();
 
       // 排除用户密码
-      const dataList = list.map((article) => {
-        const { author, ...args } = article;
-        const { password, ...authorInfo } = author;
-        return {
-          ...args,
-          author: { ...authorInfo },
-        };
-      });
+      const dataList = list.map(({ author, ...args }) => ({
+        ...args,
+        author: { ...author, password: undefined },
+      }));
 
       return { list: dataList, total };
     } catch (e) {
