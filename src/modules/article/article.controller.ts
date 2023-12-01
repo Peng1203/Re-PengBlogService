@@ -8,6 +8,8 @@ import {
   Delete,
   ForbiddenException,
   Query,
+  Res,
+  NotFoundException,
 } from '@nestjs/common';
 import { ArticleService } from './article.service';
 import { CreateArticleDto } from './dto/create-article.dto';
@@ -18,6 +20,7 @@ import { Public, ReqUser, RequirePermissions } from '@/common/decorators';
 import { ApiResponseCodeEnum, PermissionEnum } from '@/helper/enums';
 import { FindAllArticleDto } from './dto';
 import { ParseIntParamPipe } from '@/common/pipe';
+import { Response } from 'express';
 
 @ApiTags('Article')
 @ApiBearerAuth()
@@ -53,19 +56,40 @@ export class ArticleController {
   }
 
   // @RequirePermissions(PermissionEnum.UPDATE_ARTICLE)
-  @Patch(':id')
+  @Patch(':id/:aid')
   @ApiOperation({ summary: '更新文章' })
   update(
-    @Param('id', new ParseIntParamPipe('id参数有误')) id: number,
+    @Param('id', new ParseIntParamPipe('文章id参数有误')) id: number,
+    @Param('aid', new ParseIntParamPipe('作者id参数有误')) aid: number,
     @Body() data: UpdateArticleDto,
-    @ReqUser('id') uid: number,
   ) {
-    return this.articleService.update(id, data, uid);
+    return this.articleService.update(id, data, aid);
   }
 
   // @RequirePermissions(PermissionEnum.DELETE_ARTICLE)
-  @Delete(':id')
-  remove(@Param('id', new ParseIntParamPipe('id参数有误')) id: number) {
-    return this.articleService.remove(id);
+  @Delete(':id/:aid')
+  @ApiOperation({ summary: '删除文章' })
+  async remove(
+    @Param('id', new ParseIntParamPipe('文章id参数有误')) id: number,
+    @Param('aid', new ParseIntParamPipe('作者id参数有误')) aid: number,
+    @ReqUser('id') uid: number,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    if (aid !== uid)
+      throw new ForbiddenException({
+        code: ApiResponseCodeEnum.FORBIDDEN_USER,
+        msg: '删除失败，身份信息有误',
+      });
+    const role = await this.articleService.findOne(id).catch(() => false);
+    if (!role)
+      throw new NotFoundException({
+        code: ApiResponseCodeEnum.NOTFOUND_ROLE,
+        msg: '删除失败，未找到相关文章',
+      });
+
+    const delRes = await this.articleService.remove(id);
+    if (!delRes) res.resMsg = '删除文章失败!';
+    if (!delRes) res.success = false;
+    else return '删除文章成功';
   }
 }

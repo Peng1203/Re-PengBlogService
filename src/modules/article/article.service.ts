@@ -156,7 +156,16 @@ export class ArticleService {
     }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} article`;
+  async remove(id: number) {
+    try {
+      const delResult = await this.articleRepository.delete(id);
+      return !!delResult.affected;
+    } catch (e) {
+      throw new InternalServerErrorException({
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
+        e,
+        msg: '删除文章失败',
+      });
+    }
   }
 }
