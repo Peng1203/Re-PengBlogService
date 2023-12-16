@@ -217,7 +217,7 @@ export class AuthService {
     if (!session?.captcha)
       throw new UnauthorizedException({
         code: ApiResponseCodeEnum.UNAUTHORIZED_NOTFOUND_SESSION,
-        msg: '无法获取到Session信息!请确保请求携带cookie',
+        msg: '无法获取到Session信息!',
       });
 
     if (!session?.expirationTimestamp || Date.now() > session.expirationTimestamp)
