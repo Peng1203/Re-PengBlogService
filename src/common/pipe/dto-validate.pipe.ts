@@ -1,5 +1,5 @@
 import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
-import { validate } from '@nestjs/class-validator';
+import { ValidatorOptions, validate } from '@nestjs/class-validator';
 import { plainToClass } from '@nestjs/class-transformer';
 import { ApiResponseCodeEnum } from '@/helper/enums';
 
@@ -15,7 +15,7 @@ const convertProps: string[] = [
   'status',
 ];
 
-const options = {
+const options: ValidatorOptions = {
   whitelist: true,
   forbidNonWhitelisted: true,
 };
@@ -27,7 +27,6 @@ export class DtoValidatePipe implements PipeTransform {
   async transform(value: any, metadata: ArgumentMetadata) {
     // 转换部分query参数
     const { type, metatype } = metadata;
-    // console.log('type ----->', type, metatype);
 
     // 当触发 params 或者 custom 校验直接跳过 或 没有传递Dto校验数据直接返回
     // 当使用自定义的参数装饰器 或者 @Session 的装饰器 都会返回custom类型
