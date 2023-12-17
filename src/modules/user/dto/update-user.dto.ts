@@ -1,10 +1,14 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateUserDto } from './create-user.dto';
 import {
+  ArrayMaxSize,
+  ArrayMinSize,
   IsArray,
   IsEmail,
+  IsEmpty,
   IsEnum,
   IsInt,
+  IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
@@ -27,28 +31,31 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsInt()
   @IsNumber()
   @IsEnum(UserEnabledEnum)
-  @ApiProperty({ description: '用户状态 0禁用 1启用', default: UserEnabledEnum.Enabled })
   @IsOptional()
+  @ApiProperty({ description: '用户状态 0禁用 1启用', default: UserEnabledEnum.Enabled })
   readonly userEnabled?: UserEnabledEnum;
 
-  @IsArray()
-  @Validate(IsArrayNumber)
+  // @IsArray()
+  // @Validate(IsArrayNumber)
+  @IsNumber({}, { each: true })
+  @ArrayMinSize(1)
+  @ArrayMaxSize(3)
+  // @IsOptional()
   @ApiProperty({ description: '用户角色id数组', default: [] })
-  @IsOptional()
   readonly roleIds?: number[];
 
-  @IsEmail()
-  @ApiProperty({ description: '邮箱' })
   @IsOptional()
+  @IsEmail()
+  @ApiProperty({ description: '邮箱', required: false })
   readonly email?: string;
 
   @IsString()
-  @ApiProperty({ description: '昵称' })
   @IsOptional()
+  @ApiProperty({ description: '昵称' })
   readonly nickName?: string;
 
   @IsString()
-  @ApiProperty({ description: '用户头像' })
   @IsOptional()
+  @ApiProperty({ description: '用户头像' })
   readonly userAvatar?: string;
 }
