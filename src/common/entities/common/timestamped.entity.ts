@@ -18,12 +18,12 @@ export class TimestampedEntity {
     type: 'datetime',
     transformer: new DateTimeTransformer(),
   })
-  readonly createTime: Date | string;
+  createTime: Date | string;
 
   @UpdateDateColumn({
     name: 'update_time',
     type: 'datetime',
     transformer: new DateTimeTransformer(),
   })
-  readonly updateTime: Date | string;
+  updateTime: Date | string;
 }
