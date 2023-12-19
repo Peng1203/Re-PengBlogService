@@ -18,6 +18,7 @@ async function bootstrap() {
   const SWAGGER_PREFIX = configService.get<string>('SWAGGER_PREFIX');
   const SWAGGER_VERSION = configService.get<string>('SWAGGER_VERSION');
   const SWAGGER_TITLE = configService.get<string>('SWAGGER_TITLE');
+  const API_PREFIX = configService.get<string>('API_PREFIX');
 
   app.use(
     session({
@@ -34,6 +35,7 @@ async function bootstrap() {
     origin: 'http://localhost:8888',
     credentials: true,
   });
+  app.setGlobalPrefix(API_PREFIX);
 
   app.useGlobalPipes(new DtoValidatePipe());
   app.useGlobalFilters(new HttpExceptionFilter());
