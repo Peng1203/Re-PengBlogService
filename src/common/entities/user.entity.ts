@@ -1,4 +1,4 @@
-import { Article, TimestampedEntity } from '@/common/entities';
+import { Article, TimestampedEntity } from './';
 import { UserEnabledEnum } from '@/helper/enums';
 import { Role } from './';
 import {

@@ -1,4 +1,4 @@
-import { TimestampedEntity } from '@/common/entities';
+import { TimestampedEntity } from './';
 import { Menu, User, Permission } from './';
 
 import {

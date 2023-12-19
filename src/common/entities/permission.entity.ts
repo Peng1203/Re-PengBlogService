@@ -1,4 +1,4 @@
-import { TimestampedEntity } from '@/common/entities';
+import { TimestampedEntity } from './';
 // import { ActionTypeEnum } from '@/helper/enums';
 import { Role } from './';
 import { Column, Entity, Index, ManyToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';

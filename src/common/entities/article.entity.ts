@@ -1,4 +1,4 @@
-import { Category, Tag, TimestampedEntity, User } from '@/common/entities';
+import { Category, Tag, TimestampedEntity, User } from './';
 import { ArticleTypeEnum, ArticleStatusEnum, BolEnum } from '@/helper/enums';
 import {
   Column,

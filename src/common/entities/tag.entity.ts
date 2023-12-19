@@ -1,4 +1,4 @@
-import { Article, TimestampedEntity } from '@/common/entities';
+import { Article, TimestampedEntity } from './';
 import { Column, Entity, Index, ManyToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
 @Entity({ name: 'tag' })
