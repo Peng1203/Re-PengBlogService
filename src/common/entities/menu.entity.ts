@@ -10,35 +10,35 @@ import { Column, Entity, Index, ManyToMany, PrimaryGeneratedColumn, Unique } fro
 @Unique(['menuUri'])
 export class Menu extends TimestampedEntity {
   @PrimaryGeneratedColumn()
-  readonly id: number;
+  id: number;
 
   @Index('index_menu_name')
   @Column({ name: 'menu_name', type: 'varchar', length: 20 })
-  readonly menuName: string;
+  menuName: string;
 
   @Index('index_menu_path')
   @Column({ name: 'menu_path', type: 'varchar', length: 60 })
-  readonly menuPath: string;
+  menuPath: string;
 
   @Index('index_menu_uri')
   @Column({ name: 'menu_uri', type: 'varchar', length: 20, nullable: true })
-  readonly menuUri: string;
+  menuUri: string;
 
   @Column({ name: 'menu_icon', type: 'varchar', length: 60, nullable: true })
-  readonly menuIcon: string;
+  menuIcon: string;
 
   @Column({ name: 'order_num', type: 'int', nullable: true })
-  readonly orderNum: number;
+  orderNum: number;
 
   @Column({ name: 'parent_id', type: 'int', nullable: true, default: null })
-  readonly parentId: number | null;
+  parentId: number | null;
 
   @Column({ name: 'is_hidden', type: 'enum', enum: StatusEnum, default: StatusEnum.FALSE })
-  readonly isHidden: StatusEnum;
+  isHidden: StatusEnum;
 
   @Column({ name: 'is_keepAlive', type: 'enum', enum: StatusEnum, default: StatusEnum.FALSE })
-  readonly isKeepalive: StatusEnum;
+  isKeepalive: StatusEnum;
 
   @ManyToMany(() => Role, (Role) => Role.menus)
-  readonly roles: Role[];
+  roles: Role[];
 }

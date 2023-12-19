@@ -1,5 +1,5 @@
 import { Entity, CreateDateColumn, UpdateDateColumn, ValueTransformer } from 'typeorm';
-import day from '@/utils/date.util';
+import day from '../../../utils/date.util';
 
 class DateTimeTransformer implements ValueTransformer {
   to(value: Date): Date | string {
@@ -25,5 +25,5 @@ export class TimestampedEntity {
     type: 'datetime',
     transformer: new DateTimeTransformer(),
   })
-  updateTime: Date | string;
+  readonly updateTime: Date | string;
 }

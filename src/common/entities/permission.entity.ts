@@ -10,11 +10,11 @@ import { PermissionEnum } from '@/helper/enums/permission';
 @Unique(['permissionCode'])
 export class Permission extends TimestampedEntity {
   @PrimaryGeneratedColumn()
-  readonly id: number;
+  id: number;
 
   @Index('index_permission_name')
   @Column({ name: 'permission_name', type: 'varchar', length: 15 })
-  readonly permissionName: string;
+  permissionName: string;
 
   @Index('index_permission_code')
   @Column({
@@ -23,10 +23,10 @@ export class Permission extends TimestampedEntity {
     enum: PermissionEnum,
     nullable: true,
   })
-  readonly permissionCode: PermissionEnum | null;
+  permissionCode: PermissionEnum | null;
 
   // @Column({ type: 'enum', enum: ActionTypeEnum })
-  // readonly action_type: ActionTypeEnum;
+  //  action_type: ActionTypeEnum;
 
   @Column({
     name: 'resource_method',
@@ -35,17 +35,17 @@ export class Permission extends TimestampedEntity {
     // default: RequestMethodEnum.GET,
     nullable: true,
   })
-  readonly resourceMethod: RequestMethodEnum | null;
+  resourceMethod: RequestMethodEnum | null;
 
   @Column({ name: 'resource_url', type: 'varchar', nullable: true })
-  readonly resourceUrl: string | null;
+  resourceUrl: string | null;
 
   @Column({ name: 'parent_id', type: 'int', default: 0 })
-  readonly parentId: number;
+  parentId: number;
 
   @Column({ type: 'varchar', length: 60, nullable: true })
-  readonly description: string;
+  description: string;
 
   @ManyToMany(() => Role, (Role) => Role.permissions)
-  readonly roles: Role[];
+  roles: Role[];
 }

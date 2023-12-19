@@ -1,5 +1,5 @@
 import { Category, Tag, TimestampedEntity, User } from './';
-import { ArticleTypeEnum, ArticleStatusEnum, BolEnum } from '@/helper/enums';
+import { ArticleTypeEnum, ArticleStatusEnum, BolEnum } from '../../helper/enums';
 import {
   Column,
   Entity,
