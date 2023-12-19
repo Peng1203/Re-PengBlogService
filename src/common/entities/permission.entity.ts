@@ -2,8 +2,8 @@ import { TimestampedEntity } from './';
 // import { ActionTypeEnum } from '@/helper/enums';
 import { Role } from './';
 import { Column, Entity, Index, ManyToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
-import { RequestMethodEnum } from '@/helper/enums/request.method';
-import { PermissionEnum } from '@/helper/enums/permission';
+import { RequestMethodEnum } from '../../helper/enums/request.method';
+import { PermissionEnum } from '../../helper/enums/permission';
 
 @Entity({ name: 'permission' })
 @Unique(['permissionName'])

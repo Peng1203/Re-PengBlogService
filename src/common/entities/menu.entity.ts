@@ -1,5 +1,5 @@
 import { TimestampedEntity } from './';
-import { StatusEnum } from '@/helper/enums';
+import { StatusEnum } from '../../helper/enums';
 import { Role } from './';
 import { Column, Entity, Index, ManyToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
 

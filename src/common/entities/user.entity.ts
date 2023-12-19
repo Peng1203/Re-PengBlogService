@@ -1,5 +1,5 @@
 import { Article, TimestampedEntity } from './';
-import { UserEnabledEnum } from '@/helper/enums';
+import { UserEnabledEnum } from '../../helper/enums';
 import { Role } from './';
 import {
   Column,
