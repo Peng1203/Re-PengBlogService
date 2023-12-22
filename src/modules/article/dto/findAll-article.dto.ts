@@ -1,12 +1,21 @@
 import { ListCommonParamsDto } from '@/common/dto';
 import { ArticleStatusEnum, ArticleTypeEnum } from '@/helper/enums';
-import { IsEnum, IsInt, IsNumber, IsOptional } from '@nestjs/class-validator';
+import { DATE_TIME_REGEX } from '@/helper/regex';
+import {
+  IsDateString,
+  IsEnum,
+  IsInt,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Matches,
+} from '@nestjs/class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class FindAllArticleDto extends ListCommonParamsDto {
   @IsEnum(ArticleTypeEnum)
   @IsOptional()
-  @ApiProperty({ required: false, description: '文章类型' })
+  @ApiProperty({ required: false, description: '文章类型', enum: ArticleTypeEnum })
   type?: ArticleTypeEnum;
 
   @IsEnum(ArticleStatusEnum)
@@ -31,4 +40,18 @@ export class FindAllArticleDto extends ListCommonParamsDto {
   @IsOptional()
   @ApiProperty({ description: '标签ID', default: 0 })
   tagId: number;
+
+  @IsString()
+  @IsDateString()
+  // @Matches(DATE_TIME_REGEX, { message: '日期格式有误!' })
+  @IsOptional()
+  @ApiProperty({ required: false, description: '开始时间', default: null })
+  createdTime?: string;
+
+  @IsString()
+  @IsDateString()
+  // @Matches(DATE_TIME_REGEX, { message: '日期格式有误!' })
+  @IsOptional()
+  @ApiProperty({ required: false, description: '结束时间', default: null })
+  updateTime?: string;
 }

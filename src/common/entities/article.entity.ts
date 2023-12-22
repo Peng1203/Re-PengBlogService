@@ -27,10 +27,10 @@ export class Article extends TimestampedEntity {
   @Column({ type: 'varchar', nullable: true, length: 60, comment: '文章封面' })
   cover: string;
 
-  @Column({ type: 'bigint', default: 0 })
+  @Column({ type: 'int', default: 0 })
   likes: number;
 
-  @Column({ type: 'bigint', default: 0 })
+  @Column({ type: 'int', default: 0 })
   views: number;
 
   @Column({
