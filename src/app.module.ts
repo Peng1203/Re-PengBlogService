@@ -19,6 +19,10 @@ import { ResourceModule } from './modules/resource/resource.module';
 import { ArticleModule } from './modules/article/article.module';
 import { CategoryModule } from './modules/category/category.module';
 import { TagModule } from './modules/tag/tag.module';
+import { SystemModule } from './modules/system/system.module';
+
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { MutexModule } from './shared/mutex/mutex.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -28,7 +32,9 @@ import { TagModule } from './modules/tag/tag.module';
       load: [configuration],
     }),
     TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService }),
+    EventEmitterModule.forRoot(),
     CommonModule,
+    MutexModule,
     AuthModule,
     UserModule,
     RoleModule,
@@ -38,6 +44,7 @@ import { TagModule } from './modules/tag/tag.module';
     ArticleModule,
     CategoryModule,
     TagModule,
+    SystemModule,
   ],
   providers: [
     JwtStrategy,
