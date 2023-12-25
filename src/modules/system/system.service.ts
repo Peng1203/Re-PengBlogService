@@ -20,7 +20,7 @@ export class SystemService {
     let childProcess =
       process.platform === 'win32'
         ? spawn(scriptPath, { cwd })
-        : spawn('chmod', ['+x', scriptPath], { cwd });
+        : spawn('chmod', ['+x', scriptPath], { cwd, shell: true });
 
     childProcess.stdout.on('data', (data: Buffer) => {
       console.log('stdout ------', `${data}`);
