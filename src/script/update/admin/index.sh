@@ -1,5 +1,5 @@
 git status
 git pull
-pnpm i
+pnpm i --production=false
 pnpm run build
 nginx -s reload
