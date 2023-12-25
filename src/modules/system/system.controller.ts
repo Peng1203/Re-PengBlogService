@@ -1,22 +1,29 @@
-import { Controller, Get, Sse, Res, Req, MessageEvent } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Sse,
+  MessageEvent,
+  Param,
+  BadRequestException,
+  ConflictException,
+} from '@nestjs/common';
 import { SystemService } from './system.service';
-import { CreateSystemDto } from './dto/create-system.dto';
-import { UpdateSystemDto } from './dto/update-system.dto';
 import { Observable, Subject, interval, map } from 'rxjs';
 import { Public } from '@/common/decorators';
-import { Request, Response } from 'express';
 import { OnEvent } from '@nestjs/event-emitter';
-import { EventsEnum } from '@/helper/enums/events';
+import { EventsEnum } from '@/helper/enums';
 import { MutexService } from '@/shared/mutex/mutex.service';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiResponseCodeEnum } from '@/helper/enums';
 
 @ApiTags('System')
 @ApiBearerAuth()
 @Controller('system')
 export class SystemController {
-  private updateWebTrigger$ = new Subject<void>();
-  private updateAdminTrigger$ = new Subject<void>();
-  private updateServeTrigger$ = new Subject<void>();
+  private readonly serveNames: string[] = ['web', 'admin', 'serve'];
+  private updateTrigger$ = new Subject<void>();
+  // 更新计数器
+  private updateCounter: number = 0;
   constructor(
     private readonly systemService: SystemService,
     private readonly mutexService: MutexService,
@@ -24,50 +31,37 @@ export class SystemController {
 
   @Public()
   @Sse('test')
-  handleUpdate(): Observable<MessageEvent> {
+  test(): Observable<MessageEvent> {
     return interval(1000).pipe(map((_) => ({ data: 'hello world' })));
   }
 
-  @Sse('update/web')
-  handleUpdateWeb(): Observable<MessageEvent> {
-    this.systemService.updateWeb();
-    return this.updateWebTrigger$.pipe(
-      map((params) => ({
-        data: params as any,
-      })),
-    );
-  }
-  @OnEvent(EventsEnum.UPDATE_WEB_MSG)
-  handleUpdateWebTrigger(params: any) {
-    this.updateWebTrigger$.next(params);
-  }
+  @Sse('update/:serveName')
+  @Public()
+  @ApiOperation({ summary: '更新服务' })
+  handleUpdate(@Param('serveName') serveName: string) {
+    if (!serveName || !this.serveNames.includes(serveName))
+      throw new BadRequestException({
+        code: ApiResponseCodeEnum.BADREQUEST,
+        msg: '更新服务参数有误!',
+      });
 
-  @Sse('update/admin')
-  handleUpdateAdmin(): Observable<MessageEvent> {
-    this.systemService.updateAdmin();
-    return this.updateAdminTrigger$.pipe(
+    if (this.updateCounter > 0) throw new ConflictException({ message: 'Conflict Exception' });
+    this.updateCounter++;
+    this.systemService.updateSystem(serveName);
+    return this.updateTrigger$.pipe(
       map((params) => ({
         data: params as any,
       })),
     );
   }
-  @OnEvent(EventsEnum.UPDATE_ADMIN_MSG)
-  handleUpdateAdminTrigger(params: any) {
-    this.updateAdminTrigger$.next(params);
+  @OnEvent(EventsEnum.UPDATE_SYSTEM_MSG)
+  handleUpdateTrigger(params: any) {
+    this.updateTrigger$.next(params);
   }
-
-  @Sse('update/serve')
-  handleUpdateServe(): Observable<MessageEvent> {
-    this.systemService.updateServe();
-    return this.updateServeTrigger$.pipe(
-      map((params) => ({
-        data: params as any,
-      })),
-    );
-  }
-  @OnEvent(EventsEnum.UPDATE_SERVE_MSG)
-  handleUpdateServeTrigger(params: any) {
-    this.updateServeTrigger$.next(params);
+  @OnEvent(EventsEnum.UPDATE_SYSTEM_COMPLETED)
+  handleUpdateCompleted() {
+    this.updateCounter = 0;
+    // this.updateTrigger$.complete();
   }
 
   @Get()

@@ -6,3 +6,5 @@ export * from './action.type';
 export * from './bool.status';
 export * from './permission';
 export * from './article';
+export * from './events';
+export * from './system.serve.name';

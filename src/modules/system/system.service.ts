@@ -1,121 +1,72 @@
-import { exec, spawn } from 'child_process';
-import { promisify } from 'util';
-import { Injectable, Logger } from '@nestjs/common';
-import { CreateSystemDto } from './dto/create-system.dto';
-import { UpdateSystemDto } from './dto/update-system.dto';
+import { spawn } from 'child_process';
+import { Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { EventsEnum } from '@/helper/enums/events';
+import { EventsEnum } from '@/helper/enums';
 import path from 'path';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class SystemService {
+  private SCRIPT_ROOT_PATH = path.resolve(process.cwd(), 'src', 'script', 'update');
   constructor(
     private readonly eventEmitter: EventEmitter2,
     private readonly configService: ConfigService,
   ) {}
 
-  private SCRIPT_ROOT_PATH = path.resolve(process.cwd(), 'src', 'script', 'update');
-  // private readonly WEB_UPDATE_COMMANDS = [
-  //   'cd',
-  //   'git status',
-  //   'git pull',
-  //   'pnpm i',
-  //   'pnpm run build',
-  // ];
-  // private readonly execPromise = promisify(exec);
-
-  /** 更新Web服务 */
-  async updateWeb() {
-    const scriptPath = path.resolve(this.SCRIPT_ROOT_PATH, 'web', this.runScriptAdapter());
+  /** 更新系统服务 */
+  async updateSystem(serveName: string) {
+    const { scriptPath, cwd } = this.getUpdateServeNameInfo(serveName);
 
     let childProcess = spawn(scriptPath, {
-      cwd: this.configService.get<string>('WEB_PROJECT_DIR'),
+      cwd,
       shell: process.platform !== 'win32',
     });
 
-    childProcess.stdout.on('data', (data) => {
-      this.eventEmitter.emit(EventsEnum.UPDATE_WEB_MSG, {
-        data: `${data}`,
+    childProcess.stdout.on('data', (data: Buffer) => {
+      console.log('stdout ------', `${data}`);
+      this.eventEmitter.emit(EventsEnum.UPDATE_SYSTEM_MSG, {
+        data: data.toString('utf-8'),
         status: 'In execute',
       });
     });
 
     childProcess.stderr.on('data', (err) => {
-      this.eventEmitter.emit(EventsEnum.UPDATE_WEB_MSG, {
+      console.log('stderr ------', `${err}`);
+      this.eventEmitter.emit(EventsEnum.UPDATE_SYSTEM_MSG, {
         data: `${err}`,
         status: 'error',
       });
     });
 
-    childProcess.on('close', () => {
-      this.eventEmitter.emit(EventsEnum.UPDATE_WEB_MSG, {
-        data: `更新成功!`,
+    childProcess.on('close', (status) => {
+      console.log('close ------', `${status}`);
+      this.eventEmitter.emit(EventsEnum.UPDATE_SYSTEM_MSG, {
+        data: `更新结束!`,
         status: 'Success',
       });
+
+      this.eventEmitter.emit(EventsEnum.UPDATE_SYSTEM_COMPLETED);
     });
   }
 
-  /** 更新Admin web服务 */
-  async updateAdmin() {
-    const scriptPath = path.resolve(this.SCRIPT_ROOT_PATH, 'admin', this.runScriptAdapter());
-
-    let childProcess = spawn(scriptPath, {
-      cwd: this.configService.get<string>('ADMIN_PROJECT_DIR'),
-      shell: process.platform !== 'win32',
-    });
-
-    childProcess.stdout.on('data', (data) => {
-      this.eventEmitter.emit(EventsEnum.UPDATE_ADMIN_MSG, {
-        data: `${data}`,
-        status: 'In execute',
-      });
-    });
-
-    childProcess.stderr.on('data', (err) => {
-      this.eventEmitter.emit(EventsEnum.UPDATE_ADMIN_MSG, {
-        data: `${err}`,
-        status: 'error',
-      });
-    });
-
-    childProcess.on('close', () => {
-      this.eventEmitter.emit(EventsEnum.UPDATE_ADMIN_MSG, {
-        data: `更新成功!`,
-        status: 'Success',
-      });
-    });
-  }
-
-  /** 更新Serve服务 */
-  async updateServe() {
-    const scriptPath = path.resolve(this.SCRIPT_ROOT_PATH, 'serve', this.runScriptAdapter());
-
-    let childProcess = spawn(scriptPath, {
-      cwd: this.configService.get<string>('SERVE_PROJECT_DIR'),
-      shell: process.platform !== 'win32',
-    });
-
-    childProcess.stdout.on('data', (data) => {
-      this.eventEmitter.emit(EventsEnum.UPDATE_SERVE_MSG, {
-        data: `${data}`,
-        status: 'In execute',
-      });
-    });
-
-    childProcess.stderr.on('data', (err) => {
-      this.eventEmitter.emit(EventsEnum.UPDATE_SERVE_MSG, {
-        data: `${err}`,
-        status: 'error',
-      });
-    });
-
-    childProcess.on('close', () => {
-      this.eventEmitter.emit(EventsEnum.UPDATE_SERVE_MSG, {
-        data: `更新成功!`,
-        status: 'Success',
-      });
-    });
+  private getUpdateServeNameInfo(serveName: string) {
+    switch (serveName) {
+      case 'web':
+        return {
+          scriptPath: path.resolve(this.SCRIPT_ROOT_PATH, 'web', this.runScriptAdapter()),
+          cwd: this.configService.get<string>('WEB_PROJECT_DIR'),
+        };
+      case 'admin':
+        return {
+          scriptPath: path.resolve(this.SCRIPT_ROOT_PATH, 'admin', this.runScriptAdapter()),
+          cwd: this.configService.get<string>('ADMIN_PROJECT_DIR'),
+        };
+      case 'serve':
+        return {
+          scriptPath: path.resolve(this.SCRIPT_ROOT_PATH, 'serve', this.runScriptAdapter()),
+          cwd: this.configService.get<string>('SERVE_PROJECT_DIR'),
+        };
+    }
   }
 
   private runScriptAdapter(): string {
