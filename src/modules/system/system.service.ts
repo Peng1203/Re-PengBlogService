@@ -17,10 +17,10 @@ export class SystemService {
   async updateSystem(serveName: string) {
     const { scriptPath, cwd } = this.getUpdateServeNameInfo(serveName);
 
-    let childProcess = spawn(scriptPath, {
-      cwd,
-      shell: process.platform !== 'win32',
-    });
+    let childProcess =
+      process.platform === 'win32'
+        ? spawn(scriptPath, { cwd })
+        : spawn('chmod', ['+x', scriptPath], { cwd });
 
     childProcess.stdout.on('data', (data: Buffer) => {
       console.log('stdout ------', `${data}`);

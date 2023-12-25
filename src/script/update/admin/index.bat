@@ -1,4 +1,4 @@
 call git status
 call git pull
-call pnpm i --yes
+call pnpm i
 call pnpm run build
