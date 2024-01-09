@@ -23,7 +23,7 @@ export class ArticleService {
     private readonly tagService: TagService,
     private readonly usersService: UserService,
     private readonly categoryService: CategoryService,
-  ) {}
+  ) { }
 
   async create(data: CreateArticleDto) {
     try {
@@ -61,8 +61,11 @@ export class ArticleService {
         authorId,
         categoryId,
         tagId,
+        startTime,
+        endTime
       } = params;
-
+      console.log('startTime ------', startTime)
+      console.log('endTime ------', endTime)
       // .leftJoinAndSelect('author.roles', 'role')
       const queryBuilder = this.articleRepository
         .createQueryBuilder('article')
@@ -83,6 +86,8 @@ export class ArticleService {
       status && queryBuilder.andWhere('article.status = :status', { status });
       authorId && queryBuilder.andWhere('article.authorId = :authorId', { authorId });
       categoryId && queryBuilder.andWhere('article.categoryId = :categoryId', { categoryId });
+      startTime && queryBuilder.andWhere('article.createTime >= :startTime', { startTime });
+      endTime && queryBuilder.andWhere('article.createTime <= :endTime', { endTime });
 
       const [list, total] = await queryBuilder.getManyAndCount();
 

@@ -1,27 +1,29 @@
 import { ListCommonParamsDto } from '@/common/dto';
-import { ArticleStatusEnum, ArticleTypeEnum } from '@/helper/enums';
+import { ArticleStatusStateEnum, ArticleTypeStateEnum } from '@/helper/enums';
 import { DATE_TIME_REGEX } from '@/helper/regex';
+import { IsDateTimeString } from '@/helper/validate';
 import {
-  IsDateString,
+  IsDefined,
   IsEnum,
   IsInt,
   IsNumber,
   IsOptional,
   IsString,
   Matches,
+  Validate,
 } from '@nestjs/class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class FindAllArticleDto extends ListCommonParamsDto {
-  @IsEnum(ArticleTypeEnum)
+  @IsEnum(ArticleTypeStateEnum)
   @IsOptional()
-  @ApiProperty({ required: false, description: '文章类型', enum: ArticleTypeEnum })
-  type?: ArticleTypeEnum;
+  @ApiProperty({ required: false, description: '文章类型', enum: ArticleTypeStateEnum, default: ArticleTypeStateEnum.ALL })
+  type?: ArticleTypeStateEnum;
 
-  @IsEnum(ArticleStatusEnum)
+  @IsEnum(ArticleStatusStateEnum)
   @IsOptional()
-  @ApiProperty({ required: false, description: '文章状态' })
-  status?: ArticleStatusEnum;
+  @ApiProperty({ required: false, description: '文章状态', enum: ArticleStatusStateEnum, default: ArticleStatusStateEnum.ALL })
+  status?: ArticleStatusStateEnum;
 
   @IsNumber()
   @IsInt()
@@ -41,17 +43,17 @@ export class FindAllArticleDto extends ListCommonParamsDto {
   @ApiProperty({ description: '标签ID', default: 0 })
   tagId: number;
 
-  @IsString()
-  @IsDateString()
-  // @Matches(DATE_TIME_REGEX, { message: '日期格式有误!' })
   @IsOptional()
-  @ApiProperty({ required: false, description: '开始时间', default: null })
-  createdTime?: string;
+  @IsString()
+  @Validate(IsDateTimeString, { message: '开始时间格式有误' })
+  @IsDefined()
+  @ApiProperty({ default: '', required: false, description: '开始时间', })
+  startTime?: string;
 
-  @IsString()
-  @IsDateString()
-  // @Matches(DATE_TIME_REGEX, { message: '日期格式有误!' })
   @IsOptional()
-  @ApiProperty({ required: false, description: '结束时间', default: null })
-  updateTime?: string;
+  @IsString()
+  @Validate(IsDateTimeString, { message: '结束时间格式有误' })
+  @IsDefined()
+  @ApiProperty({ default: '', required: false, description: '结束时间', })
+  endTime?: string;
 }
