@@ -23,7 +23,7 @@ export class ArticleService {
     private readonly tagService: TagService,
     private readonly usersService: UserService,
     private readonly categoryService: CategoryService,
-  ) { }
+  ) {}
 
   async create(data: CreateArticleDto) {
     try {
@@ -62,10 +62,9 @@ export class ArticleService {
         categoryId,
         tagId,
         startTime,
-        endTime
+        endTime,
       } = params;
-      console.log('startTime ------', startTime)
-      console.log('endTime ------', endTime)
+
       // .leftJoinAndSelect('author.roles', 'role')
       const queryBuilder = this.articleRepository
         .createQueryBuilder('article')
@@ -91,8 +90,8 @@ export class ArticleService {
 
       const [list, total] = await queryBuilder.getManyAndCount();
 
-      // 排除用户密码
-      const dataList = list.map(({ author, ...args }) => ({
+      // 排除访问密码和作者密码
+      const dataList = list.map(({ author, accessPassword, ...args }) => ({
         ...args,
         author: { ...author, password: undefined },
       }));

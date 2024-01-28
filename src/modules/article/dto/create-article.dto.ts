@@ -1,4 +1,4 @@
-import { ArticleStatusEnum, ArticleTypeEnum, BolEnum } from '@/helper/enums';
+import { ArticleStatusEnum, ArticleTypeEnum, BolEnum, ContentModelEnum } from '@/helper/enums';
 import {
   ArrayMaxSize,
   IsDefined,
@@ -8,6 +8,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  MaxLength,
 } from '@nestjs/class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -16,6 +17,11 @@ export class CreateArticleDto {
   @IsNotEmpty()
   @ApiProperty({ description: '文章标题' })
   title: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty({ description: '文章摘要' })
+  summary?: string;
 
   @IsString()
   @IsOptional()
@@ -56,6 +62,13 @@ export class CreateArticleDto {
   })
   isTop: BolEnum;
 
+  @IsEnum(ContentModelEnum)
+  @ApiProperty({
+    default: ContentModelEnum.MARKDOWN,
+    description: '文章内容模式: 0Markdown 1富文本',
+  })
+  contentModel: ContentModelEnum;
+
   @IsNumber()
   @IsInt()
   @IsOptional()
@@ -66,4 +79,10 @@ export class CreateArticleDto {
   @ArrayMaxSize(3)
   @ApiProperty({ default: [], description: '文章标签' })
   tags: number[];
+
+  @IsString()
+  @IsOptional()
+  @MaxLength(8)
+  @ApiProperty({ default: null, description: '私密文章 访问密码' })
+  accessPassword?: string | null;
 }
