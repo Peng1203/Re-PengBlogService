@@ -1,5 +1,5 @@
 import { Category, Tag, TimestampedEntity, User } from './';
-import { ArticleTypeEnum, ArticleStatusEnum, BolEnum } from '../../helper/enums';
+import { ArticleTypeEnum, ArticleStatusEnum, BolEnum, ContentModelEnum } from '../../helper/enums';
 import {
   Column,
   Entity,
@@ -21,8 +21,24 @@ export class Article extends TimestampedEntity {
   @Column({ type: 'varchar', length: 60 })
   title: string;
 
+  @Column({
+    type: 'char',
+    default: '',
+    nullable: true,
+    comment: '文章摘要',
+  })
+  summary: string;
+
   @Column({ type: 'longtext' })
   content: string;
+
+  @Column({
+    type: 'enum',
+    enum: ContentModelEnum,
+    default: ContentModelEnum.MARKDOWN,
+    comment: '文章内容模式',
+  })
+  contentModel: ContentModelEnum;
 
   @Column({ type: 'varchar', nullable: true, length: 60, comment: '文章封面' })
   cover: string;
@@ -56,6 +72,16 @@ export class Article extends TimestampedEntity {
     default: BolEnum.FALSE,
   })
   isTop: BolEnum;
+
+  @Column({
+    name: 'access_password',
+    type: 'varchar',
+    length: 255,
+    default: '',
+    nullable: true,
+    comment: '文章状态为 私密时 他人访问需要使用该密码',
+  })
+  accessPassword: string;
 
   @ManyToOne(() => User, (User) => User.articles)
   author: User;

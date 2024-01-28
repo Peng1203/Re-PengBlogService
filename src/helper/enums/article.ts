@@ -46,8 +46,8 @@ export enum ArticleStatusEnum {
  * 文章状态 状态信息枚举
  */
 export enum ArticleStatusStateEnum {
-    /** 全部 */
-    ALL = 0,
+  /** 全部 */
+  ALL = 0,
   /** 已发布 */
   PUBLISHED = 1,
   /** 私密 */
@@ -60,4 +60,14 @@ export enum ArticleStatusStateEnum {
   PENDING_REVIEW = 5,
   /** 已拒绝 */
   REJECTED = 6,
+}
+
+/**
+ * 文章内容 模式
+ */
+export enum ContentModelEnum {
+  /** markdown 内容 */
+  MARKDOWN = 0,
+  /** 富文本 内容 */
+  RICHTEXT = 1,
 }
