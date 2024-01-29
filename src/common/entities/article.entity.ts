@@ -22,8 +22,7 @@ export class Article extends TimestampedEntity {
   title: string;
 
   @Column({
-    type: 'char',
-    default: '',
+    type: 'text',
     nullable: true,
     comment: '文章摘要',
   })
