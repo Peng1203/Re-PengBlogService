@@ -10,6 +10,7 @@ import {
   Query,
   Res,
   NotFoundException,
+  UseGuards,
 } from '@nestjs/common';
 import { ArticleService } from './article.service';
 import { CreateArticleDto } from './dto/create-article.dto';
@@ -21,6 +22,7 @@ import { ApiResponseCodeEnum, PermissionEnum } from '@/helper/enums';
 import { FindAllArticleDto } from './dto';
 import { ParseIntParamPipe } from '@/common/pipe';
 import { Response } from 'express';
+import { UpdateArticleGuard } from './guards';
 
 @ApiTags('Article')
 @ApiBearerAuth()
@@ -57,6 +59,7 @@ export class ArticleController {
 
   // @RequirePermissions(PermissionEnum.UPDATE_ARTICLE)
   @Patch(':id/:aid')
+  @UseGuards(UpdateArticleGuard)
   @ApiOperation({ summary: '更新文章' })
   update(
     @Param('id', new ParseIntParamPipe('文章id参数有误')) id: number,

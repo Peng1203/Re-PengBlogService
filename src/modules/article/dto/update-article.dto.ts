@@ -9,9 +9,10 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  MaxLength,
 } from '@nestjs/class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { ArticleStatusEnum, ArticleTypeEnum, BolEnum } from '@/helper/enums';
+import { ArticleStatusEnum, ArticleTypeEnum, BolEnum, ContentModelEnum } from '@/helper/enums';
 
 export class UpdateArticleDto extends PartialType(CreateArticleDto) {
   @IsString()
@@ -19,6 +20,11 @@ export class UpdateArticleDto extends PartialType(CreateArticleDto) {
   @IsOptional()
   @ApiProperty({ required: false, description: '文章标题' })
   title?: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty({ description: '文章摘要' })
+  summary?: string;
 
   @IsString()
   @IsOptional()
@@ -60,6 +66,13 @@ export class UpdateArticleDto extends PartialType(CreateArticleDto) {
   })
   isTop?: BolEnum;
 
+  @IsEnum(ContentModelEnum)
+  @ApiProperty({
+    default: ContentModelEnum.MARKDOWN,
+    description: '文章内容模式: 0Markdown 1富文本',
+  })
+  contentModel?: ContentModelEnum;
+
   @IsNumber()
   @IsInt()
   @IsOptional()
@@ -71,4 +84,10 @@ export class UpdateArticleDto extends PartialType(CreateArticleDto) {
   @IsOptional()
   @ApiProperty({ required: false, default: [], description: '文章标签' })
   tags?: number[];
+
+  @IsString()
+  @IsOptional()
+  @MaxLength(8)
+  @ApiProperty({ default: null, description: '私密文章 访问密码' })
+  accessPassword?: string | null;
 }
