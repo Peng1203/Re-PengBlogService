@@ -22,7 +22,7 @@ import { ApiResponseCodeEnum, PermissionEnum } from '@/helper/enums';
 import { FindAllArticleDto } from './dto';
 import { ParseIntParamPipe } from '@/common/pipe';
 import { Response } from 'express';
-import { UpdateArticleGuard } from './guards';
+import { GetArticleDetailGuard, UpdateArticleGuard } from './guards';
 
 @ApiTags('Article')
 @ApiBearerAuth()
@@ -50,8 +50,9 @@ export class ArticleController {
     return this.articleService.findAll(params);
   }
 
+  // @Public()
+  // @UseGuards(GetArticleDetailGuard)
   @Get(':id')
-  @Public()
   @ApiOperation({ summary: '获取文章详情' })
   findOne(@Param('id', new ParseIntParamPipe('id参数有误')) id: number) {
     return this.articleService.findOne(id);
@@ -61,12 +62,17 @@ export class ArticleController {
   @Patch(':id/:aid')
   @UseGuards(UpdateArticleGuard)
   @ApiOperation({ summary: '更新文章' })
-  update(
+  async update(
     @Param('id', new ParseIntParamPipe('文章id参数有误')) id: number,
     @Param('aid', new ParseIntParamPipe('作者id参数有误')) aid: number,
     @Body() data: UpdateArticleDto,
+    @Res({ passthrough: true }) res: Response,
   ) {
-    return this.articleService.update(id, data, aid);
+    const updateRes = await this.articleService.update(id, data, aid);
+    updateRes
+      ? (res.apiResponseCode = ApiResponseCodeEnum.UPDATE)
+      : (res.resMsg = '更新文章失败!') && (res.success = false);
+    return updateRes || '操作失败!';
   }
 
   // @RequirePermissions(PermissionEnum.DELETE_ARTICLE)

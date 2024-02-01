@@ -108,10 +108,13 @@ export class ArticleService {
 
   async findOne(id: number): Promise<Article> {
     try {
-      return await this.articleRepository.findOne({
+      const article = await this.articleRepository.findOne({
         where: { id },
         relations: ['author', 'tags', 'category'],
       });
+      console.log('article ------', article);
+      article.author.password = undefined;
+      return article;
     } catch (e) {
       throw new InternalServerErrorException({
         e,
@@ -125,7 +128,6 @@ export class ArticleService {
     try {
       const { category, tags: tagIds, ...args } = data;
       const article = await this.findOne(aid);
-      if (article.author.id !== uid) throw new ForbiddenException();
 
       for (const key in args) {
         article[key] = args[key];
@@ -135,17 +137,12 @@ export class ArticleService {
         ? (await Promise.all(tagIds.map((id) => this.tagService.findOne(id)))).filter((tag) => tag)
         : [];
 
-      article.category = await this.categoryService.findOne(category);
+      article.category = category ? await this.categoryService.findOne(category) : null;
 
       article.updateTime = formatDate();
       return await this.articleRepository.save(article);
     } catch (e) {
-      if (e instanceof ForbiddenException)
-        throw new ForbiddenException({
-          code: ApiResponseCodeEnum.FORBIDDEN_USER,
-          msg: '更新文章失败 身份信息有误！',
-        });
-      else if (e instanceof NotFoundException)
+      if (e instanceof NotFoundException)
         throw new NotFoundException({
           e,
           code: ApiResponseCodeEnum.NOTFOUND,
