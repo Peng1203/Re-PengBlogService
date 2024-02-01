@@ -40,11 +40,16 @@ export class CategoryController {
   @Patch(':id')
   @ApiOperation({ summary: '更新文章分类' })
   @RequirePermissions(PermissionEnum.UPDATE_CATEGORY)
-  update(
+  async update(
     @Param('id', new ParseIntParamPipe('id参数有误')) id: number,
     @Body() data: UpdateCategoryDto,
+    @Res({ passthrough: true }) res: Response,
   ) {
-    return this.categoryService.update(id, data);
+    const updateRes = await this.categoryService.update(id, data);
+    updateRes
+      ? (res.apiResponseCode = ApiResponseCodeEnum.UPDATE)
+      : (res.resMsg = '更新文章分类失败!') && (res.success = false);
+    return updateRes || '操作失败!';
   }
 
   @Delete(':id')

@@ -48,11 +48,16 @@ export class RoleController {
   @Patch(':id')
   @RequirePermissions(PermissionEnum.UPDATE_ROLE)
   @ApiOperation({ summary: '更新角色信息' })
-  update(
+  async update(
     @Param('id', new ParseIntParamPipe('id参数有误')) id: number,
     @Body() data: UpdateRoleDto,
+    @Res({ passthrough: true }) res: Response,
   ) {
-    return this.roleService.update(id, data);
+    const updateRes = await this.roleService.update(id, data);
+    updateRes
+      ? (res.apiResponseCode = ApiResponseCodeEnum.UPDATE)
+      : (res.resMsg = '更新角色信息失败!') && (res.success = false);
+    return updateRes ? '更新角色信息成功!' : '操作失败!';
   }
 
   @Delete(':id')

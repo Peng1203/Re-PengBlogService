@@ -40,8 +40,16 @@ export class TagController {
   @Patch(':id')
   @ApiOperation({ summary: '更新文章标签' })
   @RequirePermissions(PermissionEnum.UPDATE_TAG)
-  update(@Param('id', new ParseIntParamPipe('id参数有误')) id: number, @Body() data: UpdateTagDto) {
-    return this.tagService.update(id, data);
+  async update(
+    @Param('id', new ParseIntParamPipe('id参数有误')) id: number,
+    @Body() data: UpdateTagDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const updateRes = await this.tagService.update(id, data);
+    updateRes
+      ? (res.apiResponseCode = ApiResponseCodeEnum.UPDATE)
+      : (res.resMsg = '更新文章标签失败!') && (res.success = false);
+    return updateRes ? '更新文章标签成功!' : '操作失败!';
   }
 
   @Delete(':id')
