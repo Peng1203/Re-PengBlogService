@@ -1,5 +1,5 @@
 import { Request as ExpressRequest, Response as ExpressResponse } from 'express';
-import { User } from '@/modules/user/entities';
+import { User } from '@/common/entities';
 import { ApiResponseCodeEnum } from '@/helper/enums';
 import { SessionInfo } from 'express-session';
 import { Details } from 'express-useragent';
