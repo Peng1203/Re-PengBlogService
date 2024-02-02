@@ -1,7 +1,6 @@
 import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { Request } from 'express';
-import { ApiResponseCodeEnum } from '@/helper/enums';
 
 @Injectable()
 export class GetArticleDetailGuard implements CanActivate {

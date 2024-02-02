@@ -30,7 +30,6 @@ export class ArticleService {
       const { category: categoryId, tags: tagIds, authorId, ...args } = data;
 
       const author = await this.usersService.findOneById(authorId);
-
       const tags = tagIds.length
         ? (await Promise.all(tagIds.map((id) => this.tagService.findOne(id)))).filter((tag) => tag)
         : [];
@@ -76,7 +75,11 @@ export class ArticleService {
             qb.where('article.title LIKE :queryStr', { queryStr: `%${queryStr}%` }),
           ),
         )
-        .orderBy(`article.${column || 'id'}`, order || 'ASC')
+        .orderBy({
+          'article.isTop': 'DESC',
+          [`article.${column || 'id'}`]: order || 'ASC',
+        })
+        // .orderBy(`article.${column || 'id'}`, order || 'ASC')
         .skip((page - 1) * pageSize)
         .take(pageSize);
 
@@ -112,7 +115,6 @@ export class ArticleService {
         where: { id },
         relations: ['author', 'tags', 'category'],
       });
-      console.log('article ------', article);
       article.author.password = undefined;
       return article;
     } catch (e) {
@@ -124,10 +126,32 @@ export class ArticleService {
     }
   }
 
-  async update(aid: number, data: UpdateArticleDto, uid: number) {
+  async findOneByUidAndAid(uid: number, aid: number): Promise<Article> {
+    try {
+      const article = await this.articleRepository.findOne({
+        where: {
+          id: aid,
+          author: {
+            id: uid,
+          },
+        },
+        relations: ['author', 'tags', 'category'],
+      });
+      article.author.password = undefined;
+      return article;
+    } catch (e) {
+      throw new InternalServerErrorException({
+        e,
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
+        msg: '查询文章详情失败',
+      });
+    }
+  }
+
+  async update(articleId: number, data: UpdateArticleDto) {
     try {
       const { category, tags: tagIds, ...args } = data;
-      const article = await this.findOne(aid);
+      const article = await this.findOne(articleId);
 
       for (const key in args) {
         article[key] = args[key];
@@ -142,6 +166,7 @@ export class ArticleService {
       article.updateTime = formatDate();
       return await this.articleRepository.save(article);
     } catch (e) {
+      console.log('e ------', e);
       if (e instanceof NotFoundException)
         throw new NotFoundException({
           e,

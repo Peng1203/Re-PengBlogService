@@ -22,7 +22,7 @@ import { ApiResponseCodeEnum, PermissionEnum } from '@/helper/enums';
 import { FindAllArticleDto } from './dto';
 import { ParseIntParamPipe } from '@/common/pipe';
 import { Response } from 'express';
-import { GetArticleDetailGuard, UpdateArticleGuard } from './guards';
+import { DeleteArticleGuard, GetArticleDetailGuard, UpdateArticleGuard } from './guards';
 
 @ApiTags('Article')
 @ApiBearerAuth()
@@ -68,7 +68,7 @@ export class ArticleController {
     @Body() data: UpdateArticleDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const updateRes = await this.articleService.update(id, data, aid);
+    const updateRes = await this.articleService.update(aid, data);
     updateRes
       ? (res.apiResponseCode = ApiResponseCodeEnum.UPDATE)
       : (res.resMsg = '更新文章失败!') && (res.success = false);
@@ -77,26 +77,23 @@ export class ArticleController {
 
   // @RequirePermissions(PermissionEnum.DELETE_ARTICLE)
   @Delete(':id/:aid')
+  @UseGuards(DeleteArticleGuard)
   @ApiOperation({ summary: '删除文章' })
   async remove(
     @Param('id', new ParseIntParamPipe('文章id参数有误')) id: number,
     @Param('aid', new ParseIntParamPipe('作者id参数有误')) aid: number,
-    @ReqUser('id') uid: number,
     @Res({ passthrough: true }) res: Response,
   ) {
-    if (aid !== uid)
-      throw new ForbiddenException({
-        code: ApiResponseCodeEnum.FORBIDDEN_USER,
-        msg: '删除失败，身份信息有误',
-      });
-    const role = await this.articleService.findOne(id).catch(() => false);
-    if (!role)
+    const article = await this.articleService.findOne(aid).catch(() => false);
+    console.log('article ------', article);
+    if (!article)
       throw new NotFoundException({
         code: ApiResponseCodeEnum.NOTFOUND_ROLE,
         msg: '删除失败，未找到相关文章',
       });
 
-    const delRes = await this.articleService.remove(id);
+    const delRes = await this.articleService.remove(aid);
+    console.log('delRes ------', delRes);
     if (!delRes) res.resMsg = '删除文章失败!';
     if (!delRes) res.success = false;
     else return '删除文章成功';
