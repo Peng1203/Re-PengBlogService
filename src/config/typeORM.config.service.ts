@@ -16,6 +16,8 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
     const synchronize = NODE_ENV === 'development';
 
     return {
+      logger: 'simple-console',
+      logging: NODE_ENV === 'development',
       type: 'mysql',
       host: DATABASE_HOST,
       port: Number(DATABASE_PORT),
