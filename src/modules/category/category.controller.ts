@@ -49,7 +49,7 @@ export class CategoryController {
     updateRes
       ? (res.apiResponseCode = ApiResponseCodeEnum.UPDATE)
       : (res.resMsg = '更新文章分类失败!') && (res.success = false);
-    return updateRes || '操作失败!';
+    return updateRes ? '更新文章分类成功!' : '操作失败!';
   }
 
   @Delete(':id')
