@@ -18,6 +18,7 @@ export enum PermissionEnum {
   CREATE_MENU = 'create_menu',
   UPDATE_MENU = 'update_menu',
   DELETE_MENU = 'delete_menu',
+  INIT_MENU = 'init_menu',
 
   /** 权限标识 */
   VIEW_PERMISSION = 'view_permission',

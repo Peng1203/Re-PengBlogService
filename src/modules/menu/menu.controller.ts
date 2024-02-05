@@ -13,14 +13,14 @@ import {
   Put,
 } from '@nestjs/common';
 import { MenuService } from './menu.service';
-import { CreateMenuDto, FindAllMenuDto } from './dto';
+import { BatchCreateMenuDto, CreateMenuDto, FindAllMenuDto } from './dto';
 import { UpdateMenuDto } from './dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ParseIntParamPipe } from '@/common/pipe';
 import { ApiResponseCodeEnum, PermissionEnum } from '@/helper/enums';
 import { Response } from 'express';
 import { Menu } from '@/common/entities';
-import { RequirePermissions } from '@/common/decorators';
+import { Public, RequirePermissions } from '@/common/decorators';
 @ApiTags('Menu')
 @ApiBearerAuth()
 @Controller('menu')
@@ -80,5 +80,14 @@ export class MenuController {
     if (!delResult) res.resMsg = '删除菜单失败!';
     if (!delResult) res.success = false;
     else return '删除菜单成功';
+  }
+
+  @Public()
+  @Post('init')
+  // @RequirePermissions(PermissionEnum.INIT_MENU)
+  @ApiOperation({ summary: '初始化添加全部菜单' })
+  async initMenu(@Body() menuData: BatchCreateMenuDto) {
+    await this.menuService.batchInitMenu(menuData);
+    return '你好';
   }
 }

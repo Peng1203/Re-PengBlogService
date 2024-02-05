@@ -1,5 +1,5 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { CreateMenuDto } from './dto/create-menu.dto';
+import { BatchCreateMenuDto, CreateMenuDto } from './dto/create-menu.dto';
 import { UpdateMenuDto } from './dto/update-menu.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Menu } from '@/common/entities';
@@ -127,6 +127,18 @@ export class MenuService {
         e,
         code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
         msg: '查询菜单失败',
+      });
+    }
+  }
+
+  async batchInitMenu(menuData: BatchCreateMenuDto) {
+    try {
+      console.log('menuData ------', menuData);
+    } catch (e) {
+      throw new InternalServerErrorException({
+        e,
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_CREATED,
+        msg: '添加菜单失败',
       });
     }
   }

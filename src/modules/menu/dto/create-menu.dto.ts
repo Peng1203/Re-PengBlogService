@@ -1,6 +1,7 @@
 import { StatusEnum } from '@/helper/enums';
 import { Type } from '@nestjs/class-transformer';
 import {
+  IsArray,
   IsEnum,
   IsInt,
   IsNumber,
@@ -10,8 +11,10 @@ import {
   MaxLength,
   Min,
   MinLength,
+  ValidateNested,
 } from '@nestjs/class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { BatchAddMenuItem, BatchAddMenuItemInstance } from '../types';
 
 export class CreateMenuDto {
   @IsString()
@@ -63,4 +66,26 @@ export class CreateMenuDto {
   // @IsOptional()
   // @ApiProperty({ description: '子菜单', default: [] })
   // children?: CreateMenuDto[];
+}
+
+export class BatchCreateMenuDto {
+  @IsArray()
+  // @ValidateNested()
+  @Type(() => BatchAddMenuItemInstance)
+  @ApiProperty({
+    default: [],
+    description: '父菜单',
+    type: BatchAddMenuItemInstance,
+  })
+  parentMenus: BatchAddMenuItem[];
+
+  @IsArray()
+  // @ValidateNested()
+  @Type(() => BatchAddMenuItemInstance)
+  @ApiProperty({
+    default: [],
+    description: '子菜单',
+    type: BatchAddMenuItemInstance,
+  })
+  subMenus: BatchAddMenuItem[];
 }
