@@ -16,4 +16,5 @@ export class BatchAddMenuItemInstance {
   orderNum: number;
   isHidden: StatusEnum;
   isKeepalive: StatusEnum;
+  parentUri?: string | undefined;
 }

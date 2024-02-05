@@ -6,7 +6,7 @@ import { Menu } from '@/common/entities';
 import { Like, Repository } from 'typeorm';
 import { ApiResponseCodeEnum } from '@/helper/enums';
 import { FindAllMenuDto } from './dto';
-import { MenuItem } from './types';
+import { BatchAddMenuItem, BatchAddMenuItemInstance, MenuItem } from './types';
 
 @Injectable()
 export class MenuService {
@@ -131,15 +131,67 @@ export class MenuService {
     }
   }
 
-  async batchInitMenu(menuData: BatchCreateMenuDto) {
+  async batchInitMenu({ parentMenus, subMenus }: BatchCreateMenuDto) {
     try {
-      console.log('menuData ------', menuData);
+      // menuData.parentMenus.map();
+      const parentData = await Promise.all(
+        parentMenus.map((menu) => this.findOrCreateParentMenu(menu)),
+      );
+
+      // console.log('parentData ------', parentData);
+      // 创建菜单实例
+      const createdParentMenus = await this.menuRepository.create(
+        parentData.filter((item) => item !== null),
+      );
+      // 写库
+      await this.menuRepository.save(createdParentMenus);
+      // 查询一创建的所有菜单数据
+      const [findAllMenu] = await this.menuRepository.findAndCount();
+
+      const subData = await Promise.all(
+        subMenus.map((menu) => this.findOrCreateSubMenu(menu, findAllMenu)),
+      );
+
+      const createdSubMenus = await this.menuRepository.create(
+        subData.filter((item) => item !== null),
+      );
+      // 写库
+      await this.menuRepository.save(createdSubMenus);
+
+      return createdParentMenus.length + createdSubMenus.length;
     } catch (e) {
       throw new InternalServerErrorException({
         e,
         code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_CREATED,
-        msg: '添加菜单失败',
+        msg: '初始化菜单操作失败!',
       });
+    }
+  }
+
+  // 查询并返回需要创建的父级菜单数据
+  private async findOrCreateParentMenu(item: BatchAddMenuItemInstance) {
+    try {
+      const menu = await this.menuRepository.findOneBy({ menuUri: item.menuUri });
+      if (menu) return null;
+      return { ...item, parentId: 0 };
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  private async findOrCreateSubMenu(
+    { parentUri, ...item }: BatchAddMenuItemInstance,
+    allMenus: Menu[],
+  ) {
+    try {
+      const menu = await this.menuRepository.findOneBy({ menuUri: item.menuUri });
+      if (menu) return null;
+      return {
+        ...item,
+        parentId: allMenus.find((menu) => menu.menuUri === parentUri)?.id || 0,
+      };
+    } catch (e) {
+      throw e;
     }
   }
 }

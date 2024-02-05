@@ -87,7 +87,7 @@ export class MenuController {
   // @RequirePermissions(PermissionEnum.INIT_MENU)
   @ApiOperation({ summary: '初始化添加全部菜单' })
   async initMenu(@Body() menuData: BatchCreateMenuDto) {
-    await this.menuService.batchInitMenu(menuData);
-    return '你好';
+    const createdCount = await this.menuService.batchInitMenu(menuData);
+    return `新增了 ${createdCount} 个菜单`;
   }
 }
