@@ -18,7 +18,7 @@ import { FindAllPermissionDto } from './dto';
 import { ParseIntParamPipe } from '@/common/pipe';
 import { ApiResponseCodeEnum, PermissionEnum } from '@/helper/enums';
 import { Response } from 'express';
-import { RequirePermissions } from '@/common/decorators';
+import { Public, RequirePermissions } from '@/common/decorators';
 @ApiTags('Permission')
 @ApiBearerAuth()
 @Controller('permission')
@@ -80,5 +80,18 @@ export class PermissionController {
     if (!delResult) res.resMsg = '删除权限标识失败!';
     if (!delResult) res.success = false;
     else return '删除权限标识成功';
+  }
+
+  @Get('/code/options')
+  @ApiOperation({ summary: '获取权限标识下拉数据' })
+  getPermissionCodeOptions() {
+    const options = [];
+    for (const key in PermissionEnum) {
+      options.push({
+        label: key,
+        value: PermissionEnum[key],
+      });
+    }
+    return options;
   }
 }
