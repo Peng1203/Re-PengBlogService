@@ -6,7 +6,7 @@ import { Menu } from '@/common/entities';
 import { Like, Repository } from 'typeorm';
 import { ApiResponseCodeEnum } from '@/helper/enums';
 import { FindAllMenuDto } from './dto';
-import { BatchAddMenuItem, BatchAddMenuItemInstance, MenuItem } from './types';
+import { BatchAddMenuItemInstance, MenuItem } from './types';
 
 @Injectable()
 export class MenuService {
