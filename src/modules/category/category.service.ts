@@ -35,7 +35,11 @@ export class CategoryService {
         order: { [column || 'id']: order || 'ASC' },
         relations: ['articles'],
       });
-      return { list, total };
+
+      return {
+        list: list.map((item) => ({ ...item, articles: item.articles.length })),
+        total,
+      };
     } catch (e) {
       throw new InternalServerErrorException({
         e,
