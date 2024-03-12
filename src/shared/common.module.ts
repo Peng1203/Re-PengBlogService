@@ -6,7 +6,12 @@ import { CosService } from './COS/cos.service';
 import { ProxyHttpModule } from './proxyHttp/proxyHttp.module';
 
 @Module({
-  imports: [HttpModule.registerAsync({ useClass: HttpConfigService }), RedisModule],
+  imports: [
+    HttpModule.registerAsync({ useClass: HttpConfigService }),
+    ProxyHttpModule,
+    RedisModule,
+  ],
+
   providers: [CosService],
   exports: [HttpModule, RedisModule, CosService, ProxyHttpModule],
 })
