@@ -1,10 +1,9 @@
 import { ApiResponseCodeEnum } from '@/helper/enums';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import COS, { type CosObject, GetBucketResult } from 'cos-nodejs-sdk-v5';
+import COS, { GetBucketResult } from 'cos-nodejs-sdk-v5';
 import { DirFileDataItem, ExtendBucketResult } from './types';
 import { extname, basename } from 'path';
-import dayjs, { formatDate } from '@/utils/date.util';
 import { countOccurrences } from '@/utils/string.util';
 
 @Injectable()
@@ -16,19 +15,19 @@ export class CosService {
   private rootDir: string;
 
   constructor(private readonly configService: ConfigService) {
-    const SecretId = this.configService.get<string>('COS_SECRET_ID');
-    const SecretKey = this.configService.get<string>('COS_SECRET_KEY');
-    const Bucket = this.configService.get<string>('COS_BUCKET');
-    const Region = this.configService.get<string>('COS_REGION');
-    const rootDir = this.configService.get<string>('NETDISK_ROOT_DIR');
+    const SECRET_ID = this.configService.get<string>('COS_SECRET_ID');
+    const SECRET_KEY = this.configService.get<string>('COS_SECRET_KEY');
+    const BUCKET = this.configService.get<string>('COS_BUCKET');
+    const REGION = this.configService.get<string>('COS_REGION');
+    const ROOTDIR = this.configService.get<string>('NETDISK_ROOT_DIR');
 
-    this.rootDir = rootDir;
-    this.Bucket = Bucket;
-    this.Region = Region;
+    this.rootDir = ROOTDIR;
+    this.Bucket = BUCKET;
+    this.Region = REGION;
 
     this.cos = new COS({
-      SecretId,
-      SecretKey,
+      SecretId: SECRET_ID,
+      SecretKey: SECRET_KEY,
     });
 
     // CosObject;
