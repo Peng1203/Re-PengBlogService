@@ -20,9 +20,10 @@ import { ArticleModule } from './modules/article/article.module';
 import { CategoryModule } from './modules/category/category.module';
 import { TagModule } from './modules/tag/tag.module';
 import { SystemModule } from './modules/system/system.module';
-
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { MutexModule } from './shared/mutex/mutex.module';
+import { OpenAiModule } from './modules/open-ai/open-ai.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -45,6 +46,7 @@ import { MutexModule } from './shared/mutex/mutex.module';
     CategoryModule,
     TagModule,
     SystemModule,
+    OpenAiModule,
   ],
   providers: [
     JwtStrategy,
