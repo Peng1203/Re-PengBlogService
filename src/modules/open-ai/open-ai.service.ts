@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ProxyHttpService } from '@/shared/proxyHttp/proxyHttp.service';
 import OpenAI from 'openai';
 import { ConfigService } from '@nestjs/config';
+import { ChatDto } from './dto';
 
 @Injectable()
 export class OpenAiService {
@@ -21,12 +22,12 @@ export class OpenAiService {
     });
   }
 
-  getStreamResponse(content: string) {
+  getStreamResponse({ messages }: ChatDto) {
     try {
       return this.openai.beta.chat.completions.stream({
         model: 'gpt-3.5-turbo',
         stream: true,
-        messages: [{ role: 'user', content }],
+        messages: messages as any,
         max_tokens: this.MAX_TOKENS,
         temperature: this.TEMPERATURE,
       });

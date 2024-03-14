@@ -32,10 +32,9 @@ export class OpenAiController {
     // response.pipe(res);
 
     const textDecoder = new TextDecoder();
-    const stream = this.openAiService.getStreamResponse(data.content);
+    const stream = this.openAiService.getStreamResponse(data);
     for await (const chunk of (stream as any).toReadableStream()) {
       const data = textDecoder.decode(chunk);
-      console.log('data ------', data);
       res.write(data);
     }
     res.end();
