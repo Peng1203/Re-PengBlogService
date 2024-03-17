@@ -4,7 +4,6 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import session from 'express-session';
 import { AppModule } from './app.module';
 import { DtoValidatePipe } from './common/pipe';
-import { HttpExceptionFilter, DataAccessFilter } from './common/exceptions';
 import { Logger } from '@nestjs/common';
 import userAgent from 'express-useragent';
 import requestIp from 'request-ip';
@@ -38,8 +37,8 @@ async function bootstrap() {
   app.setGlobalPrefix(API_PREFIX);
 
   app.useGlobalPipes(new DtoValidatePipe());
-  app.useGlobalFilters(new HttpExceptionFilter());
-  app.useGlobalFilters(new DataAccessFilter());
+  // app.useGlobalFilters(new HttpExceptionFilter());
+  // app.useGlobalFilters(new DataAccessFilter());
 
   const options = new DocumentBuilder()
     .setTitle(SWAGGER_TITLE)

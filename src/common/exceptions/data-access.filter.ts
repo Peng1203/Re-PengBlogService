@@ -1,5 +1,6 @@
 import { ServerError } from '@/common/errors/server.error';
-import { ApiResponseMessageEnum } from '@/helper/enums';
+import { StatusEnum } from '@/helper/enums';
+import { AuditService } from '@/modules/audit/audit.service';
 import { formatDate } from '@/utils/date.util';
 import {
   ArgumentsHost,
@@ -7,12 +8,14 @@ import {
   ExceptionFilter,
   InternalServerErrorException,
   HttpException,
-  Logger,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+
 // 处理 TypeORM 抛出错误
 @Catch(InternalServerErrorException)
 export class DataAccessFilter implements ExceptionFilter {
+  constructor(private readonly auditService: AuditService) {}
+
   catch(exception: HttpException & ServerError, host: ArgumentsHost) {
     // const [req, res, next]: [Request, Response, Function] = host.getArgs();
     const exceptionRes = exception.getResponse() as any;
@@ -46,6 +49,10 @@ export class DataAccessFilter implements ExceptionFilter {
     console.log('exceptionRes.e ------', exceptionRes.e.code);
     console.log('exception.message ------', exception.message);
 
+    const message = `${exceptionRes.msg}，${reason}`;
+
+    this.auditService.createAuditRecord(req, res, StatusEnum.FALSE, 0, message, status);
+
     // 写入错误的logger日志
 
     res.status(status).json({
@@ -53,7 +60,7 @@ export class DataAccessFilter implements ExceptionFilter {
       path: req.url,
       error: exception.message,
       methods: req.method,
-      message: `${exceptionRes.msg}，${reason}`,
+      message,
       timestamp: formatDate(),
     });
   }

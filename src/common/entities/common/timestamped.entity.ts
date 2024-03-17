@@ -1,7 +1,7 @@
 import { Entity, CreateDateColumn, UpdateDateColumn, ValueTransformer } from 'typeorm';
 import day from '../../../utils/date.util';
 
-class DateTimeTransformer implements ValueTransformer {
+export class DateTimeTransformer implements ValueTransformer {
   to(value: Date): Date | string {
     return value;
   }

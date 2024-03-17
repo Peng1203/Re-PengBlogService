@@ -1,4 +1,4 @@
-import { Article, TimestampedEntity } from './';
+import { Article, Audit, TimestampedEntity } from './';
 import { UserEnabledEnum } from '../../helper/enums';
 import { Role } from './';
 import {
@@ -54,4 +54,7 @@ export class User extends TimestampedEntity {
 
   @OneToMany(() => Article, (Article) => Article.author)
   articles: Article[];
+
+  @OneToMany(() => Audit, (Audit) => Audit.user)
+  audits: Audit[];
 }

@@ -3,10 +3,10 @@ import { ConfigModule } from '@nestjs/config';
 import configuration from './config/configuration';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigService } from './config';
-import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtAuthGuard } from './modules/auth/guards';
 import { JwtStrategy } from './modules/auth/strategys';
-import { TransformInterceptor } from './common/interceptor';
+import { TransformInterceptor, AuditInterceptor } from './common/interceptor';
 import { RoleGuard, PermissionGuard } from './common/guards';
 import { LoggerMiddleware, ResponseHeadersMiddleware } from './common/middleware';
 import { CommonModule } from './shared/common.module';
@@ -23,6 +23,8 @@ import { SystemModule } from './modules/system/system.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { MutexModule } from './shared/mutex/mutex.module';
 import { OpenAiModule } from './modules/open-ai/open-ai.module';
+import { AuditModule } from './modules/audit/audit.module';
+import { DataAccessFilter, HttpExceptionFilter } from './common/exceptions';
 
 @Module({
   imports: [
@@ -47,6 +49,7 @@ import { OpenAiModule } from './modules/open-ai/open-ai.module';
     TagModule,
     SystemModule,
     OpenAiModule,
+    AuditModule,
   ],
   providers: [
     JwtStrategy,
@@ -69,6 +72,21 @@ import { OpenAiModule } from './modules/open-ai/open-ai.module';
     {
       provide: APP_INTERCEPTOR,
       useClass: TransformInterceptor,
+    },
+    // 审计拦截器
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: AuditInterceptor,
+    },
+    // 全局HTTP异常过滤器
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
+    },
+    // 数据库操作异常过滤器
+    {
+      provide: APP_FILTER,
+      useClass: DataAccessFilter,
     },
   ],
 })
