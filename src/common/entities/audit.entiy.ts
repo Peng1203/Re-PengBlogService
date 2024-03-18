@@ -8,7 +8,7 @@ export class Audit {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'char', length: 10, enum: RequestMethodEnum })
+  @Column({ type: 'enum', enum: RequestMethodEnum })
   method: RequestMethodEnum;
 
   @Column({ type: 'varchar' })
