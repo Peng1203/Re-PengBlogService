@@ -8,3 +8,4 @@ export * from './permission';
 export * from './article';
 export * from './events';
 export * from './system.serve.name';
+export * from './request.method';
