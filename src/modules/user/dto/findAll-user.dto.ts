@@ -3,9 +3,9 @@ import { IsInt, IsNumber, IsOptional } from '@nestjs/class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class FindAllUserDto extends ListCommonParamsDto {
-  @ApiProperty({ default: '', required: false, description: '角色id' })
   @IsInt()
   @IsNumber()
   @IsOptional()
+  @ApiProperty({ default: '', required: false, description: '角色id' })
   readonly roleId?: number;
 }

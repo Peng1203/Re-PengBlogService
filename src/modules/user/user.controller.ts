@@ -44,8 +44,7 @@ export class UserController {
     @ReqUser() user: User,
     @ReqUser('roles') roles: Role[],
   ) {
-    const { list: data, total } = await this.usersService.findAll(query);
-    const list: UserData[] = data.map(({ password, ...user }) => user);
+    const { list, total } = await this.usersService.findAll(query);
     return { list, total };
   }
 

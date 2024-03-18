@@ -3,7 +3,6 @@ import { Role } from '@/common/entities';
 export interface UserData {
   id: number;
   userName: string;
-  // password: string
   roles: Role[];
   email: string | null;
   nickName: string | null;

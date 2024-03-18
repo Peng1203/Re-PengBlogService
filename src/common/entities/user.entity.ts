@@ -23,7 +23,7 @@ export class User extends TimestampedEntity {
   @Column({ name: 'user_name', type: 'varchar', length: 15 })
   userName: string;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar', length: 255, select: false })
   password: string;
 
   @ManyToMany(() => Role, (role) => role.users)

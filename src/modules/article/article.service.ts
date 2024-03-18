@@ -94,10 +94,7 @@ export class ArticleService {
       const [list, total] = await queryBuilder.getManyAndCount();
 
       // 排除访问密码和作者密码
-      const dataList = list.map(({ author, accessPassword, ...args }) => ({
-        ...args,
-        author: { ...author, password: undefined },
-      }));
+      const dataList = list.map(({ accessPassword, ...args }) => args);
 
       return { list: dataList, total };
     } catch (e) {
@@ -115,7 +112,6 @@ export class ArticleService {
         where: { id },
         relations: ['author', 'tags', 'category'],
       });
-      article.author.password = undefined;
       return article;
     } catch (e) {
       throw new InternalServerErrorException({
@@ -137,7 +133,6 @@ export class ArticleService {
         },
         relations: ['author', 'tags', 'category'],
       });
-      article.author.password = undefined;
       return article;
     } catch (e) {
       throw new InternalServerErrorException({

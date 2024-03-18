@@ -65,7 +65,7 @@ export class AuthController {
     @Body() data: UserLoginDto,
     @Session() session: SessionInfo,
   ) {
-    const { password, ...user } = req.user;
+    const user = req.user;
     if (!user.userEnabled)
       throw new ForbiddenException({
         code: ApiResponseCodeEnum.FORBIDDEN_USER_DISABLED,

@@ -205,8 +205,8 @@ export class UserService {
    */
   async findOneById(id: number): Promise<User> {
     try {
-      const { password, ...user } = await this.userRepository.findOne({ where: { id } });
-      if (user) return user as User;
+      const user = await this.userRepository.findOne({ where: { id } });
+      if (user) return user;
       else this.handleFindOneNotFoundError();
     } catch (e) {
       this.handleFindOneError(e);
