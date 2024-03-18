@@ -13,6 +13,7 @@ const convertProps: string[] = [
   'tagId',
   'type',
   'status',
+  'userId',
 ];
 
 const options: ValidatorOptions = {
