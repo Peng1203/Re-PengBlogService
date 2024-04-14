@@ -1,16 +1,7 @@
 import { Article, Audit, TimestampedEntity } from './';
 import { UserEnabledEnum } from '../../helper/enums';
 import { Role } from './';
-import {
-  Column,
-  Entity,
-  Index,
-  JoinTable,
-  ManyToMany,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  Unique,
-} from 'typeorm';
+import { Column, Entity, Index, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
 @Entity({ name: 'user' })
 @Unique(['userName'])
@@ -26,7 +17,7 @@ export class User extends TimestampedEntity {
   @Column({ type: 'varchar', length: 255, select: false })
   password: string;
 
-  @ManyToMany(() => Role, (role) => role.users)
+  @ManyToMany(() => Role, role => role.users)
   @JoinTable({ name: 'user_role_relation' })
   roles: Role[];
 
@@ -52,9 +43,9 @@ export class User extends TimestampedEntity {
   @Column({ name: 'user_avatar', type: 'varchar', nullable: true })
   userAvatar: string;
 
-  @OneToMany(() => Article, (Article) => Article.author)
+  @OneToMany(() => Article, Article => Article.author)
   articles: Article[];
 
-  @OneToMany(() => Audit, (Audit) => Audit.user)
+  @OneToMany(() => Audit, Audit => Audit.user)
   audits: Audit[];
 }

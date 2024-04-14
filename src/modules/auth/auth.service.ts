@@ -15,7 +15,7 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-    private readonly redis: RedisService,
+    private readonly redis: RedisService
   ) {}
 
   /**
@@ -86,7 +86,7 @@ export class AuthService {
       {
         secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
         expiresIn: this.configService.get<number>('JWT_REFRESH_TOKEN_EXPIRES_IN'),
-      },
+      }
     );
   }
 
@@ -139,11 +139,7 @@ export class AuthService {
    * @returns {*}
    */
   async setTokenToRedis(key: string, token: string) {
-    await this.redis.setCache(
-      key,
-      token,
-      this.configService.get<number>('JWT_ACCESS_TOKEN_EXPIRES_IN'),
-    );
+    await this.redis.setCache(key, token, this.configService.get<number>('JWT_ACCESS_TOKEN_EXPIRES_IN'));
   }
 
   /**
@@ -178,9 +174,9 @@ export class AuthService {
   }
 
   private rc(min, max, opacity?: number) {
-    let r = this.rn(min, max);
-    let g = this.rn(min, max);
-    let b = this.rn(min, max);
+    const r = this.rn(min, max);
+    const g = this.rn(min, max);
+    const b = this.rn(min, max);
     return `rgba(${r},${g},${b},${opacity || 1})`;
   }
 

@@ -11,6 +11,6 @@ export class Category extends TimestampedEntity {
   @Column({ name: 'category_name', type: 'varchar' })
   categoryName: string;
 
-  @OneToMany(() => Article, (Article) => Article.category)
+  @OneToMany(() => Article, Article => Article.category)
   articles: Article[];
 }

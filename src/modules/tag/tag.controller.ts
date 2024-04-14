@@ -1,15 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  Query,
-  Res,
-  NotFoundException,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Res, NotFoundException } from '@nestjs/common';
 import { TagService } from './tag.service';
 import { CreateTagDto, UpdateTagDto, FindAllTagDto } from './dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -43,7 +32,7 @@ export class TagController {
   async update(
     @Param('id', new ParseIntParamPipe('id参数有误')) id: number,
     @Body() data: UpdateTagDto,
-    @Res({ passthrough: true }) res: Response,
+    @Res({ passthrough: true }) res: Response
   ) {
     const updateRes = await this.tagService.update(id, data);
     updateRes
@@ -57,7 +46,7 @@ export class TagController {
   @RequirePermissions(PermissionEnum.DELETE_TAG)
   async remove(
     @Param('id', new ParseIntParamPipe('id参数有误')) id: number,
-    @Res({ passthrough: true }) res: Response,
+    @Res({ passthrough: true }) res: Response
   ) {
     const tag = await this.tagService.findOne(id).catch(() => false);
     if (!tag)

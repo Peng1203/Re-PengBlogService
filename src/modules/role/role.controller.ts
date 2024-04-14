@@ -1,15 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  Query,
-  NotFoundException,
-  Res,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, NotFoundException, Res } from '@nestjs/common';
 import { RoleService } from './role.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
@@ -51,7 +40,7 @@ export class RoleController {
   async update(
     @Param('id', new ParseIntParamPipe('id参数有误')) id: number,
     @Body() data: UpdateRoleDto,
-    @Res({ passthrough: true }) res: Response,
+    @Res({ passthrough: true }) res: Response
   ) {
     const updateRes = await this.roleService.update(id, data);
     updateRes
@@ -65,7 +54,7 @@ export class RoleController {
   @ApiOperation({ summary: '删除角色' })
   async remove(
     @Param('id', new ParseIntParamPipe('id参数有误')) id: number,
-    @Res({ passthrough: true }) res: Response,
+    @Res({ passthrough: true }) res: Response
   ) {
     const role = await this.roleService.findOne(id).catch(() => false);
     if (!role)

@@ -23,10 +23,10 @@ export class PermissionGuard implements CanActivate {
     //   role.permissions.forEach((item) => allowedPermissions.push(item.permissionCode));
     // });
     const allowedPermissions: string[] = [].concat(
-      ...user.roles.map((role) => role.permissions.map((item) => item.permissionCode)),
+      ...user.roles.map(role => role.permissions.map(item => item.permissionCode))
     );
 
-    const isPass = requirePermissions.every((key) => allowedPermissions.includes(key));
+    const isPass = requirePermissions.every(key => allowedPermissions.includes(key));
     if (isPass) return true;
     throw new ForbiddenException({
       code: ApiResponseCodeEnum.FORBIDDEN_PERMISSION,

@@ -8,16 +8,13 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class SystemService {
   private SCRIPT_ROOT_PATH = path.resolve(process.cwd(), 'src', 'script', 'update');
-  constructor(
-    private readonly eventEmitter: EventEmitter2,
-    private readonly configService: ConfigService,
-  ) {}
+  constructor(private readonly eventEmitter: EventEmitter2, private readonly configService: ConfigService) {}
 
   /** 更新系统服务 */
   async updateSystem(serveName: string) {
     const { scriptPath, cwd } = this.getUpdateServeNameInfo(serveName);
 
-    let childProcess =
+    const childProcess =
       process.platform === 'win32'
         ? spawn(scriptPath, { cwd })
         : spawn('chmod', ['+x', scriptPath], { cwd, shell: true });
@@ -30,7 +27,7 @@ export class SystemService {
       });
     });
 
-    childProcess.stderr.on('data', (err) => {
+    childProcess.stderr.on('data', err => {
       console.log('stderr ------', `${err}`);
       this.eventEmitter.emit(EventsEnum.UPDATE_SYSTEM_MSG, {
         data: `${err}`,
@@ -38,7 +35,7 @@ export class SystemService {
       });
     });
 
-    childProcess.on('close', (status) => {
+    childProcess.on('close', status => {
       console.log('close ------', `${status}`);
       this.eventEmitter.emit(EventsEnum.UPDATE_SYSTEM_MSG, {
         data: `更新结束!`,

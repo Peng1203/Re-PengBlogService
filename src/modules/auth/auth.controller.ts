@@ -36,7 +36,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly configService: ConfigService,
-    private readonly userService: UserService,
+    private readonly userService: UserService
   ) {}
 
   @Get('login/captcha')
@@ -63,7 +63,7 @@ export class AuthController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
     @Body() data: UserLoginDto,
-    @Session() session: SessionInfo,
+    @Session() session: SessionInfo
   ) {
     const user = req.user;
     if (!user.userEnabled)
@@ -76,10 +76,7 @@ export class AuthController {
     const refresh_token = await this.authService.generateRefreshToken(user.id);
 
     // redis 设置token
-    await this.authService.setTokenToRedis(
-      this.authService.redisTokenKeyStr(user.id, user.userName),
-      access_token,
-    );
+    await this.authService.setTokenToRedis(this.authService.redisTokenKeyStr(user.id, user.userName), access_token);
 
     // 登录成功 删除 session 设置的验证码和 过期日期
     delete session.captcha;
@@ -110,10 +107,7 @@ export class AuthController {
     const refresh_token = await this.authService.generateRefreshToken(user.id);
 
     // redis 设置token
-    await this.authService.setTokenToRedis(
-      this.authService.redisTokenKeyStr(user.id, user.userName),
-      access_token,
-    );
+    await this.authService.setTokenToRedis(this.authService.redisTokenKeyStr(user.id, user.userName), access_token);
 
     return {
       access_token,
@@ -124,11 +118,7 @@ export class AuthController {
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '退出登录' })
-  async logout(
-    @ReqUser() user: User,
-    @Body() data: UserLogoutDto,
-    @Res({ passthrough: true }) res: Response,
-  ) {
+  async logout(@ReqUser() user: User, @Body() data: UserLogoutDto, @Res({ passthrough: true }) res: Response) {
     if (data.id !== user.id || data.userName !== user.userName)
       throw new ForbiddenException({
         code: ApiResponseCodeEnum.FORBIDDEN_USER,

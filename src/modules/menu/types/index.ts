@@ -3,10 +3,7 @@ import { StatusEnum } from '@/helper/enums';
 
 export type MenuItem = Menu & { children?: Menu[] };
 
-export type BatchAddMenuItem = Optional<
-  Menu,
-  'createTime' | 'updateTime' | 'id' | 'roles' | 'parentId'
->;
+export type BatchAddMenuItem = Optional<Menu, 'createTime' | 'updateTime' | 'id' | 'roles' | 'parentId'>;
 
 export class BatchAddMenuItemInstance {
   menuName: string;

@@ -1,13 +1,6 @@
 import { ListCommonParamsDto } from '@/common/dto';
 import { IsDateTimeString } from '@/helper/validate';
-import {
-  IsDefined,
-  IsInt,
-  IsNumber,
-  IsOptional,
-  IsString,
-  Validate,
-} from '@nestjs/class-validator';
+import { IsDefined, IsInt, IsNumber, IsOptional, IsString, Validate } from '@nestjs/class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class FindAllAuditDto extends ListCommonParamsDto {

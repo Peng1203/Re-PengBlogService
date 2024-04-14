@@ -14,6 +14,6 @@ export class Tag extends TimestampedEntity {
   @Column({ type: 'varchar', nullable: true })
   icon: string;
 
-  @ManyToMany(() => Article, (Article) => Article.tags)
+  @ManyToMany(() => Article, Article => Article.tags)
   articles: Article[];
 }

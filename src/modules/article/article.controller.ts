@@ -50,7 +50,15 @@ export class ArticleController {
     return this.articleService.findAll(params);
   }
 
+  // @Get(':uid')
   // @Public()
+  // @ApiOperation({ summary: '获取用户文章列表' })
+  // findUserArticle() {
+  //   // return this.articleService.findAll(params);
+  //   return '';
+  // }
+
+  @Public()
   // @UseGuards(GetArticleDetailGuard)
   @Get(':id')
   @ApiOperation({ summary: '获取文章详情' })
@@ -66,7 +74,7 @@ export class ArticleController {
     @Param('id', new ParseIntParamPipe('文章id参数有误')) id: number,
     @Param('aid', new ParseIntParamPipe('作者id参数有误')) aid: number,
     @Body() data: UpdateArticleDto,
-    @Res({ passthrough: true }) res: Response,
+    @Res({ passthrough: true }) res: Response
   ) {
     const updateRes = await this.articleService.update(aid, data);
     updateRes
@@ -82,7 +90,7 @@ export class ArticleController {
   async remove(
     @Param('id', new ParseIntParamPipe('文章id参数有误')) id: number,
     @Param('aid', new ParseIntParamPipe('作者id参数有误')) aid: number,
-    @Res({ passthrough: true }) res: Response,
+    @Res({ passthrough: true }) res: Response
   ) {
     const article = await this.articleService.findOne(aid).catch(() => false);
     console.log('article ------', article);
@@ -93,7 +101,6 @@ export class ArticleController {
       });
 
     const delRes = await this.articleService.remove(aid);
-    console.log('delRes ------', delRes);
     if (!delRes) res.resMsg = '删除文章失败!';
     if (!delRes) res.success = false;
     else return '删除文章成功';

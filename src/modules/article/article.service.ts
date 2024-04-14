@@ -1,9 +1,4 @@
-import {
-  ForbiddenException,
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { ApiResponseCodeEnum } from '@/helper/enums';
@@ -22,7 +17,7 @@ export class ArticleService {
     @InjectRepository(Article) private readonly articleRepository: Repository<Article>,
     private readonly tagService: TagService,
     private readonly usersService: UserService,
-    private readonly categoryService: CategoryService,
+    private readonly categoryService: CategoryService
   ) {}
 
   async create(data: CreateArticleDto) {
@@ -31,7 +26,7 @@ export class ArticleService {
 
       const author = await this.usersService.findOneById(authorId);
       const tags = tagIds.length
-        ? (await Promise.all(tagIds.map((id) => this.tagService.findOne(id)))).filter((tag) => tag)
+        ? (await Promise.all(tagIds.map(id => this.tagService.findOne(id)))).filter(tag => tag)
         : [];
       const category = categoryId ? await this.categoryService.findOne(categoryId) : null;
 
@@ -70,11 +65,7 @@ export class ArticleService {
         .leftJoinAndSelect('article.tags', 'tags')
         .leftJoinAndSelect('article.author', 'author')
         .leftJoinAndSelect('article.category', 'category')
-        .andWhere(
-          new Brackets((qb) =>
-            qb.where('article.title LIKE :queryStr', { queryStr: `%${queryStr}%` }),
-          ),
-        )
+        .andWhere(new Brackets(qb => qb.where('article.title LIKE :queryStr', { queryStr: `%${queryStr}%` })))
         .orderBy({
           'article.isTop': 'DESC',
           [`article.${column || 'id'}`]: order || 'ASC',
@@ -153,7 +144,7 @@ export class ArticleService {
       }
 
       article.tags = tagIds.length
-        ? (await Promise.all(tagIds.map((id) => this.tagService.findOne(id)))).filter((tag) => tag)
+        ? (await Promise.all(tagIds.map(id => this.tagService.findOne(id)))).filter(tag => tag)
         : [];
 
       article.category = category ? await this.categoryService.findOne(category) : null;

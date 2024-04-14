@@ -92,8 +92,6 @@ import { DataAccessFilter, HttpExceptionFilter } from './common/exceptions';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(ResponseHeadersMiddleware, LoggerMiddleware)
-      .forRoutes({ path: '*', method: RequestMethod.ALL });
+    consumer.apply(ResponseHeadersMiddleware, LoggerMiddleware).forRoutes({ path: '*', method: RequestMethod.ALL });
   }
 }

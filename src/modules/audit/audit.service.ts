@@ -16,7 +16,7 @@ export class AuditService {
     operationStatus: StatusEnum,
     responseTime?: number,
     errMessage?: string,
-    statusCode?: number,
+    statusCode?: number
   ) {
     try {
       const { method, originalUrl, useragent, query, body, path, ip } = req;

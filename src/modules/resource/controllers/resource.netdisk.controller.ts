@@ -10,10 +10,7 @@ import { FindNetdiskDirDto } from '../dto';
 @ApiBearerAuth()
 @Controller('resource/netdisk')
 export class NetDiskController {
-  constructor(
-    private readonly COSService: CosService,
-    private readonly configService: ConfigService,
-  ) {}
+  constructor(private readonly COSService: CosService, private readonly configService: ConfigService) {}
 
   @Get()
   @Public()
@@ -22,8 +19,7 @@ export class NetDiskController {
     const fullPath = join(rootDir, (params.path || '').replaceAll('netdisk/', '')).toString();
     const result = await this.COSService.getDirBucket(fullPath);
     return {
-      path:
-        (result as any).Prefix === rootDir ? '' : (result as any).Prefix.replaceAll('netdisk/', ''),
+      path: (result as any).Prefix === rootDir ? '' : (result as any).Prefix.replaceAll('netdisk/', ''),
       list: result.data,
     };
   }

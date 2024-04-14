@@ -16,12 +16,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const status = exception.getStatus();
 
     const code = exceptionRes.code || status;
-    Logger.error(
-      '触发 Http 异常过滤器 ----->',
-      exceptionRes,
-      exceptionRes.response,
-      exception.message,
-    );
+    Logger.error('触发 Http 异常过滤器 ----->', exceptionRes, exceptionRes.response, exception.message);
 
     this.auditService.createAuditRecord(req, res, StatusEnum.FALSE, 0, exceptionRes.msg, status);
 

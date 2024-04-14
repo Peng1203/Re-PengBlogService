@@ -1,15 +1,6 @@
 import { Category, Tag, TimestampedEntity, User } from './';
 import { ArticleTypeEnum, ArticleStatusEnum, BolEnum, ContentModelEnum } from '../../helper/enums';
-import {
-  Column,
-  Entity,
-  Index,
-  ManyToOne,
-  ManyToMany,
-  PrimaryGeneratedColumn,
-  Unique,
-  JoinTable,
-} from 'typeorm';
+import { Column, Entity, Index, ManyToOne, ManyToMany, PrimaryGeneratedColumn, Unique, JoinTable } from 'typeorm';
 
 @Entity({ name: 'article' })
 @Unique(['title'])
@@ -82,13 +73,13 @@ export class Article extends TimestampedEntity {
   })
   accessPassword: string;
 
-  @ManyToOne(() => User, (User) => User.articles)
+  @ManyToOne(() => User, User => User.articles)
   author: User;
 
-  @ManyToOne(() => Category, (Category) => Category.articles, { nullable: true })
+  @ManyToOne(() => Category, Category => Category.articles, { nullable: true })
   category: Category | null;
 
-  @ManyToMany(() => Tag, (Tag) => Tag.articles)
+  @ManyToMany(() => Tag, Tag => Tag.articles)
   @JoinTable({ name: 'article_tag_relation' })
   tags: Tag[];
 }

@@ -48,7 +48,7 @@ export class MenuController {
   async update(
     @Param('id', new ParseIntParamPipe('id参数有误')) id: number,
     @Body() data: UpdateMenuDto,
-    @Res({ passthrough: true }) res: Response,
+    @Res({ passthrough: true }) res: Response
   ) {
     const updateRes = await this.menuService.update(id, data);
 
@@ -64,7 +64,7 @@ export class MenuController {
   @ApiOperation({ summary: '删除菜单' })
   async remove(
     @Param('id', new ParseIntParamPipe('id参数有误')) id: number,
-    @Res({ passthrough: true }) res: Response,
+    @Res({ passthrough: true }) res: Response
   ) {
     const menu = await this.menuService.findOne(id);
 

@@ -45,7 +45,7 @@ export class Audit {
    * 'CASCADE'：当关联的用户被删除时，相关联的审计记录也会被删除。
    * 'SET NULL'：当关联的用户被删除时，相关联的审计记录的user字段将被设置为NULL。
    */
-  @ManyToOne(() => User, (User) => User.audits, { onDelete: 'SET NULL', nullable: true })
+  @ManyToOne(() => User, User => User.audits, { onDelete: 'SET NULL', nullable: true })
   user: User;
 
   @CreateDateColumn({

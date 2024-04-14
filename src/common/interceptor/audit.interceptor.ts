@@ -24,11 +24,11 @@ export class AuditInterceptor implements NestInterceptor {
 
     const requestTime = Date.now();
     return next.handle().pipe(
-      tap((data) => {
+      tap(data => {
         const responseTime = Date.now();
 
         this.auditService.createAuditRecord(req, res, StatusEnum.TRUE, responseTime - requestTime);
-      }),
+      })
     );
   }
 }

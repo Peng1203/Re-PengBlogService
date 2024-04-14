@@ -1,15 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  Query,
-  Res,
-  ConflictException,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Res, ConflictException } from '@nestjs/common';
 import { PermissionService } from './permission.service';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
@@ -51,7 +40,7 @@ export class PermissionController {
   async update(
     @Param('id', new ParseIntParamPipe('id参数有误')) id: number,
     @Body() data: UpdatePermissionDto,
-    @Res({ passthrough: true }) res: Response,
+    @Res({ passthrough: true }) res: Response
   ) {
     const updateRes = await this.permissionService.update(id, data);
     updateRes
@@ -66,7 +55,7 @@ export class PermissionController {
   @ApiOperation({ summary: '删除权限' })
   async remove(
     @Param('id', new ParseIntParamPipe('id参数有误')) id: number,
-    @Res({ passthrough: true }) res: Response,
+    @Res({ passthrough: true }) res: Response
   ) {
     const permission = await this.permissionService.findOne(id);
     const isHave = await this.permissionService.permissionHasChildren(permission.id);

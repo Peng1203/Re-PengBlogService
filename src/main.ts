@@ -24,14 +24,15 @@ async function bootstrap() {
       secret: SESSION_SECRET,
       resave: false,
       saveUninitialized: false,
-    }),
+    })
   );
   app.use(userAgent.express());
   app.use(requestIp.mw());
 
   // app.enableCors();
   app.enableCors({
-    origin: 'http://localhost:8888',
+    // origin: 'http://localhost:8888',
+    origin: 'http://localhost:8000',
     credentials: true,
   });
   app.setGlobalPrefix(API_PREFIX);
@@ -52,7 +53,7 @@ async function bootstrap() {
   SwaggerModule.setup(SWAGGER_PREFIX, app, document);
 
   await app.listen(APP_PORT, APP_HOST, () =>
-    Logger.debug(`server is running: http://${APP_HOST}:${APP_PORT}  --${process.env.NODE_ENV}`),
+    Logger.debug(`server is running: http://${APP_HOST}:${APP_PORT}  --${process.env.NODE_ENV}`)
   );
 }
 bootstrap();

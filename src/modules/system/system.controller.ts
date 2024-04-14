@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Get,
-  Sse,
-  MessageEvent,
-  Param,
-  BadRequestException,
-  ConflictException,
-} from '@nestjs/common';
+import { Controller, Get, Sse, MessageEvent, Param, BadRequestException, ConflictException } from '@nestjs/common';
 import { SystemService } from './system.service';
 import { Observable, Subject, interval, map } from 'rxjs';
 import { Public } from '@/common/decorators';
@@ -23,16 +15,13 @@ export class SystemController {
   private readonly serveNames: string[] = ['web', 'admin', 'serve'];
   private updateTrigger$ = new Subject<void>();
   // 更新计数器
-  private updateCounter: number = 0;
-  constructor(
-    private readonly systemService: SystemService,
-    private readonly mutexService: MutexService,
-  ) {}
+  private updateCounter = 0;
+  constructor(private readonly systemService: SystemService, private readonly mutexService: MutexService) {}
 
   @Public()
   @Sse('test')
   test(): Observable<MessageEvent> {
-    return interval(1000).pipe(map((_) => ({ data: 'hello world' })));
+    return interval(1000).pipe(map(_ => ({ data: 'hello world' })));
   }
 
   @Sse('update/:serveName')
@@ -49,9 +38,9 @@ export class SystemController {
     this.updateCounter++;
     this.systemService.updateSystem(serveName);
     return this.updateTrigger$.pipe(
-      map((params) => ({
+      map(params => ({
         data: params as any,
-      })),
+      }))
     );
   }
   @OnEvent(EventsEnum.UPDATE_SYSTEM_MSG)
@@ -74,7 +63,7 @@ export class SystemController {
       console.log('开始执行锁中任务...');
 
       // 模拟耗时的操作
-      await new Promise((resolve) => setTimeout(resolve, 10000));
+      await new Promise(resolve => setTimeout(resolve, 10000));
 
       console.log('锁中任务执行完成!');
 

@@ -1,15 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  Query,
-  Res,
-  NotFoundException,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Res, NotFoundException } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto, UpdateCategoryDto, FindAllCategoryDto } from './dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -43,7 +32,7 @@ export class CategoryController {
   async update(
     @Param('id', new ParseIntParamPipe('id参数有误')) id: number,
     @Body() data: UpdateCategoryDto,
-    @Res({ passthrough: true }) res: Response,
+    @Res({ passthrough: true }) res: Response
   ) {
     const updateRes = await this.categoryService.update(id, data);
     updateRes
@@ -57,7 +46,7 @@ export class CategoryController {
   @RequirePermissions(PermissionEnum.DELETE_CATEGORY)
   async remove(
     @Param('id', new ParseIntParamPipe('id参数有误')) id: number,
-    @Res({ passthrough: true }) res: Response,
+    @Res({ passthrough: true }) res: Response
   ) {
     const category = await this.categoryService.findOne(id).catch(() => false);
     if (!category)

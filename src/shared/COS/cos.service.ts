@@ -58,18 +58,17 @@ export class CosService {
             });
           console.log('data', JSON.parse(JSON.stringify(data)));
           resolve(this.handleDirData(data));
-        },
+        }
       );
     });
   }
 
   // 处理目录查询响应的结构
   private handleDirData(result: GetBucketResult): ExtendBucketResult {
-    const prefixPath =
-      (result as any).Prefix === this.rootDir ? `${this.rootDir}/` : (result as any).Prefix;
+    const prefixPath = (result as any).Prefix === this.rootDir ? `${this.rootDir}/` : (result as any).Prefix;
     if (!result.Contents.length) return { ...result, data: [] };
     // 排除自身文件夹结果 并排除 其其它子目录中的内容
-    const data = result.Contents.slice(1).filter((item) => {
+    const data = result.Contents.slice(1).filter(item => {
       const str = item.Key.replace(prefixPath, '');
       const count = countOccurrences(str, '/');
       const lastLineChatIndex = str.lastIndexOf('/');
@@ -80,7 +79,7 @@ export class CosService {
       return !str.split('/')[2] && count <= 1;
     });
 
-    const formatData: DirFileDataItem[] = data.map((COSItem) => {
+    const formatData: DirFileDataItem[] = data.map(COSItem => {
       const { Key, Size, LastModified } = COSItem;
       const ext = extname(Key);
       const size = Number(Size);

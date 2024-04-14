@@ -1,15 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreatePermissionDto } from './create-permission.dto';
-import {
-  IsString,
-  MaxLength,
-  MinLength,
-  IsEnum,
-  IsOptional,
-  IsNumber,
-  IsInt,
-  Min,
-} from '@nestjs/class-validator';
+import { IsString, MaxLength, MinLength, IsEnum, IsOptional, IsNumber, IsInt, Min } from '@nestjs/class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { PermissionEnum } from '@/helper/enums/permission';
 import { RequestMethodEnum } from '@/helper/enums/request.method';

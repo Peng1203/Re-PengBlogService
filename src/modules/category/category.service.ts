@@ -8,9 +8,7 @@ import { formatDate } from '@/utils/date.util';
 
 @Injectable()
 export class CategoryService {
-  constructor(
-    @InjectRepository(Category) private readonly categoryRepository: Repository<Category>,
-  ) {}
+  constructor(@InjectRepository(Category) private readonly categoryRepository: Repository<Category>) {}
 
   async create(data: CreateCategoryDto) {
     try {
@@ -37,7 +35,7 @@ export class CategoryService {
       });
 
       return {
-        list: list.map((item) => ({ ...item, articles: item.articles.length })),
+        list: list.map(item => ({ ...item, articles: item.articles.length })),
         total,
       };
     } catch (e) {

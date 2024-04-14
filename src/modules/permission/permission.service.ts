@@ -9,9 +9,7 @@ import { ApiResponseCodeEnum } from '@/helper/enums';
 
 @Injectable()
 export class PermissionService {
-  constructor(
-    @InjectRepository(Permission) private readonly permissionRepository: Repository<Permission>,
-  ) {}
+  constructor(@InjectRepository(Permission) private readonly permissionRepository: Repository<Permission>) {}
 
   async create(data: CreatePermissionDto) {
     try {
@@ -94,11 +92,11 @@ export class PermissionService {
 
   formatTree(ary: any[], parentId?: number) {
     return ary
-      .filter((item) =>
+      .filter(item =>
         // 如果没有父id（第一次递归的时候）将所有父级查询出来
-        parentId === undefined ? item.parentId === 0 : item.parentId === parentId,
+        parentId === undefined ? item.parentId === 0 : item.parentId === parentId
       )
-      .map((item) => {
+      .map(item => {
         // 通过父节点ID查询所有子节点
         item.children = this.formatTree(ary, item.id);
         return item;
@@ -108,7 +106,7 @@ export class PermissionService {
   async permissionHasChildren(id: number): Promise<boolean> {
     try {
       const [list] = await this.permissionRepository.findAndCount();
-      return list.some((menu) => menu.parentId === id);
+      return list.some(menu => menu.parentId === id);
     } catch (e) {
       throw new InternalServerErrorException({
         e,

@@ -2,8 +2,7 @@ import { TimestampedEntity } from './';
 // import { ActionTypeEnum } from '@/helper/enums';
 import { Role } from './';
 import { Column, Entity, Index, ManyToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
-import { RequestMethodEnum } from '../../helper/enums/request.method';
-import { PermissionEnum } from '../../helper/enums/permission';
+import { PermissionEnum, RequestMethodEnum } from '../../helper/enums';
 
 @Entity({ name: 'permission' })
 @Unique(['permissionName'])
@@ -46,6 +45,6 @@ export class Permission extends TimestampedEntity {
   @Column({ type: 'varchar', length: 60, nullable: true })
   description: string;
 
-  @ManyToMany(() => Role, (Role) => Role.permissions)
+  @ManyToMany(() => Role, Role => Role.permissions)
   roles: Role[];
 }

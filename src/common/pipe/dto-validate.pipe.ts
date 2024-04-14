@@ -50,7 +50,7 @@ export class DtoValidatePipe implements PipeTransform {
 
   private flattenErrors(errors: any[]): string {
     return errors
-      .map((error) => {
+      .map(error => {
         for (const property in error.constraints) {
           if (error.constraints.hasOwnProperty(property)) {
             return error.constraints[property];

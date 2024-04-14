@@ -1,1 +1,1 @@
-export * from './isDateTimeString'
+export * from './isDateTimeString';

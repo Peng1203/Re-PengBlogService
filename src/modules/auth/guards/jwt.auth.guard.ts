@@ -1,10 +1,4 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  Inject,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { IS_PUBLIC_KEY } from '@/common/decorators';
@@ -22,7 +16,7 @@ export class JwtAuthGuard extends AuthGuard(PassPortStrategyEnum.JWT) {
   constructor(
     private readonly reflector: Reflector,
     private readonly authService: AuthService,
-    private readonly redis: RedisService,
+    private readonly redis: RedisService
   ) {
     super();
   }

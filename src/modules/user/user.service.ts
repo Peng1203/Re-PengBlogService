@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { Brackets, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -19,12 +14,12 @@ import { formatDate } from '@/utils/date.util';
 export class UserService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
-    private readonly roleService: RoleService,
+    private readonly roleService: RoleService
   ) {}
   async create(data: CreateUserDto) {
     try {
-      let { roleIds, ...userInfo } = data;
-      const roles = await Promise.all(roleIds.map((roleId) => this.roleService.findOne(roleId)));
+      const { roleIds, ...userInfo } = data;
+      const roles = await Promise.all(roleIds.map(roleId => this.roleService.findOne(roleId)));
       const user = await this.userRepository.create({ roles, ...userInfo });
       return await this.userRepository.save(user);
     } catch (e) {
@@ -52,12 +47,12 @@ export class UserService {
         .createQueryBuilder('user')
         .leftJoinAndSelect('user.roles', 'role')
         .andWhere(
-          new Brackets((qb) => {
+          new Brackets(qb => {
             qb.where('user.userName LIKE :queryStr', { queryStr: `%${queryStr}%` }).orWhere(
               'user.nickName LIKE :queryStr',
-              { queryStr: `%${queryStr}%` },
+              { queryStr: `%${queryStr}%` }
             );
-          }),
+          })
         )
         .orderBy(`user.${column || 'id'}`, order || 'ASC')
         .skip((page - 1) * pageSize)
@@ -93,9 +88,7 @@ export class UserService {
       const { roleIds, ...userInfo } = data;
 
       // 角色ID转换为 角色实例
-      const roles = roleIds?.length
-        ? await Promise.all(roleIds.map((roleId) => this.roleService.findOne(roleId)))
-        : [];
+      const roles = roleIds?.length ? await Promise.all(roleIds.map(roleId => this.roleService.findOne(roleId))) : [];
 
       for (const key in userInfo) {
         user[key] = userInfo[key];
@@ -278,7 +271,7 @@ export class UserService {
 
   private handleUserMenus({ roles }: User) {
     // 多维数组菜单处理为一维菜单数组
-    const menus = [].concat(...roles.map((role) => role.menus));
+    const menus = [].concat(...roles.map(role => role.menus));
 
     // 菜单去重
     const uniqueMap = new Map();

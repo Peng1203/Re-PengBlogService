@@ -17,7 +17,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
 
     return {
       logger: 'simple-console',
-      logging: NODE_ENV === 'development',
+      // logging: NODE_ENV === 'development',
       type: 'mysql',
       host: DATABASE_HOST,
       port: Number(DATABASE_PORT),

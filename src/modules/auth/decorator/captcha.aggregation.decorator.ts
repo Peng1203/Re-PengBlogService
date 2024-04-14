@@ -11,6 +11,6 @@ export function CaptchaAggregation() {
     Public(),
     Header('Content-Type', 'image/svg+xml'),
     ApiOperation({ summary: '获取验证码' }),
-    ApiProduces('image/svg+xml'), // 指定响应类型为SVG图像);
+    ApiProduces('image/svg+xml') // 指定响应类型为SVG图像);
   );
 }

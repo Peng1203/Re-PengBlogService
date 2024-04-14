@@ -39,6 +39,6 @@ export class Menu extends TimestampedEntity {
   @Column({ name: 'is_keepAlive', type: 'enum', enum: StatusEnum, default: StatusEnum.FALSE })
   isKeepalive: StatusEnum;
 
-  @ManyToMany(() => Role, (Role) => Role.menus)
+  @ManyToMany(() => Role, Role => Role.menus)
   roles: Role[];
 }

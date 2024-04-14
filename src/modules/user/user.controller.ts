@@ -1,16 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  Query,
-  Res,
-  NotFoundException,
-  Put,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Res, NotFoundException, Put } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto, DeleteUsersDto, FindAllUserDto } from './dto';
 import { UpdateUserDto } from './dto';
@@ -39,11 +27,7 @@ export class UserController {
   // @Roles(RoleEnum.ADMINISTRATOR, RoleEnum.USER)
   @Get()
   @ApiOperation({ summary: '查询用户' })
-  async findAll(
-    @Query() query: FindAllUserDto,
-    @ReqUser() user: User,
-    @ReqUser('roles') roles: Role[],
-  ) {
+  async findAll(@Query() query: FindAllUserDto, @ReqUser() user: User, @ReqUser('roles') roles: Role[]) {
     const { list, total } = await this.usersService.findAll(query);
     return { list, total };
   }
@@ -60,7 +44,7 @@ export class UserController {
   async update(
     @Param('id', new ParseIntParamPipe('id参数有误')) id: number,
     @Body() data: UpdateUserDto,
-    @Res({ passthrough: true }) res: Response,
+    @Res({ passthrough: true }) res: Response
   ) {
     const updateRes = await this.usersService.update(id, data);
     updateRes
@@ -76,7 +60,7 @@ export class UserController {
   async updateBatch(
     @Param('id', new ParseIntParamPipe('id参数有误')) id: number,
     @Body() data: UpdateUserDto,
-    @Res({ passthrough: true }) res: Response,
+    @Res({ passthrough: true }) res: Response
   ) {
     const updateRes = await this.usersService.update(id, data);
     updateRes
@@ -91,7 +75,7 @@ export class UserController {
   @ApiOperation({ summary: '通过ID删除用户' })
   async remove(
     @Param('id', new ParseIntParamPipe('id参数有误')) id: number,
-    @Res({ passthrough: true }) res: Response,
+    @Res({ passthrough: true }) res: Response
   ) {
     const user = await this.usersService.findOneById(id).catch(() => false);
     if (!user)
