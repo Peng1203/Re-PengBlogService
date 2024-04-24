@@ -17,7 +17,7 @@ declare module 'express' {
     user: User;
     session: SessionInfo;
     // 客户端 UA 信息
-    useragent: Details;
+    useragent: Details & { isAuthoritative: boolean };
     //
     clientIp: any;
   }
