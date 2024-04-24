@@ -23,7 +23,6 @@ import { ApiResponseCodeEnum } from '@/helper/enums';
 import { ConfigService } from '@nestjs/config';
 import { SessionInfo } from 'express-session';
 import { CaptchaAggregation } from './decorator';
-import { CosService } from '@/shared/COS/cos.service';
 import { Details } from 'express-useragent';
 import { User } from '@/common/entities';
 import { ParseIntParamPipe } from '@/common/pipe';
@@ -74,6 +73,7 @@ export class AuthController {
 
     const access_token = await this.authService.generateAccessToken(user.id, user.userName);
     const refresh_token = await this.authService.generateRefreshToken(user.id);
+    const clientInfo = await this.authService.getClientInfo(req);
 
     // redis 设置token
     await this.authService.setTokenToRedis(this.authService.redisTokenKeyStr(user.id, user.userName), access_token);
@@ -86,6 +86,7 @@ export class AuthController {
 
     return {
       user,
+      clientInfo,
       tokens: { access_token, refresh_token },
     };
   }
@@ -137,5 +138,12 @@ export class AuthController {
   @ApiOperation({ summary: '获取用户菜单' })
   async userMenu(@Param('id', new ParseIntParamPipe('id参数有误')) id: number) {
     return this.userService.findUserMenus(id);
+  }
+
+  @Public()
+  @Get('auth/permissions/:id')
+  @ApiOperation({ summary: '获取用户权限标识' })
+  async userPermissions(@Param('id', new ParseIntParamPipe('id参数有误')) id: number) {
+    return this.userService.findUserPermissions(id);
   }
 }

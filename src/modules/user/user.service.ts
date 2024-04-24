@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { FindAllUserDto } from './dto';
-import { User } from '@/common/entities';
+import { Permission, User } from '@/common/entities';
 import { ListResponse } from '@/common/interface';
 import { ApiResponseCodeEnum } from '@/helper/enums';
 import { RoleService } from './../role/role.service';
@@ -279,6 +279,41 @@ export class UserService {
       if (!uniqueMap.has(menu.id)) {
         uniqueMap.set(menu.id, true);
         result.push(menu);
+      }
+      return result;
+    }, []);
+  }
+
+  /**
+   * 获取用户权限标识
+   */
+  async findUserPermissions(id: number) {
+    try {
+      const user = await this.userRepository
+        .createQueryBuilder('user')
+        .where('user.id = :id', { id })
+        .leftJoinAndSelect('user.roles', 'roles')
+        .leftJoinAndSelect('roles.permissions', 'permissions')
+        .getOne();
+
+      return this.handleUserPermissions(user);
+    } catch (e) {
+      throw new InternalServerErrorException({
+        e,
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
+        msg: '获取用户权限标识失败',
+      });
+    }
+  }
+
+  private handleUserPermissions({ roles }: User) {
+    const permissions = [].concat(...roles.map(role => role.permissions));
+
+    const uniqueMap = new Map();
+    return permissions.reduce((result, permission: Permission) => {
+      if (!uniqueMap.has(permission.id)) {
+        uniqueMap.set(permission.id, true);
+        result.push(permission.permissionCode);
       }
       return result;
     }, []);

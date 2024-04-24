@@ -8,6 +8,7 @@ import { ApiResponseCodeEnum } from '@/helper/enums';
 import { SessionInfo } from 'express-session';
 import { JwtPayload } from 'passport-jwt';
 import { UserLogoutDto } from './dto';
+import { Request } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -140,6 +141,28 @@ export class AuthService {
    */
   async setTokenToRedis(key: string, token: string) {
     await this.redis.setCache(key, token, this.configService.get<number>('JWT_ACCESS_TOKEN_EXPIRES_IN'));
+  }
+
+  getClientInfo(req: Request) {
+    const { os, platform, browser, version, source, isAuthoritative, ...args } = req.useragent;
+    const deviceTypes: string[] = [];
+    for (const key in args) {
+      if (!key.includes('is')) continue;
+
+      if (!args[key]) continue;
+
+      deviceTypes.push(key.replace('is', ''));
+    }
+    // return req.useragent;
+    return {
+      os,
+      platform,
+      browser,
+      version,
+      deviceTypes,
+      authoritative: isAuthoritative,
+      userAgent: source,
+    };
   }
 
   /**
