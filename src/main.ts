@@ -31,8 +31,8 @@ async function bootstrap() {
 
   // app.enableCors();
   app.enableCors({
-    // origin: 'http://localhost:8888',
-    origin: 'http://localhost:8000',
+    origin: 'http://localhost:8888',
+    // origin: 'http://localhost:8000',
     credentials: true,
   });
   app.setGlobalPrefix(API_PREFIX);
