@@ -53,6 +53,17 @@ export class AuthController {
     return data;
   }
 
+  @Get('login/v2/captcha')
+  @CaptchaAggregation()
+  getV2Captcha(@Session() session: SessionInfo, @UserAgent() ua: Details) {
+    const isPhone = ['Android', 'iPhone'].includes(ua.platform);
+    const { text, data } = this.authService.generateV2Captcha(isPhone);
+    session.captcha = text;
+    const CAPTCHA_EXPIRES = Number(this.configService.get<string>('CAPTCHA_EXPIRES'));
+    session.expirationTimestamp = Date.now() + CAPTCHA_EXPIRES;
+    return data;
+  }
+
   @Public()
   @Post('login')
   @UseGuards(LocalAuthGuard)

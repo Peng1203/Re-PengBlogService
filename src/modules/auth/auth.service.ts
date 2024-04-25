@@ -223,6 +223,14 @@ export class AuthService {
       // background: "#cc9966" // 验证码背景颜色
     });
   }
+  generateV2Captcha(phone: boolean) {
+    return svgCaptcha.createMathExpr({
+      width: phone ? 80 : 135,
+      height: 40,
+      noise: 2, // 干扰线
+      background: this.rc(230, 255), // 验证码背景颜色
+    });
+  }
 
   /**
    * 校验验证码

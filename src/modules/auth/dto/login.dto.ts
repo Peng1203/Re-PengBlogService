@@ -5,17 +5,17 @@ export class UserLoginDto {
   @IsString()
   @MinLength(2)
   @MaxLength(8)
-  @ApiProperty({ description: '用户名', default: 'admin' })
+  @ApiProperty({ description: '用户名' })
   userName: string;
 
   @IsString()
   @MinLength(6)
-  @ApiProperty({ description: '密码', default: '123456' })
+  @ApiProperty({ description: '密码' })
   password: string;
 
   @IsString()
-  @MinLength(4)
+  @MinLength(1)
   @MaxLength(4)
-  @ApiProperty({ description: '验证码', default: '1234' })
+  @ApiProperty({ description: '验证码', default: '' })
   captcha: string;
 }
