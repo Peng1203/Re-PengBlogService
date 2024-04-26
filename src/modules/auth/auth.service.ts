@@ -203,13 +203,7 @@ export class AuthService {
     return `rgba(${r},${g},${b},${opacity || 1})`;
   }
 
-  /**
-   * 生成验证码
-   * @date 2023/9/1 - 15:14:05
-   * @author Peng
-   *
-   * @returns {*}
-   */
+  /** 生成验证码 */
   generateCaptcha(phone: boolean) {
     // createMathExpr 创建一个 简单加法的 svg 验证码
     return svgCaptcha.create({
@@ -234,11 +228,6 @@ export class AuthService {
 
   /**
    * 校验验证码
-   * @date 2023/9/1 - 16:42:08
-   * @author Peng
-   *
-   * @param {string} captcha
-   * @param {SessionInfo} session
    */
   verifyCaptcha(captcha: string, session: SessionInfo) {
     if (!session?.captcha)
@@ -260,29 +249,13 @@ export class AuthService {
       });
   }
 
-  /**
-   * 通过用户ID和用户名查询用户
-   * @date 2023/9/3 - 16:33:51
-   * @author Peng
-   *
-   * @param {number} id
-   * @param {string} userName
-   * @returns {*}
-   */
+  /** 通过用户ID和用户名查询用户 */
   validateUserByIdAndName(id: number, userName: string) {
     return this.userService.findOneByUserIdAndUserName(id, userName);
   }
 
   /**
    * 刷新token
-   * @date 2023/9/3 - 23:50:11
-   * @author Peng
-   *
-   * @async
-   * @param {number} id
-   * @param {string} userName
-   * @param {Response} res
-   * @returns {*}
    */
   async refreshAccessToken(id: number, userName: string): Promise<string> {
     try {
@@ -299,15 +272,7 @@ export class AuthService {
     }
   }
 
-  /**
-   * 获取token的TTL
-   * @date 2023/9/4 - 14:10:25
-   * @author Peng
-   *
-   * @async
-   * @param {string} token
-   * @returns {unknown}
-   */
+  /** 获取token的TTL */
   async getTokenTTL(key: string) {
     return await this.redis.getTTL(key);
   }
@@ -319,7 +284,6 @@ export class AuthService {
   async clearUserToken(data: UserLogoutDto) {
     const { id, userName } = data;
     const key = this.redisTokenKeyStr(id, userName);
-    const val = await this.redis.clearCatch(key);
-    console.log('val ------', val);
+    await this.redis.clearCatch(key);
   }
 }

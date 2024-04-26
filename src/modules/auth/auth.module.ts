@@ -7,6 +7,7 @@ import { JwtConfigService, PassportConfigService } from '@/config';
 import { LocalStrategy } from './strategys';
 import { UserModule } from '@/modules/user/user.module';
 import { CommonModule } from '@/shared/common.module';
+import { PasswordService } from './services';
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { CommonModule } from '@/shared/common.module';
     CommonModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy],
-  exports: [AuthService, PassportModule],
+  providers: [AuthService, LocalStrategy, PasswordService],
+  exports: [AuthService, PassportModule, PasswordService],
 })
 export class AuthModule {}
