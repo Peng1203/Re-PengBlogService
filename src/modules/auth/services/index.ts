@@ -1,1 +1,1 @@
-export * from './pwd.service';
+export * from './password/password.service';
