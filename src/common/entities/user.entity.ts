@@ -15,7 +15,7 @@ export class User extends TimestampedEntity {
   userName: string;
 
   @Column({ type: 'varchar', length: 255, select: false })
-  password: string;
+  password?: string;
 
   @ManyToMany(() => Role, role => role.users)
   @JoinTable({ name: 'user_role_relation' })

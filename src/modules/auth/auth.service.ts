@@ -9,6 +9,7 @@ import { SessionInfo } from 'express-session';
 import { JwtPayload } from 'passport-jwt';
 import { UserLogoutDto } from './dto';
 import { Request } from 'express';
+import { PasswordService } from './services';
 
 @Injectable()
 export class AuthService {
@@ -16,31 +17,29 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-    private readonly redis: RedisService
+    private readonly redis: RedisService,
+    private readonly passwordService: PasswordService
   ) {}
 
   /**
    * 账号密码校验用户
-   * @date 2023/8/30 - 16:39:05
-   * @author Peng
-   *
-   * @param {string} userName
-   * @param {string} password
-   * @returns {*}
    */
-  validateUser(userName: string, password: string) {
-    return this.userService.findOneByUserNameAndPwd(userName, password);
+  async validateUser(userName: string, pwd: string) {
+    try {
+      const { password, ...user } = await this.userService.findLoginUserByUserName(userName);
+      const validateStatus = await this.passwordService.verify(pwd, password);
+      if (!validateStatus) throw new Error();
+      return user;
+    } catch (e) {
+      throw new UnauthorizedException({
+        code: ApiResponseCodeEnum.UNAUTHORIZED_UNAME_OR_PWD_NOMATCH,
+        msg: '用户名或密码错误',
+      });
+    }
   }
 
   /**
    * 生成accessToken
-   * @date 2023/9/1 - 14:52:01
-   * @author Peng
-   *
-   * @async
-   * @param {number} id
-   * @param {string} userName
-   * @returns {unknown}
    */
   async generateAccessToken(id: number, userName: string) {
     return `${await this.jwtService.signAsync({
@@ -51,12 +50,6 @@ export class AuthService {
 
   /**
    * 校验token
-   * @date 2023/9/1 - 14:52:20
-   * @author Peng
-   *
-   * @async
-   * @param {string} token
-   * @returns {Promise<JwtPayload>}
    */
   async verifyAccessToken(token: string): Promise<JwtPayload> {
     try {

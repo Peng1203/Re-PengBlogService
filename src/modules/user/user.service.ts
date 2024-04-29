@@ -1,5 +1,5 @@
 import { Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { Brackets, Repository } from 'typeorm';
+import { Brackets, Repository, getMetadataArgsStorage } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -9,13 +9,16 @@ import { ListResponse } from '@/common/interface';
 import { ApiResponseCodeEnum } from '@/helper/enums';
 import { RoleService } from './../role/role.service';
 import { formatDate } from '@/utils/date.util';
+import { PasswordService } from '@/modules/auth/services';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
-    private readonly roleService: RoleService
+    private readonly roleService: RoleService,
+    private readonly passwordService: PasswordService
   ) {}
+
   async create(data: CreateUserDto) {
     try {
       const { roleIds, ...userInfo } = data;
@@ -187,18 +190,37 @@ export class UserService {
     }
   }
 
-  /**
-   * 通过 id查询用户
-   * @date 2023/9/5 - 10:48:11
-   * @author Peng
-   *
-   * @async
-   * @param {number} id
-   * @returns {Promise<User | null>}
-   */
+  /** 通过 id 查询用户 */
   async findOneById(id: number): Promise<User> {
     try {
       const user = await this.userRepository.findOne({ where: { id } });
+      if (user) return user;
+      else this.handleFindOneNotFoundError();
+    } catch (e) {
+      this.handleFindOneError(e);
+    }
+  }
+
+  /** 通过 用户名 查询用户 */
+  async findOneByUserName(userName: string) {
+    try {
+      const user = await this.userRepository.findOne({ where: { userName } });
+      if (user) return user;
+      else this.handleFindOneNotFoundError();
+    } catch (e) {
+      this.handleFindOneError(e);
+    }
+  }
+
+  /** 通过 用户名 查询登录用户 */
+  async findLoginUserByUserName(userName: string): Promise<User> {
+    try {
+      const user = await this.userRepository
+        .createQueryBuilder('user')
+        .where('user.userName = :userName', { userName })
+        .leftJoinAndSelect('user.roles', 'roles')
+        .addSelect('user.password')
+        .getOne();
       if (user) return user;
       else this.handleFindOneNotFoundError();
     } catch (e) {

@@ -27,7 +27,7 @@ export class CreateUserDto {
   readonly userName: string;
 
   @IsString()
-  @MinLength(6)
+  @MaxLength(255)
   @ApiProperty({ description: '密码' })
   readonly password: string;
 
