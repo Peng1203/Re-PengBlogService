@@ -28,7 +28,7 @@ export class AuditService {
       audit.method = RequestMethodEnum[method];
       // audit.router = originalUrl;
       audit.router = path;
-      audit.ip = (Array.isArray(clientIp) ? clientIp[0] : clientIp) || ip;
+      audit.ip = ((Array.isArray(clientIp) ? clientIp[0] : clientIp) || ip).replace('::ffff:', '');
       audit.userAgent = useragent.source;
       audit.statusCode = statusCode || res.statusCode;
       audit.responseTime = responseTime;
