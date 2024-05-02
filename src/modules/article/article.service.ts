@@ -16,7 +16,7 @@ export class ArticleService {
   constructor(
     @InjectRepository(Article) private readonly articleRepository: Repository<Article>,
     private readonly tagService: TagService,
-    private readonly usersService: UserService,
+    private readonly userService: UserService,
     private readonly categoryService: CategoryService
   ) {}
 
@@ -24,7 +24,7 @@ export class ArticleService {
     try {
       const { category: categoryId, tags: tagIds, authorId, ...args } = data;
 
-      const author = await this.usersService.findOneById(authorId);
+      const author = await this.userService.findOneById(authorId);
       const tags = tagIds.length
         ? (await Promise.all(tagIds.map(id => this.tagService.findOne(id)))).filter(tag => tag)
         : [];

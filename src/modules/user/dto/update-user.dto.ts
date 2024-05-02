@@ -3,22 +3,17 @@ import { CreateUserDto } from './create-user.dto';
 import {
   ArrayMaxSize,
   ArrayMinSize,
-  IsArray,
   IsEmail,
-  IsEmpty,
   IsEnum,
   IsInt,
-  IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
   MaxLength,
   MinLength,
-  Validate,
 } from '@nestjs/class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { UserEnabledEnum } from '@/helper/enums';
-import { IsArrayNumber } from '@/common/validator';
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsString()
