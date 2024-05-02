@@ -52,7 +52,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup(SWAGGER_PREFIX, app, document);
 
-  await app.listen(APP_PORT, APP_HOST, () =>
+  await app.listen(APP_PORT, () =>
     Logger.debug(`server is running: http://${APP_HOST}:${APP_PORT}  --${process.env.NODE_ENV}`)
   );
 }
