@@ -157,4 +157,11 @@ export class AuthController {
   async userPermissions(@Param('id', new ParseIntParamPipe('id参数有误')) id: number) {
     return this.userService.findUserPermissions(id);
   }
+
+  @Get('auth/userInfo')
+  @ApiOperation({ summary: '根据 refresh_token 获取用户信息' })
+  async getUserInfo(@ReqUser() user: User, @Req() req: Request) {
+    // const clientInfo = await this.authService.getClientInfo(req);
+    return user;
+  }
 }
