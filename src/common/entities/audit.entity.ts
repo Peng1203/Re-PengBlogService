@@ -1,4 +1,10 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { User } from './user.entity';
 import { DateTimeTransformer } from './common/timestamped.entity';
 import { StatusEnum, RequestMethodEnum } from '../../helper/enums';
@@ -23,7 +29,11 @@ export class Audit {
   @Column({ name: 'status_code', type: 'int' })
   statusCode: number;
 
-  @Column({ name: 'response_time', type: 'bigint', comment: '处理请求耗费时间' })
+  @Column({
+    name: 'response_time',
+    type: 'bigint',
+    comment: '处理请求耗费时间',
+  })
   responseTime: number;
 
   @Column({ name: 'request_query_params', type: 'text', nullable: true })
@@ -45,7 +55,10 @@ export class Audit {
    * 'CASCADE'：当关联的用户被删除时，相关联的审计记录也会被删除。
    * 'SET NULL'：当关联的用户被删除时，相关联的审计记录的user字段将被设置为NULL。
    */
-  @ManyToOne(() => User, User => User.audits, { onDelete: 'SET NULL', nullable: true })
+  @ManyToOne(() => User, User => User.audits, {
+    onDelete: 'SET NULL',
+    nullable: true,
+  })
   user: User;
 
   @CreateDateColumn({

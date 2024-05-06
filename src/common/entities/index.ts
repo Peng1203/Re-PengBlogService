@@ -9,4 +9,4 @@ export * from './article.entity';
 export * from './category.entity';
 export * from './tag.entity';
 
-export * from './audit.entiy';
+export * from './audit.entity';
