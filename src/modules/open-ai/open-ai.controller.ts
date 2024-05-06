@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Header, Post, Res } from '@nestjs/common';
+import { Body, Controller, Post, Res } from '@nestjs/common';
 import { OpenAiService } from './open-ai.service';
 import { ChatDto } from './dto';
 import { ProxyHttpService } from '@/shared/proxyHttp/proxyHttp.service';
@@ -9,7 +9,6 @@ export class OpenAiController {
   constructor(private readonly openAiService: OpenAiService, private readonly proxyHttpService: ProxyHttpService) {}
 
   @Post('chat')
-  // @Header('Content-Type', 'text/plain')
   async chartGpt(@Body() data: ChatDto, @Res() res: Response) {
     const textDecoder = new TextDecoder();
     const stream = await this.openAiService.getStreamResponse(data);
@@ -18,11 +17,9 @@ export class OpenAiController {
       res.write(data);
     }
     res.end();
-    // const stream = this.openAiService.getStreamResponse(data.content);
   }
 
   @Post('v2/chat')
-  // @Header('Content-Type', 'text/event-stream')
   async chartGpt_v2(@Body() { messages }: ChatDto, @Res() res: Response) {
     const { data: response } = await this.proxyHttpService.openAiHttp({
       method: 'POST',
