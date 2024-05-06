@@ -65,6 +65,9 @@ dependencies:
   dayjs:
     specifier: ^1.11.10
     version: 1.11.10
+  dotenv:
+    specifier: ^16.4.5
+    version: 16.4.5
   express-session:
     specifier: ^1.17.3
     version: 1.18.0
