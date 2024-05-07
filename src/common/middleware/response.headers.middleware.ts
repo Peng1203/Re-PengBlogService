@@ -7,7 +7,7 @@ import { Request, Response, NextFunction } from 'express';
 @Injectable()
 export class ResponseHeadersMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
-    res.setHeader('Access-Control-Expose-Headers', 'refresh-token, test');
+    res.setHeader('Access-Control-Expose-Headers', 'refresh-token');
     res.setHeader('Cache-Control', 'no-store');
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');
