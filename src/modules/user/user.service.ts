@@ -1,4 +1,9 @@
-import { Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Brackets, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -21,9 +26,15 @@ export class UserService {
 
   async create(data: CreateUserDto) {
     try {
-      const { roleIds, ...userInfo } = data;
-      const roles = await Promise.all(roleIds.map(roleId => this.roleService.findOne(roleId)));
-      const user = await this.userRepository.create({ roles, ...userInfo });
+      const { roleIds, password, ...userInfo } = data;
+      const roles = await Promise.all(
+        roleIds.map(roleId => this.roleService.findOne(roleId))
+      );
+      const user = await this.userRepository.create({
+        roles,
+        password: await this.passwordService.hash(password),
+        ...userInfo,
+      });
       return await this.userRepository.save(user);
     } catch (e) {
       throw new InternalServerErrorException({
@@ -45,16 +56,24 @@ export class UserService {
    */
   async findAll(params: FindAllUserDto): Promise<ListResponse<User>> {
     try {
-      const { page, pageSize, queryStr = '', column, order, roleId = '' } = params;
+      const {
+        page,
+        pageSize,
+        queryStr = '',
+        column,
+        order,
+        roleId = '',
+      } = params;
       const queryBuilder = this.userRepository
         .createQueryBuilder('user')
         .leftJoinAndSelect('user.roles', 'role')
         .andWhere(
           new Brackets(qb => {
-            qb.where('user.userName LIKE :queryStr', { queryStr: `%${queryStr}%` }).orWhere(
-              'user.nickName LIKE :queryStr',
-              { queryStr: `%${queryStr}%` }
-            );
+            qb.where('user.userName LIKE :queryStr', {
+              queryStr: `%${queryStr}%`,
+            }).orWhere('user.nickName LIKE :queryStr', {
+              queryStr: `%${queryStr}%`,
+            });
           })
         )
         .orderBy(`user.${column || 'id'}`, order || 'ASC')
@@ -91,7 +110,11 @@ export class UserService {
       const { roleIds, ...userInfo } = data;
 
       // 角色ID转换为 角色实例
-      const roles = roleIds?.length ? await Promise.all(roleIds.map(roleId => this.roleService.findOne(roleId))) : [];
+      const roles = roleIds?.length
+        ? await Promise.all(
+            roleIds.map(roleId => this.roleService.findOne(roleId))
+          )
+        : [];
 
       for (const key in userInfo) {
         user[key] = userInfo[key];
@@ -135,7 +158,10 @@ export class UserService {
    * @param {string} password
    * @returns {Promise<User | null>}
    */
-  async findOneByUserNameAndPwd(userName: string, password: string): Promise<User> {
+  async findOneByUserNameAndPwd(
+    userName: string,
+    password: string
+  ): Promise<User> {
     try {
       const user = await this.userRepository
         .createQueryBuilder('user')
@@ -169,7 +195,10 @@ export class UserService {
    * @param {string} userName
    * @returns {*}
    */
-  async findOneByUserIdAndUserName(id: number, userName: string): Promise<User> {
+  async findOneByUserIdAndUserName(
+    id: number,
+    userName: string
+  ): Promise<User> {
     try {
       // const user = await this.userRepository.findOne({
       //   where: { id, userName },
