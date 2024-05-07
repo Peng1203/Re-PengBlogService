@@ -29,7 +29,10 @@ import path from 'path';
 @ApiBearerAuth()
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService, private readonly configService: ConfigService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly configService: ConfigService
+  ) {}
 
   @Post()
   @RequirePermissions(PermissionEnum.CREATE_USER)
@@ -119,8 +122,10 @@ export class UserController {
     @UploadedFile() file: Express.Multer.File,
     @Param('id', new ParseIntParamPipe('id参数有误')) id: number
   ) {
-    const RESOURCE_SERVE = this.configService.get<string>('STATIC_RESOURCE_SERVE');
-    const fullPath = `${req.protocol}://${RESOURCE_SERVE}/${path.basename(file.path)}`;
+    const RESOURCE_SERVE = this.configService.get<string>(
+      'STATIC_RESOURCE_SERVE'
+    );
+    const fullPath = `${RESOURCE_SERVE}/${path.basename(file.path)}`;
 
     await this.userService.update(id, { userAvatar: fullPath });
 
