@@ -114,9 +114,27 @@ export class UserController {
     return `成功删除${delCount}个用户`;
   }
 
+  @Post('avater')
+  @UploadAvaterAggregation()
+  @ApiOperation({ summary: '上传头像' })
+  async uploadAvater(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+    @UploadedFile() file: Express.Multer.File
+  ) {
+    const RESOURCE_SERVE = this.configService.get<string>(
+      'STATIC_RESOURCE_SERVE'
+    );
+    const fullPath = `${RESOURCE_SERVE}/${path.basename(file.path)}`;
+
+    res.resMsg = '头像上传成功!';
+    return fullPath;
+  }
+
   @Post('avater/:id')
   @UploadAvaterAggregation()
-  async uploadAvater(
+  @ApiOperation({ summary: '更新用户头像' })
+  async updateUserAvater(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
     @UploadedFile() file: Express.Multer.File,
