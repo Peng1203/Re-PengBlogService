@@ -22,7 +22,11 @@ import { ApiResponseCodeEnum, PermissionEnum } from '@/helper/enums';
 import { FindAllArticleDto } from './dto';
 import { ParseIntParamPipe } from '@/common/pipe';
 import { Response } from 'express';
-import { DeleteArticleGuard, GetArticleDetailGuard, UpdateArticleGuard } from './guards';
+import {
+  DeleteArticleGuard,
+  GetArticleDetailGuard,
+  UpdateArticleGuard,
+} from './guards';
 
 @ApiTags('Article')
 @ApiBearerAuth()
@@ -44,21 +48,11 @@ export class ArticleController {
   }
 
   @Get()
-  @Public()
   @ApiOperation({ summary: '获取文章列表' })
   findAll(@Query() params: FindAllArticleDto) {
     return this.articleService.findAll(params);
   }
 
-  // @Get(':uid')
-  // @Public()
-  // @ApiOperation({ summary: '获取用户文章列表' })
-  // findUserArticle() {
-  //   // return this.articleService.findAll(params);
-  //   return '';
-  // }
-
-  @Public()
   // @UseGuards(GetArticleDetailGuard)
   @Get(':id')
   @ApiOperation({ summary: '获取文章详情' })
