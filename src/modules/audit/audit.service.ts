@@ -1,5 +1,13 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { StatusEnum, RequestMethodEnum, ApiResponseCodeEnum } from '@/helper/enums';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Param,
+} from '@nestjs/common';
+import {
+  StatusEnum,
+  RequestMethodEnum,
+  ApiResponseCodeEnum,
+} from '@/helper/enums';
 import { Response, Request } from 'express';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Audit } from '@/common/entities';
@@ -8,7 +16,9 @@ import { FindAllAuditDto } from './dto';
 
 @Injectable()
 export class AuditService {
-  constructor(@InjectRepository(Audit) private readonly auditRepository: Repository<Audit>) {}
+  constructor(
+    @InjectRepository(Audit) private readonly auditRepository: Repository<Audit>
+  ) {}
 
   async createAuditRecord(
     req: Request,
@@ -22,18 +32,24 @@ export class AuditService {
       const { method, originalUrl, useragent, query, body, path, ip } = req;
       // const { statusCode } = res;
 
-      const clientIp = req.headers['x-real-ip'] || req.headers['x-forwarded-for'];
+      // 隐藏 query/body 参数中的关键信息
+      const [toBody, toQuery] = this.hideKeyInfoParams(body, query);
+
+      const clientIp =
+        req.headers['x-real-ip'] || req.headers['x-forwarded-for'];
       const audit = new Audit();
 
       audit.method = RequestMethodEnum[method];
       // audit.router = originalUrl;
       audit.router = path;
-      audit.ip = ((Array.isArray(clientIp) ? clientIp[0] : clientIp) || ip).replace('::ffff:', '');
+      audit.ip = (
+        (Array.isArray(clientIp) ? clientIp[0] : clientIp) || ip
+      ).replace('::ffff:', '');
       audit.userAgent = useragent.source;
       audit.statusCode = statusCode || res.statusCode;
       audit.responseTime = responseTime;
-      audit.requestQueryParams = JSON.stringify(query);
-      audit.requestBodyParams = JSON.stringify(body);
+      audit.requestQueryParams = JSON.stringify(toQuery);
+      audit.requestBodyParams = JSON.stringify(toBody);
       audit.operationStatus = operationStatus;
       errMessage && (audit.errMessage = errMessage);
       audit.description = '';
@@ -46,9 +62,28 @@ export class AuditService {
     }
   }
 
-  async findAll(params: FindAllAuditDto) {
+  private hideKeyInfoParams(body: any, query: any) {
+    for (const key in body) {
+      if (key.includes('password')) body[key] = '******';
+    }
+
+    for (const key in query) {
+      if (key.includes('password')) query[key] = '******';
+    }
+
+    return [body, query];
+  }
+
+  async findAll(params: FindAllAuditDto, queryUserId: number) {
     try {
-      const { page, pageSize, queryStr = '', column, order, userId = 0 } = params;
+      const {
+        page,
+        pageSize,
+        queryStr = '',
+        column,
+        order,
+        userId = 0,
+      } = params;
 
       // const [list, total] = await this.auditRepository.findAndCount({
       //   where: [
@@ -68,16 +103,19 @@ export class AuditService {
         // .select(['user.userName'])
         .skip((page - 1) * pageSize)
         .take(pageSize)
-        .orderBy(`audit.${column || 'id'}`, order || 'ASC');
+        .orderBy(`audit.${column || 'createTime'}`, order || 'DESC');
+      console.log('userId ------', userId, typeof userId);
+      userId > 0 && queryBuilder.where('user.id = :userId', { userId });
 
-      userId && queryBuilder.where('user.id = :userId', { userId });
+      userId === -1 && queryBuilder.where('user.id IS NULL');
 
       const [list, total] = await queryBuilder.getManyAndCount();
       return {
-        list: list.map(({ user, ...args }) => ({
+        list: list.map(({ user, ip, ...args }) => ({
           ...args,
-          userId: user.id,
-          userName: user.userName,
+          ip: this.formatIPInfo(ip, queryUserId),
+          userId: user?.id || null,
+          userName: user?.userName || null,
         })),
         total,
       };
@@ -87,6 +125,20 @@ export class AuditService {
         code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
         msg: '查询审计列表失败',
       });
+    }
+  }
+
+  // 判断是否是 admin 用户 来展示 IP段信息
+  private formatIPInfo(ip: string, userId: number): string {
+    if (userId === 1) return ip;
+    else {
+      const ipParts = ip.split('.');
+      if (ipParts.length !== 4) return ip;
+      else {
+        ipParts[1] = '***';
+        ipParts[2] = '***';
+        return ipParts.join('.');
+      }
     }
   }
 
