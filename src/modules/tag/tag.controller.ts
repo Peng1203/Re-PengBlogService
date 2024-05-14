@@ -1,9 +1,25 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Res, NotFoundException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  Res,
+  NotFoundException,
+} from '@nestjs/common';
 import { TagService } from './tag.service';
-import { CreateTagDto, UpdateTagDto, FindAllTagDto } from './dto';
+import {
+  CreateTagDto,
+  UpdateTagDto,
+  FindAllTagDto,
+  DeleteTagsDto,
+} from './dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiResponseCodeEnum, PermissionEnum } from '@/helper/enums';
-import { RequirePermissions } from '@/common/decorators';
+import { Public, RequirePermissions } from '@/common/decorators';
 import { ParseIntParamPipe } from '@/common/pipe';
 import { Response } from 'express';
 
@@ -59,5 +75,18 @@ export class TagController {
     if (!delRes) res.resMsg = '删除标签失败!';
     if (!delRes) res.success = false;
     else return '删除标签成功';
+  }
+
+  @Delete()
+  @ApiOperation({ summary: '批量删除文章标签' })
+  @RequirePermissions(PermissionEnum.DELETE_TAG)
+  async batchRemove(
+    @Body() { tagIds }: DeleteTagsDto,
+    @Res({ passthrough: true }) res: Response
+  ) {
+    const delRes = await this.tagService.removes(tagIds);
+    if (!delRes) res.resMsg = '批量删除标签失败!';
+    if (!delRes) res.success = false;
+    else return `成功删除 ${delRes.affected || 0} 条记录`;
   }
 }

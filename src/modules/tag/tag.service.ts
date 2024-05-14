@@ -8,7 +8,9 @@ import { formatDate } from '@/utils/date.util';
 
 @Injectable()
 export class TagService {
-  constructor(@InjectRepository(Tag) private readonly tagRepository: Repository<Tag>) {}
+  constructor(
+    @InjectRepository(Tag) private readonly tagRepository: Repository<Tag>
+  ) {}
 
   async create(data: CreateTagDto) {
     try {
@@ -33,7 +35,10 @@ export class TagService {
         order: { [column || 'id']: order || 'ASC' },
         relations: ['articles'],
       });
-      return { list: list.map(item => ({ ...item, articles: item.articles.length })), total };
+      return {
+        list: list.map(item => ({ ...item, articles: item.articles.length })),
+        total,
+      };
     } catch (e) {
       throw new InternalServerErrorException({
         e,
@@ -82,7 +87,19 @@ export class TagService {
       throw new InternalServerErrorException({
         code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
         e,
-        msg: '删除角色失败',
+        msg: '删除标签失败',
+      });
+    }
+  }
+
+  async removes(ids: number[]) {
+    try {
+      return await this.tagRepository.delete(ids);
+    } catch (e) {
+      throw new InternalServerErrorException({
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
+        e,
+        msg: '删除标签失败',
       });
     }
   }
