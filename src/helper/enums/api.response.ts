@@ -8,6 +8,8 @@ export enum ApiResponseCodeEnum {
   NOCONTENT = 20400,
 
   BADREQUEST = 40000,
+  /** 新密码与旧密码一致 */
+  BADREQUEST_OLD_NEW_PWD = 40099,
 
   UNAUTHORIZED = 40100,
   /** 验证码过期 */
@@ -22,6 +24,8 @@ export enum ApiResponseCodeEnum {
   UNAUTHORIZED_REFRESH_TOKEN = 40105,
   /** 用户名或密码错误 */
   UNAUTHORIZED_UNAME_OR_PWD_NOMATCH = 40106,
+  /** 修改密码 旧密码错误 */
+  UNAUTHORIZED_OLD_PWD = 40107,
 
   /** 权限不足 */
   FORBIDDEN = 40300,

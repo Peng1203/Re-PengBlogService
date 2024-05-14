@@ -12,9 +12,17 @@ import {
   Put,
   UploadedFile,
   Req,
+  UseGuards,
+  UnauthorizedException,
+  BadRequestException,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto, DeleteUsersDto, FindAllUserDto } from './dto';
+import {
+  CreateUserDto,
+  DeleteUsersDto,
+  FindAllUserDto,
+  UpdatePasswordDto,
+} from './dto';
 import { UpdateUserDto } from './dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { RequirePermissions } from '@/common/decorators';
@@ -24,6 +32,8 @@ import { Response, Request } from 'express';
 import { UploadAvaterAggregation } from './decorator';
 import { ConfigService } from '@nestjs/config';
 import path from 'path';
+import { IdentityGuard } from '@/common/guards';
+import { PasswordService } from '../auth/services';
 
 @ApiTags('User')
 @ApiBearerAuth()
@@ -31,7 +41,8 @@ import path from 'path';
 export class UserController {
   constructor(
     private readonly userService: UserService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
+    private readonly passwordService: PasswordService
   ) {}
 
   @Post()
@@ -131,7 +142,7 @@ export class UserController {
     return fullPath;
   }
 
-  @Post('avater/:id')
+  @Post(':id/avater')
   @UploadAvaterAggregation()
   @ApiOperation({ summary: '更新用户头像' })
   async updateUserAvater(
@@ -149,5 +160,40 @@ export class UserController {
 
     res.resMsg = '头像更新成功!';
     return fullPath;
+  }
+
+  @Put(':id/password')
+  @UseGuards(IdentityGuard)
+  @ApiOperation({ summary: '修改密码' })
+  async changePassword(
+    @Body() data: UpdatePasswordDto,
+    @Param('id', new ParseIntParamPipe('id参数有误')) id: number
+  ) {
+    /**
+     *  1.校验输入的旧密码是否正确
+     *  2.校验新旧密码是否一致
+     *  3.更新用户密码
+     */
+    const { oldPassword, newPassword } = data;
+    const { password: userPwd } = await this.userService.findUserPassword(id);
+
+    const pass = await this.passwordService.verify(oldPassword, userPwd);
+
+    // prettier-ignore
+    if (!pass) throw new UnauthorizedException({
+      code: ApiResponseCodeEnum.UNAUTHORIZED_OLD_PWD,
+      msg: '当前密码不正确',
+    });
+
+    // prettier-ignore
+    if (oldPassword === newPassword) throw new BadRequestException({
+      code: ApiResponseCodeEnum.BADREQUEST_OLD_NEW_PWD,
+      msg: '新密码不能与旧密码相同',
+    });
+
+    const newHashPwd = await this.passwordService.hash(newPassword);
+
+    await this.userService.update(id, { password: newHashPwd });
+    return '密码修改成功';
   }
 }

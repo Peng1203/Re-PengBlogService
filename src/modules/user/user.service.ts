@@ -369,4 +369,17 @@ export class UserService {
       return result;
     }, []);
   }
+
+  async findUserPassword(id: number) {
+    try {
+      return await this.userRepository.findOne({
+        where: {
+          id,
+        },
+        select: ['password'],
+      });
+    } catch (e) {
+      this.handleFindOneError(e);
+    }
+  }
 }
