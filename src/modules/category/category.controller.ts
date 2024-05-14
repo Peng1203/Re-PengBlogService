@@ -1,6 +1,22 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Res, NotFoundException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  Res,
+  NotFoundException,
+} from '@nestjs/common';
 import { CategoryService } from './category.service';
-import { CreateCategoryDto, UpdateCategoryDto, FindAllCategoryDto } from './dto';
+import {
+  CreateCategoryDto,
+  UpdateCategoryDto,
+  FindAllCategoryDto,
+  DeleteCategorysDto,
+} from './dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiResponseCodeEnum, PermissionEnum } from '@/helper/enums';
 import { RequirePermissions } from '@/common/decorators';
@@ -59,5 +75,18 @@ export class CategoryController {
     if (!delRes) res.resMsg = '删除分类失败!';
     if (!delRes) res.success = false;
     else return '删除分类成功';
+  }
+
+  @Delete()
+  @ApiOperation({ summary: '批量删除文章分类' })
+  @RequirePermissions(PermissionEnum.DELETE_CATEGORY)
+  async batchRemove(
+    @Body() { categoryIds }: DeleteCategorysDto,
+    @Res({ passthrough: true }) res: Response
+  ) {
+    const delRes = await this.categoryService.removes(categoryIds);
+    if (!delRes) res.resMsg = '批量删除文章分类失败!';
+    if (!delRes) res.success = false;
+    else return `成功删除 ${delRes.affected || 0} 条记录`;
   }
 }

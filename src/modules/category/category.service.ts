@@ -1,5 +1,13 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { CreateCategoryDto, UpdateCategoryDto, FindAllCategoryDto } from './dto';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
+import {
+  CreateCategoryDto,
+  UpdateCategoryDto,
+  FindAllCategoryDto,
+} from './dto';
 import { Category } from '@/common/entities';
 import { Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -8,7 +16,10 @@ import { formatDate } from '@/utils/date.util';
 
 @Injectable()
 export class CategoryService {
-  constructor(@InjectRepository(Category) private readonly categoryRepository: Repository<Category>) {}
+  constructor(
+    @InjectRepository(Category)
+    private readonly categoryRepository: Repository<Category>
+  ) {}
 
   async create(data: CreateCategoryDto) {
     try {
@@ -94,7 +105,19 @@ export class CategoryService {
       throw new InternalServerErrorException({
         code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
         e,
-        msg: '删除角色失败',
+        msg: '删除分类失败',
+      });
+    }
+  }
+
+  async removes(ids: number[]) {
+    try {
+      return await this.categoryRepository.delete(ids);
+    } catch (e) {
+      throw new InternalServerErrorException({
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
+        e,
+        msg: '删除分类失败',
       });
     }
   }
