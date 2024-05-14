@@ -104,9 +104,10 @@ export class AuditService {
         .skip((page - 1) * pageSize)
         .take(pageSize)
         .orderBy(`audit.${column || 'createTime'}`, order || 'DESC');
-      console.log('userId ------', userId, typeof userId);
+
       userId > 0 && queryBuilder.where('user.id = :userId', { userId });
 
+      // -1 查询未知用户请求
       userId === -1 && queryBuilder.where('user.id IS NULL');
 
       const [list, total] = await queryBuilder.getManyAndCount();

@@ -16,17 +16,12 @@ import { ArticleService } from './article.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { UserService } from '@/modules/user/user.service';
-import { Public, ReqUser, RequirePermissions } from '@/common/decorators';
+import { ReqUser, RequirePermissions } from '@/common/decorators';
 import { ApiResponseCodeEnum, PermissionEnum } from '@/helper/enums';
 import { FindAllArticleDto } from './dto';
 import { ParseIntParamPipe } from '@/common/pipe';
 import { Response } from 'express';
-import {
-  DeleteArticleGuard,
-  GetArticleDetailGuard,
-  UpdateArticleGuard,
-} from './guards';
+import { DeleteArticleGuard, UpdateArticleGuard } from './guards';
 
 @ApiTags('Article')
 @ApiBearerAuth()
@@ -87,7 +82,6 @@ export class ArticleController {
     @Res({ passthrough: true }) res: Response
   ) {
     const article = await this.articleService.findOne(aid).catch(() => false);
-    console.log('article ------', article);
     if (!article)
       throw new NotFoundException({
         code: ApiResponseCodeEnum.NOTFOUND_ROLE,
