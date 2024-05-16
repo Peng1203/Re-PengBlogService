@@ -1,6 +1,20 @@
 import { Category, Tag, TimestampedEntity, User } from './';
-import { ArticleTypeEnum, ArticleStatusEnum, BolEnum, ContentModelEnum } from '../../helper/enums';
-import { Column, Entity, Index, ManyToOne, ManyToMany, PrimaryGeneratedColumn, Unique, JoinTable } from 'typeorm';
+import {
+  ArticleTypeEnum,
+  ArticleStatusEnum,
+  BolEnum,
+  ContentModelEnum,
+} from '../../helper/enums';
+import {
+  Column,
+  Entity,
+  Index,
+  ManyToOne,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+  Unique,
+  JoinTable,
+} from 'typeorm';
 
 @Entity({ name: 'article' })
 @Unique(['title'])
@@ -69,6 +83,7 @@ export class Article extends TimestampedEntity {
     length: 255,
     default: '',
     nullable: true,
+    select: false,
     comment: '文章状态为 私密时 他人访问需要使用该密码',
   })
   accessPassword: string;
