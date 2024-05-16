@@ -64,7 +64,10 @@ export class AuditService {
 
   private hideKeyInfoParams(body: any, query: any) {
     const hidedKeys = [
+      'content',
+      'summary',
       'password',
+      'accessPassword',
       'oldPassword',
       'newPassword',
       'refresh_token',
@@ -92,6 +95,8 @@ export class AuditService {
         column,
         order,
         userId = 0,
+        startTime,
+        endTime,
       } = params;
 
       // const [list, total] = await this.auditRepository.findAndCount({
@@ -118,6 +123,13 @@ export class AuditService {
 
       // -1 查询未知用户请求
       userId === -1 && queryBuilder.where('user.id IS NULL');
+
+      startTime &&
+        queryBuilder.andWhere('audit.createTime >= :startTime', {
+          startTime,
+        });
+      endTime &&
+        queryBuilder.andWhere('audit.createTime <= :endTime', { endTime });
 
       const [list, total] = await queryBuilder.getManyAndCount();
       return {
@@ -152,7 +164,28 @@ export class AuditService {
     }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} audit`;
+  async remove(id: number) {
+    try {
+      const delResult = await this.auditRepository.delete(id);
+      return !!delResult.affected;
+    } catch (e) {
+      throw new InternalServerErrorException({
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
+        e,
+        msg: '删除审计记录失败',
+      });
+    }
+  }
+
+  async removes(ids: number[]) {
+    try {
+      return await this.auditRepository.delete(ids);
+    } catch (e) {
+      throw new InternalServerErrorException({
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
+        e,
+        msg: '删除审计记录失败',
+      });
+    }
   }
 }

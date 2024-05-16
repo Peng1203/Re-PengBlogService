@@ -1,4 +1,9 @@
-import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { ApiResponseCodeEnum } from '@/helper/enums';
@@ -14,7 +19,8 @@ import { formatDate } from '@/utils/date.util';
 @Injectable()
 export class ArticleService {
   constructor(
-    @InjectRepository(Article) private readonly articleRepository: Repository<Article>,
+    @InjectRepository(Article)
+    private readonly articleRepository: Repository<Article>,
     private readonly tagService: TagService,
     private readonly userService: UserService,
     private readonly categoryService: CategoryService
@@ -26,11 +32,20 @@ export class ArticleService {
 
       const author = await this.userService.findOneById(authorId);
       const tags = tagIds.length
-        ? (await Promise.all(tagIds.map(id => this.tagService.findOne(id)))).filter(tag => tag)
+        ? (
+            await Promise.all(tagIds.map(id => this.tagService.findOne(id)))
+          ).filter(tag => tag)
         : [];
-      const category = categoryId ? await this.categoryService.findOne(categoryId) : null;
+      const category = categoryId
+        ? await this.categoryService.findOne(categoryId)
+        : null;
 
-      const article = await this.articleRepository.create({ author, tags, category, ...args });
+      const article = await this.articleRepository.create({
+        author,
+        tags,
+        category,
+        ...args,
+      });
 
       return await this.articleRepository.save(article);
     } catch (e) {
@@ -65,7 +80,13 @@ export class ArticleService {
         .leftJoinAndSelect('article.tags', 'tags')
         .leftJoinAndSelect('article.author', 'author')
         .leftJoinAndSelect('article.category', 'category')
-        .andWhere(new Brackets(qb => qb.where('article.title LIKE :queryStr', { queryStr: `%${queryStr}%` })))
+        .andWhere(
+          new Brackets(qb =>
+            qb.where('article.title LIKE :queryStr', {
+              queryStr: `%${queryStr}%`,
+            })
+          )
+        )
         .orderBy({
           'article.isTop': 'DESC',
           [`article.${column || 'id'}`]: order || 'ASC',
@@ -77,17 +98,22 @@ export class ArticleService {
       type && queryBuilder.andWhere('article.type = :type', { type });
       tagId && queryBuilder.andWhere('tags.id = :tagId', { tagId });
       status && queryBuilder.andWhere('article.status = :status', { status });
-      authorId && queryBuilder.andWhere('article.authorId = :authorId', { authorId });
-      categoryId && queryBuilder.andWhere('article.categoryId = :categoryId', { categoryId });
-      startTime && queryBuilder.andWhere('article.createTime >= :startTime', { startTime });
-      endTime && queryBuilder.andWhere('article.createTime <= :endTime', { endTime });
+      authorId &&
+        queryBuilder.andWhere('article.authorId = :authorId', { authorId });
+      categoryId &&
+        queryBuilder.andWhere('article.categoryId = :categoryId', {
+          categoryId,
+        });
+      startTime &&
+        queryBuilder.andWhere('article.createTime >= :startTime', {
+          startTime,
+        });
+      endTime &&
+        queryBuilder.andWhere('article.createTime <= :endTime', { endTime });
 
       const [list, total] = await queryBuilder.getManyAndCount();
 
-      // 排除访问密码和作者密码
-      const dataList = list.map(({ accessPassword, ...args }) => args);
-
-      return { list: dataList, total };
+      return { list, total };
     } catch (e) {
       throw new InternalServerErrorException({
         e,
@@ -144,10 +170,14 @@ export class ArticleService {
       }
 
       article.tags = tagIds.length
-        ? (await Promise.all(tagIds.map(id => this.tagService.findOne(id)))).filter(tag => tag)
+        ? (
+            await Promise.all(tagIds.map(id => this.tagService.findOne(id)))
+          ).filter(tag => tag)
         : [];
 
-      article.category = category ? await this.categoryService.findOne(category) : null;
+      article.category = category
+        ? await this.categoryService.findOne(category)
+        : null;
 
       article.updateTime = formatDate();
       return await this.articleRepository.save(article);

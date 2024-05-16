@@ -1,9 +1,19 @@
-import { Controller, Get, Param, Delete, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Delete,
+  Query,
+  Body,
+  Res,
+} from '@nestjs/common';
 import { AuditService } from './audit.service';
-import { FindAllAuditDto } from './dto';
+import { DeleteAuditLogsDto, FindAllAuditDto } from './dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ReqUser } from '@/common/decorators';
 import { User } from '@/common/entities';
+import { ParseIntParamPipe } from '@/common/pipe';
+import { Response } from 'express';
 
 @ApiTags('Audit')
 @ApiBearerAuth()
@@ -18,8 +28,26 @@ export class AuditController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: '删除审计' })
-  remove(@Param('id') id: string) {
-    return this.auditService.remove(+id);
+  @ApiOperation({ summary: '删除审计记录' })
+  async remove(
+    @Param('id', new ParseIntParamPipe('id参数有误')) id: number,
+    @Res({ passthrough: true }) res: Response
+  ) {
+    const delRes = await this.auditService.remove(id);
+    if (!delRes) res.resMsg = '删除审计记录失败!';
+    if (!delRes) res.success = false;
+    else return '删除审计记录成功';
+  }
+
+  @Delete()
+  @ApiOperation({ summary: '批量删除审计记录' })
+  async batchRemove(
+    @Body() { ids }: DeleteAuditLogsDto,
+    @Res({ passthrough: true }) res: Response
+  ) {
+    const delRes = await this.auditService.removes(ids);
+    if (!delRes) res.resMsg = '批量删除审计记录失败!';
+    if (!delRes) res.success = false;
+    else return `成功删除 ${delRes.affected || 0} 条记录`;
   }
 }
