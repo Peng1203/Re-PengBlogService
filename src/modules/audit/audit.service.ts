@@ -63,13 +63,22 @@ export class AuditService {
   }
 
   private hideKeyInfoParams(body: any, query: any) {
-    for (const key in body) {
-      if (key.includes('password')) body[key] = '******';
-    }
+    const hidedKeys = [
+      'password',
+      'oldPassword',
+      'newPassword',
+      'refresh_token',
+    ];
+    const hideInfo = (obj: any) => {
+      Object.keys(obj).forEach(key => {
+        if (hidedKeys.includes(key)) {
+          obj[key] = '******';
+        }
+      });
+    };
 
-    for (const key in query) {
-      if (key.includes('password')) query[key] = '******';
-    }
+    hideInfo(body);
+    hideInfo(query);
 
     return [body, query];
   }
