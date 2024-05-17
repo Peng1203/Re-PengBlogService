@@ -1,4 +1,9 @@
-import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import configuration from './config/configuration';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -8,7 +13,10 @@ import { JwtAuthGuard } from './modules/auth/guards';
 import { JwtStrategy } from './modules/auth/strategys';
 import { TransformInterceptor, AuditInterceptor } from './common/interceptor';
 import { RoleGuard, PermissionGuard } from './common/guards';
-import { LoggerMiddleware, ResponseHeadersMiddleware } from './common/middleware';
+import {
+  LoggerMiddleware,
+  ResponseHeadersMiddleware,
+} from './common/middleware';
 import { CommonModule } from './shared/common.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
@@ -23,13 +31,16 @@ import { SystemModule } from './modules/system/system.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { MutexModule } from './shared/mutex/mutex.module';
 import { OpenAiModule } from './modules/open-ai/open-ai.module';
-import { AuditModule } from './modules/audit/audit.module';
+import { AuditModule } from './modules/log/audit/audit.module';
 import { DataAccessFilter, HttpExceptionFilter } from './common/exceptions';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: ['.env', process.env.NODE_ENV === 'development' ? '.env.dev' : '.env.prod'],
+      envFilePath: [
+        '.env',
+        process.env.NODE_ENV === 'development' ? '.env.dev' : '.env.prod',
+      ],
       isGlobal: true,
       cache: true,
       load: [configuration],
@@ -92,6 +103,8 @@ import { DataAccessFilter, HttpExceptionFilter } from './common/exceptions';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(ResponseHeadersMiddleware, LoggerMiddleware).forRoutes({ path: '*', method: RequestMethod.ALL });
+    consumer
+      .apply(ResponseHeadersMiddleware, LoggerMiddleware)
+      .forRoutes({ path: '*', method: RequestMethod.ALL });
   }
 }

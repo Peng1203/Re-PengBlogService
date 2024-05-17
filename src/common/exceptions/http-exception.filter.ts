@@ -1,7 +1,13 @@
 import { ApiResponseMessageEnum, StatusEnum } from '@/helper/enums';
-import { AuditService } from '@/modules/audit/audit.service';
+import { AuditService } from '@/modules/log/audit/audit.service';
 import { formatDate } from '@/utils/date.util';
-import { ExceptionFilter, Catch, ArgumentsHost, HttpException, Logger } from '@nestjs/common';
+import {
+  ExceptionFilter,
+  Catch,
+  ArgumentsHost,
+  HttpException,
+  Logger,
+} from '@nestjs/common';
 import { Request, Response } from 'express';
 
 @Catch(HttpException)
@@ -16,9 +22,22 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const status = exception.getStatus();
 
     const code = exceptionRes.code || status;
-    Logger.error('触发 Http 异常过滤器 ----->', exceptionRes, exceptionRes.response, exception.message);
+    Logger.error(
+      '触发 Http 异常过滤器 ----->',
+      exceptionRes,
+      exceptionRes.response,
+      exception.message
+    );
 
-    this.auditService.createAuditRecord(req, res, StatusEnum.FALSE, 0, exceptionRes.msg, status);
+    // 根据请求url 记录 到 审计日志或登录日志中
+    this.auditService.createAuditRecord(
+      req,
+      res,
+      StatusEnum.FALSE,
+      0,
+      exceptionRes.msg,
+      status
+    );
 
     res.status(status).json({
       code,
