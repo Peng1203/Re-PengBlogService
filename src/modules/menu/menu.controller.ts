@@ -3,11 +3,9 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   Query,
-  NotFoundException,
   ConflictException,
   Res,
   Put,
@@ -20,7 +18,7 @@ import { ParseIntParamPipe } from '@/common/pipe';
 import { ApiResponseCodeEnum, PermissionEnum } from '@/helper/enums';
 import { Response } from 'express';
 import { Menu } from '@/common/entities';
-import { Public, RequirePermissions } from '@/common/decorators';
+import { RequirePermissions } from '@/common/decorators';
 @ApiTags('Menu')
 @ApiBearerAuth()
 @Controller('menu')
@@ -38,7 +36,9 @@ export class MenuController {
   @ApiOperation({ summary: '查询菜单' })
   async findAll(@Query() query: FindAllMenuDto) {
     const { list, total } = await this.menuService.findAll(query);
-    const menu = query.queryStr ? list : this.menuService.handleMenusResponse(list);
+    const menu = query.queryStr
+      ? list
+      : this.menuService.handleMenusResponse(list);
     return { total, list: menu };
   }
 

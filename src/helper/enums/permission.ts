@@ -21,7 +21,7 @@ export enum PermissionEnum {
   INIT_MENU = 'init_menu',
 
   /** 权限标识 */
-  VIEW_PERMISSION = 'view_permission',
+  GET_PERMISSION = 'get_permission',
   CREATE_PERMISSION = 'create_permission',
   UPDATE_PERMISSION = 'update_permission',
   DELETE_PERMISSION = 'delete_permission',
@@ -40,4 +40,12 @@ export enum PermissionEnum {
   CREATE_ARTICLE = 'create_article',
   UPDATE_ARTICLE = 'update_article',
   DELETE_ARTICLE = 'delete_article',
+
+  /** 日志管理 */
+  // 审计日志
+  GET_AUDIT_LOG = 'get_audit_log',
+  DELETE_AUDIT_LOG = 'delete_audit_log',
+  // 登录日志
+  GET_LOGIN_LOG = 'get_login_log',
+  DELETE_LOGIN_LOG = 'delete_login_log',
 }

@@ -19,7 +19,7 @@ import {
 } from './dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiResponseCodeEnum, PermissionEnum } from '@/helper/enums';
-import { Public, RequirePermissions } from '@/common/decorators';
+import { RequirePermissions } from '@/common/decorators';
 import { ParseIntParamPipe } from '@/common/pipe';
 import { Response } from 'express';
 
