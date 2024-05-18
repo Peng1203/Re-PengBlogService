@@ -32,7 +32,11 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { MutexModule } from './shared/mutex/mutex.module';
 import { OpenAiModule } from './modules/open-ai/open-ai.module';
 import { AuditModule } from './modules/log/audit/audit.module';
-import { DataAccessFilter, HttpExceptionFilter } from './common/exceptions';
+import {
+  DataAccessFilter,
+  HttpExceptionFilter,
+  UploadTooLargeFilter,
+} from './common/exceptions';
 
 @Module({
   imports: [
@@ -98,6 +102,11 @@ import { DataAccessFilter, HttpExceptionFilter } from './common/exceptions';
     {
       provide: APP_FILTER,
       useClass: DataAccessFilter,
+    },
+    // 上传文件异常过滤器
+    {
+      provide: APP_FILTER,
+      useClass: UploadTooLargeFilter,
     },
   ],
 })

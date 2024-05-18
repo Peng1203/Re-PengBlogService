@@ -44,6 +44,10 @@ export enum ApiResponseCodeEnum {
   /** 操作冲突 */
   CONFLICT = 40900,
 
+  PAYLOAD_TOO_LARGE = 41300,
+  /** 文件上传过大 */
+  FILE_TOO_LARGE = 41301,
+
   INTERNALSERVERERROR = 50000,
   /** 数据库 查询操作失败 */
   INTERNALSERVERERROR_SQL_FIND = 50001,

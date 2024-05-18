@@ -1,3 +1,4 @@
+import path from 'path';
 import {
   Controller,
   Get,
@@ -11,12 +12,19 @@ import {
   Res,
   NotFoundException,
   UseGuards,
+  UploadedFile,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { ArticleService } from './article.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { ReqUser, RequirePermissions } from '@/common/decorators';
+import {
+  Public,
+  ReqUser,
+  RequirePermissions,
+  UploadImageAggregation,
+} from '@/common/decorators';
 import { ApiResponseCodeEnum, PermissionEnum } from '@/helper/enums';
 import { FindAllArticleDto } from './dto';
 import { ParseIntParamPipe } from '@/common/pipe';
@@ -27,7 +35,10 @@ import { DeleteArticleGuard, UpdateArticleGuard } from './guards';
 @ApiBearerAuth()
 @Controller('article')
 export class ArticleController {
-  constructor(private readonly articleService: ArticleService) {}
+  constructor(
+    private readonly articleService: ArticleService,
+    private readonly configService: ConfigService
+  ) {}
 
   @Post()
   @RequirePermissions(PermissionEnum.CREATE_ARTICLE)
@@ -92,5 +103,21 @@ export class ArticleController {
     if (!delRes) res.resMsg = '删除文章失败!';
     if (!delRes) res.success = false;
     else return '删除文章成功';
+  }
+
+  @Public()
+  @Post('image')
+  @UploadImageAggregation()
+  @ApiOperation({ summary: '上传文章图片资源' })
+  async upload(
+    @Res({ passthrough: true }) res: Response,
+    @UploadedFile() file: Express.Multer.File
+  ) {
+    const RESOURCE_SERVE = this.configService.get<string>(
+      'STATIC_RESOURCE_SERVE'
+    );
+    const fullPath = `${RESOURCE_SERVE}/${path.basename(file.path)}`;
+    res.resMsg = '图片上传成功!';
+    return fullPath;
   }
 }

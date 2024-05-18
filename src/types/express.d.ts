@@ -1,4 +1,7 @@
-import { Request as ExpressRequest, Response as ExpressResponse } from 'express';
+import {
+  Request as ExpressRequest,
+  Response as ExpressResponse,
+} from 'express';
 import { User } from '@/common/entities';
 import { ApiResponseCodeEnum } from '@/helper/enums';
 import { SessionInfo } from 'express-session';
@@ -20,5 +23,7 @@ declare module 'express' {
     useragent: Details & { isAuthoritative: boolean };
     //
     clientIp: any;
+    // 响应错误信息
+    resErrMsg: string;
   }
 }

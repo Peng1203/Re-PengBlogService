@@ -25,11 +25,13 @@ import {
 } from './dto';
 import { UpdateUserDto } from './dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { RequirePermissions } from '@/common/decorators';
+import {
+  RequirePermissions,
+  UploadImageAggregation,
+} from '@/common/decorators';
 import { ApiResponseCodeEnum, PermissionEnum } from '@/helper/enums';
 import { ParseIntParamPipe } from '@/common/pipe';
 import { Response, Request } from 'express';
-import { UploadAvaterAggregation } from './decorator';
 import { ConfigService } from '@nestjs/config';
 import path from 'path';
 import { IdentityGuard } from '@/common/guards';
@@ -126,7 +128,7 @@ export class UserController {
   }
 
   @Post('avater')
-  @UploadAvaterAggregation()
+  @UploadImageAggregation()
   @ApiOperation({ summary: '上传头像' })
   async uploadAvater(
     @Req() req: Request,
@@ -143,7 +145,7 @@ export class UserController {
   }
 
   @Post(':id/avater')
-  @UploadAvaterAggregation()
+  @UploadImageAggregation()
   @ApiOperation({ summary: '更新用户头像' })
   async updateUserAvater(
     @Req() req: Request,
