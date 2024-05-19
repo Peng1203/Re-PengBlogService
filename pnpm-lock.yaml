@@ -77,6 +77,9 @@ dependencies:
   ioredis:
     specifier: ^5.3.2
     version: 5.3.2
+  ip2region:
+    specifier: ^2.3.0
+    version: 2.3.0(@types/node@18.13.0)
   mime-types:
     specifier: ^2.1.35
     version: 2.1.35
@@ -3828,6 +3831,14 @@ packages:
       standard-as-callback: 2.1.0
     transitivePeerDependencies:
       - supports-color
+    dev: false
+
+  /ip2region@2.3.0(@types/node@18.13.0):
+    resolution: {integrity: sha512-zV5Xsadzrx9Ej6heoyhbXMsfGWWQ3C6bAIYStrHhw9kzLpGpVNlnAyRBxxPgxA1GNqr1Ti7oUxcWsMWNN3jZBg==}
+    peerDependencies:
+      '@types/node': '*'
+    dependencies:
+      '@types/node': 18.13.0
     dev: false
 
   /ipaddr.js@1.9.1:
