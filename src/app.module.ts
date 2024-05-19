@@ -37,6 +37,7 @@ import {
   HttpExceptionFilter,
   UploadTooLargeFilter,
 } from './common/exceptions';
+import { LoginAuditModule } from './modules/log/login-audit/login-audit.module';
 
 @Module({
   imports: [
@@ -65,6 +66,7 @@ import {
     SystemModule,
     OpenAiModule,
     AuditModule,
+    LoginAuditModule,
   ],
   providers: [
     JwtStrategy,
