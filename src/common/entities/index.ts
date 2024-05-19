@@ -10,3 +10,4 @@ export * from './category.entity';
 export * from './tag.entity';
 
 export * from './audit.entity';
+export * from './login.audit.entity';
