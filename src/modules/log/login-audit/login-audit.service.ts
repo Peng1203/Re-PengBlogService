@@ -1,11 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LoginAudit } from '@/common/entities';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 import { Request } from 'express';
 import { IpService } from '@/shared/ip/ip.service';
-import { LoginMethodEnum } from '@/helper/enums';
+import { ApiResponseCodeEnum, LoginMethodEnum } from '@/helper/enums';
 import { formatDate } from '@/utils/date.util';
+import { FindAllLoginAuditDto } from './dto';
 
 @Injectable()
 export class LoginAuditService {
@@ -100,5 +101,60 @@ export class LoginAuditService {
     if (deviceTypes.includes('Desktop')) return 'PC';
     else if (deviceTypes.includes('Mobile')) return 'Mobile';
     else return 'Other';
+  }
+
+  async findAll(params: FindAllLoginAuditDto, queryUserId: number) {
+    try {
+      const {
+        page,
+        pageSize,
+        queryStr = '',
+        column,
+        order,
+        userId = 0,
+        startTime,
+        endTime,
+      } = params;
+
+      const filter: any = {};
+
+      if (userId) filter.userId = userId;
+
+      if (startTime && endTime) filter.loginTime = Between(startTime, endTime);
+
+      const [list, total] = await this.loginAuditRepository.findAndCount({
+        where: [filter],
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+        order: { [column]: order },
+      });
+
+      return {
+        list: list.map(({ ip, ...args }) => ({
+          ...args,
+          ip: this.formatIPInfo(ip, queryUserId),
+        })),
+        total,
+      };
+    } catch (e) {
+      throw new InternalServerErrorException({
+        e,
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
+        msg: '查询登录日志列表失败',
+      });
+    }
+  }
+
+  private formatIPInfo(ip: string, userId: number): string {
+    if (userId === 1) return ip;
+    else {
+      const ipParts = ip.split('.');
+      if (ipParts.length !== 4) return ip;
+      else {
+        ipParts[1] = '***';
+        ipParts[2] = '***';
+        return ipParts.join('.');
+      }
+    }
   }
 }

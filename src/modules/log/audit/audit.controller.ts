@@ -17,7 +17,7 @@ import { Response } from 'express';
 import { PermissionEnum } from '@/helper/enums';
 import { RequirePermissions } from '@/common/decorators';
 
-@ApiTags('Audit')
+@ApiTags('Log')
 @ApiBearerAuth()
 @Controller('audit')
 export class AuditController {
