@@ -2,10 +2,8 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { User } from './user.entity';
 import { DateTimeTransformer } from './common/timestamped.entity';
 import { LoginMethodEnum, LoginStatusEnum } from '../../helper/enums';
 
@@ -17,8 +15,8 @@ export class LoginAudit {
   @Column({ name: 'user_name', type: 'varchar' })
   userName: string;
 
-  @Column({ name: 'user_id', type: 'varchar', nullable: true, default: null })
-  userId: string;
+  @Column({ name: 'user_id', type: 'int', nullable: true, default: null })
+  userId: number;
 
   @Column({ type: 'varchar', length: 15 })
   ip: string;
@@ -29,8 +27,8 @@ export class LoginAudit {
   @Column({ type: 'varchar', nullable: true, default: null })
   location: string;
 
-  @Column({ name: 'login_status', type: 'enum', enum: LoginStatusEnum })
-  loginStatus: LoginStatusEnum;
+  @Column({ name: 'login_status', type: 'int' })
+  loginStatus: number;
 
   @Column({
     name: 'failure_reason',
@@ -76,7 +74,8 @@ export class LoginAudit {
     name: 'logout_time',
     type: 'datetime',
     transformer: new DateTimeTransformer(),
-    default: '',
+    nullable: true,
+    default: null,
   })
   logoutTime: Date | string;
 }
