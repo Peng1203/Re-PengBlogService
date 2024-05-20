@@ -8,6 +8,7 @@ import { LocalStrategy } from './strategys';
 import { UserModule } from '@/modules/user/user.module';
 import { CommonModule } from '@/shared/common.module';
 import { PasswordService } from './services';
+import { LoginAuditModule } from '../log/login-audit/login-audit.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { PasswordService } from './services';
     JwtModule.registerAsync({ useClass: JwtConfigService }),
     forwardRef(() => UserModule),
     CommonModule,
+    LoginAuditModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, LocalStrategy, PasswordService],

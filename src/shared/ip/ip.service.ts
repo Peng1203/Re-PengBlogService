@@ -9,7 +9,12 @@ export class IpService {
     this.query = new IP2Region({ disableIpv6: true });
   }
 
-  resolveIp(ip: string) {
+  resolveIp(ip: string): {
+    country: string;
+    province: string;
+    city: string;
+    isp: string;
+  } {
     try {
       return this.query.search(ip);
     } catch (e) {

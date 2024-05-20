@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UserService } from '@/modules/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -26,7 +30,8 @@ export class AuthService {
    */
   async validateUser(userName: string, pwd: string) {
     try {
-      const { password, ...user } = await this.userService.findLoginUserByUserName(userName);
+      const { password, ...user } =
+        await this.userService.findLoginUserByUserName(userName);
       const validateStatus = await this.passwordService.verify(pwd, password);
       if (!validateStatus) throw new Error();
       return user;
@@ -79,7 +84,9 @@ export class AuthService {
       { sub: id },
       {
         secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
-        expiresIn: this.configService.get<number>('JWT_REFRESH_TOKEN_EXPIRES_IN'),
+        expiresIn: this.configService.get<number>(
+          'JWT_REFRESH_TOKEN_EXPIRES_IN'
+        ),
       }
     );
   }
@@ -133,11 +140,16 @@ export class AuthService {
    * @returns {*}
    */
   async setTokenToRedis(key: string, token: string) {
-    await this.redis.setCache(key, token, this.configService.get<number>('JWT_ACCESS_TOKEN_EXPIRES_IN'));
+    await this.redis.setCache(
+      key,
+      token,
+      this.configService.get<number>('JWT_ACCESS_TOKEN_EXPIRES_IN')
+    );
   }
 
   getClientInfo(req: Request) {
-    const { os, platform, browser, version, source, isAuthoritative, ...args } = req.useragent;
+    const { os, platform, browser, version, source, isAuthoritative, ...args } =
+      req.useragent;
     const deviceTypes: string[] = [];
     for (const key in args) {
       if (!key.includes('is')) continue;
@@ -225,11 +237,18 @@ export class AuthService {
   verifyCaptcha(captcha: string, session: SessionInfo) {
     if (!session?.captcha)
       throw new UnauthorizedException({
-        code: ApiResponseCodeEnum.UNAUTHORIZED_NOTFOUND_SESSION,
-        msg: '无法获取到Session信息!',
+        code: ApiResponseCodeEnum.UNAUTHORIZED_CAPTCHA_EXPIRE,
+        msg: '验证码已过期!',
       });
+    // throw new UnauthorizedException({
+    //   code: ApiResponseCodeEnum.UNAUTHORIZED_NOTFOUND_SESSION,
+    //   msg: '无法获取到Session信息!',
+    // });
 
-    if (!session?.expirationTimestamp || Date.now() > session.expirationTimestamp)
+    if (
+      !session?.expirationTimestamp ||
+      Date.now() > session.expirationTimestamp
+    )
       throw new UnauthorizedException({
         code: ApiResponseCodeEnum.UNAUTHORIZED_CAPTCHA_EXPIRE,
         msg: '验证码已过期!',

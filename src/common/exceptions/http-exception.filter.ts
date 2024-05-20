@@ -1,5 +1,10 @@
-import { ApiResponseMessageEnum, StatusEnum } from '@/helper/enums';
+import {
+  ApiResponseMessageEnum,
+  LoginMethodEnum,
+  StatusEnum,
+} from '@/helper/enums';
 import { AuditService } from '@/modules/log/audit/audit.service';
+import { LoginAuditService } from '@/modules/log/login-audit/login-audit.service';
 import { formatDate } from '@/utils/date.util';
 import {
   ExceptionFilter,
@@ -12,7 +17,10 @@ import { Request, Response } from 'express';
 
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
-  constructor(private readonly auditService: AuditService) {}
+  constructor(
+    private readonly auditService: AuditService,
+    private readonly loginAuditService: LoginAuditService
+  ) {}
 
   catch(exception: HttpException & unknown, host: ArgumentsHost) {
     const exceptionRes = exception.getResponse() as any;
@@ -22,22 +30,34 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const status = exception.getStatus();
 
     const code = exceptionRes.code || status;
-    Logger.error(
-      '触发 Http 异常过滤器 ----->',
-      exceptionRes,
-      exceptionRes.response,
-      exception.message
-    );
+    Logger.error('触发 Http 异常过滤器 ----->', exceptionRes);
+    Logger.error('触发 Http 异常过滤器 ----->', exception.message);
 
     // 根据请求url 记录 到 审计日志或登录日志中
-    this.auditService.createAuditRecord(
-      req,
-      res,
-      StatusEnum.FALSE,
-      0,
-      exceptionRes.msg,
-      status
-    );
+    if (req.path.includes('login')) {
+      this.loginAuditService.createLoginRecord(
+        req,
+        {
+          userId: null,
+          userName: req.body.userName,
+        },
+        {
+          loginDuration: 0,
+          loginStatus: exceptionRes.code,
+          failureReason: exceptionRes.msg,
+          loginMethod: LoginMethodEnum.PASSWORD,
+        }
+      );
+    } else {
+      this.auditService.createAuditRecord(
+        req,
+        res,
+        StatusEnum.FALSE,
+        0,
+        exceptionRes.msg,
+        status
+      );
+    }
 
     res.status(status).json({
       code,

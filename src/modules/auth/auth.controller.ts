@@ -12,6 +12,7 @@ import {
   Res,
   Session,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -27,6 +28,9 @@ import { Details } from 'express-useragent';
 import { User } from '@/common/entities';
 import { ParseIntParamPipe } from '@/common/pipe';
 import { UserService } from '../user/user.service';
+import { LoginRecordInterceptor } from './interceptor';
+import { LoginAuditService } from '../log/login-audit/login-audit.service';
+import { formatDate } from '@/utils/date.util';
 
 @ApiTags('Auth')
 @ApiBearerAuth()
@@ -35,7 +39,8 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly configService: ConfigService,
-    private readonly userService: UserService
+    private readonly userService: UserService,
+    private readonly loginAuditService: LoginAuditService
   ) {}
 
   @Get('login/captcha')
@@ -72,6 +77,7 @@ export class AuthController {
   @Post('login')
   @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
+  @UseInterceptors(LoginRecordInterceptor)
   @ApiOperation({ summary: '登录' })
   async login(
     @Req() req: Request,
@@ -103,11 +109,18 @@ export class AuthController {
     delete session.captcha;
     delete session.expirationTimestamp;
 
-    res.resMsg = '登录成功';
+    const ip = this.loginAuditService.getClientIp(req);
+    const location = this.loginAuditService.getLocationInfo(ip);
 
+    res.resMsg = '登录成功';
+    user.id;
+    user.userName;
     return {
       user,
       clientInfo,
+      ip,
+      location,
+      loginTime: formatDate(),
       tokens: { access_token, refresh_token },
     };
   }
