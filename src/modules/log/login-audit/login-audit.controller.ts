@@ -2,7 +2,7 @@ import { Controller, Get, Query } from '@nestjs/common';
 import { LoginAuditService } from './login-audit.service';
 import { PermissionEnum } from '@/helper/enums';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Public, ReqUser, RequirePermissions } from '@/common/decorators';
+import { ReqUser, RequirePermissions } from '@/common/decorators';
 import { User } from '@/common/entities';
 import { FindAllLoginAuditDto } from './dto';
 
