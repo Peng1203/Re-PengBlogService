@@ -5,7 +5,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { DateTimeTransformer } from './common/timestamped.entity';
-import { LoginMethodEnum, LoginStatusEnum } from '../../helper/enums';
+import { LoginMethodEnum } from '../../helper/enums';
 
 @Entity({ name: 'login_audit' })
 export class LoginAudit {

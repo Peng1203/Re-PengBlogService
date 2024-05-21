@@ -126,7 +126,7 @@ export class LoginAuditService {
         where: [filter],
         skip: (page - 1) * pageSize,
         take: pageSize,
-        order: { [column]: order },
+        order: { [column || 'id']: order || 'ASC' },
       });
 
       return {
