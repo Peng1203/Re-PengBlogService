@@ -126,7 +126,7 @@ export class LoginAuditService {
         where: [filter],
         skip: (page - 1) * pageSize,
         take: pageSize,
-        order: { [column || 'id']: order || 'ASC' },
+        order: { [column || 'loginTime']: order || 'DESC' },
       });
 
       return {
@@ -155,6 +155,31 @@ export class LoginAuditService {
         ipParts[2] = '***';
         return ipParts.join('.');
       }
+    }
+  }
+
+  async remove(id: number) {
+    try {
+      const delResult = await this.loginAuditRepository.delete(id);
+      return !!delResult.affected;
+    } catch (e) {
+      throw new InternalServerErrorException({
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
+        e,
+        msg: '删除登录日志失败',
+      });
+    }
+  }
+
+  async removes(ids: number[]) {
+    try {
+      return await this.loginAuditRepository.delete(ids);
+    } catch (e) {
+      throw new InternalServerErrorException({
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
+        e,
+        msg: '删除登录日志失败',
+      });
     }
   }
 }

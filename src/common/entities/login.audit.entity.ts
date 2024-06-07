@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { DateTimeTransformer } from './common/timestamped.entity';
@@ -12,7 +13,8 @@ export class LoginAudit {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'user_name', type: 'varchar' })
+  @Index('index_user_name')
+  @Column({ name: 'user_name', type: 'varchar', length: 15, default: null })
   userName: string;
 
   @Column({ name: 'user_id', type: 'int', nullable: true, default: null })
@@ -27,7 +29,7 @@ export class LoginAudit {
   @Column({ type: 'varchar', nullable: true, default: null })
   location: string;
 
-  @Column({ name: 'login_status', type: 'int' })
+  @Column({ name: 'login_status', type: 'int', default: null })
   loginStatus: number;
 
   @Column({
