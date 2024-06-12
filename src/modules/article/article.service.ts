@@ -13,7 +13,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, Repository } from 'typeorm';
 import { Article } from '@/common/entities';
 import { UserService } from '@/modules/user/user.service';
-import { FindAllArticleDto } from './dto';
+import { FindAllArticleDto, FindUserArticleDto } from './dto';
 import { formatDate } from '@/utils/date.util';
 
 @Injectable()
@@ -114,6 +114,40 @@ export class ArticleService {
       const [list, total] = await queryBuilder.getManyAndCount();
 
       return { list, total };
+    } catch (e) {
+      throw new InternalServerErrorException({
+        e,
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
+        msg: '查询文章列表失败',
+      });
+    }
+  }
+
+  async findByUser(uid: number, params: FindUserArticleDto) {
+    try {
+      console.log('params ------', params);
+      const { page, pageSize, column, order, type = 1 } = params;
+      const where = { author: { id: uid } };
+      const data = { list: [], total: 0 };
+      if (type === 1) {
+        const [list, total] = await this.articleRepository.findAndCount({
+          where,
+          skip: (page - 1) * pageSize,
+          take: pageSize,
+          order: { [column || 'id']: order || 'ASC' },
+          relations: ['author', 'tags', 'category'],
+        });
+        data.list = list;
+        data.total = total;
+      } else {
+        const [list, total] = await this.articleRepository.findAndCount({
+          where,
+        });
+        data.list = list.map(item => ({ label: item.title, value: item.id }));
+        data.total = total;
+      }
+
+      return data;
     } catch (e) {
       throw new InternalServerErrorException({
         e,

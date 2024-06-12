@@ -26,7 +26,7 @@ import {
   UploadImageAggregation,
 } from '@/common/decorators';
 import { ApiResponseCodeEnum, PermissionEnum } from '@/helper/enums';
-import { FindAllArticleDto } from './dto';
+import { FindAllArticleDto, FindUserArticleDto } from './dto';
 import { ParseIntParamPipe } from '@/common/pipe';
 import { Response } from 'express';
 import { DeleteArticleGuard, UpdateArticleGuard } from './guards';
@@ -59,20 +59,33 @@ export class ArticleController {
     return this.articleService.findAll(params);
   }
 
+  @Public()
+  @Get(':uid')
+  @ApiOperation({ summary: '获取用户文章列表' })
+  findByUser(
+    @Param('uid', new ParseIntParamPipe('文章id参数有误')) uid: number,
+    @Query() params: FindUserArticleDto
+  ) {
+    return this.articleService.findByUser(uid, params);
+  }
+
   // @UseGuards(GetArticleDetailGuard)
-  @Get(':id')
+  @Get(':uid/:aid')
   @ApiOperation({ summary: '获取文章详情' })
-  findOne(@Param('id', new ParseIntParamPipe('id参数有误')) id: number) {
-    return this.articleService.findOne(id);
+  findOne(
+    @Param('uid', new ParseIntParamPipe('作者id参数有误')) uid: number,
+    @Param('aid', new ParseIntParamPipe('文章id参数有误')) aid: number
+  ) {
+    return this.articleService.findOne(aid);
   }
 
   // @RequirePermissions(PermissionEnum.UPDATE_ARTICLE)
-  @Patch(':id/:aid')
+  @Patch(':uid/:aid')
   @UseGuards(UpdateArticleGuard)
   @ApiOperation({ summary: '更新文章' })
   async update(
-    @Param('id', new ParseIntParamPipe('文章id参数有误')) id: number,
-    @Param('aid', new ParseIntParamPipe('作者id参数有误')) aid: number,
+    @Param('uid', new ParseIntParamPipe('作者id参数有误')) uid: number,
+    @Param('aid', new ParseIntParamPipe('文章id参数有误')) aid: number,
     @Body() data: UpdateArticleDto,
     @Res({ passthrough: true }) res: Response
   ) {
@@ -84,12 +97,12 @@ export class ArticleController {
   }
 
   // @RequirePermissions(PermissionEnum.DELETE_ARTICLE)
-  @Delete(':id/:aid')
+  @Delete(':uid/:aid')
   @UseGuards(DeleteArticleGuard)
   @ApiOperation({ summary: '删除文章' })
   async remove(
-    @Param('id', new ParseIntParamPipe('文章id参数有误')) id: number,
-    @Param('aid', new ParseIntParamPipe('作者id参数有误')) aid: number,
+    @Param('uid', new ParseIntParamPipe('作者id参数有误')) uid: number,
+    @Param('aid', new ParseIntParamPipe('文章id参数有误')) aid: number,
     @Res({ passthrough: true }) res: Response
   ) {
     const article = await this.articleService.findOne(aid).catch(() => false);
@@ -105,7 +118,6 @@ export class ArticleController {
     else return '删除文章成功';
   }
 
-  @Public()
   @Post('image')
   @UploadImageAggregation()
   @ApiOperation({ summary: '上传文章图片资源' })
