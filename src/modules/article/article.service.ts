@@ -125,7 +125,6 @@ export class ArticleService {
 
   async findByUser(uid: number, params: FindUserArticleDto) {
     try {
-      console.log('params ------', params);
       const { page, pageSize, column, order, type = 1 } = params;
       const where = { author: { id: uid } };
       const data = { list: [], total: 0 };
@@ -142,6 +141,7 @@ export class ArticleService {
       } else {
         const [list, total] = await this.articleRepository.findAndCount({
           where,
+          order: { [column || 'id']: order || 'ASC' },
         });
         data.list = list.map(item => ({ label: item.title, value: item.id }));
         data.total = total;
