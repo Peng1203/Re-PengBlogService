@@ -3,7 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateTagDto {
   @IsString()
-  @MaxLength(8)
+  @MaxLength(12)
   @ApiProperty({ description: '标签名' })
   tagName: string;
 
