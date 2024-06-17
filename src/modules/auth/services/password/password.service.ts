@@ -5,9 +5,37 @@ import { Injectable } from '@nestjs/common';
 export class PasswordService {
   private readonly KEY_LENGTH = 64;
   private readonly INITIAL_PASSWORD: '123456';
+  private readonly HASH_ALGORITHM = 'sha512';
 
   /** 生成密码hash */
   hash(password: string): Promise<string> {
+    return new Promise(resolve => {
+      // 生成随机盐
+      const salt = crypto.randomBytes(16).toString('hex');
+      const hash = crypto.createHmac(this.HASH_ALGORITHM, salt);
+
+      hash.update(password);
+      const value = hash.digest('hex');
+
+      resolve(`${salt}:${value}`);
+    });
+  }
+
+  /** 验证密码 */
+  verify(password: string, hash: string): Promise<boolean> {
+    return new Promise(resolve => {
+      const [salt, storedHash] = hash.split(':');
+      const hashToVerify = crypto.createHmac(this.HASH_ALGORITHM, salt);
+
+      hashToVerify.update(password);
+
+      const value = hashToVerify.digest('hex');
+      resolve(storedHash === value);
+    });
+  }
+
+  /** 生成密码hash */
+  hash_v0(password: string): Promise<string> {
     return new Promise((resolve, reject) => {
       // 生成随机盐
       const salt = crypto.randomBytes(16).toString('hex');
@@ -19,8 +47,11 @@ export class PasswordService {
     });
   }
 
-  /** 验证密码 */
-  verify(password: string, hash: string): Promise<boolean> {
+  /**
+   * 验证密码
+   *  存在问题 过段时间同样的 hash 和 salt 验证会失败
+   */
+  verify_v0(password: string, hash: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
       const [salt, hashKey] = hash.split(':');
       const hashKeyBuff = Buffer.from(hashKey, 'hex');
