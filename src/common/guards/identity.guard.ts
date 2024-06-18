@@ -15,6 +15,9 @@ export class IdentityGuard implements CanActivate {
     context: ExecutionContext
   ): boolean | Promise<boolean> | Observable<boolean> {
     const req = context.switchToHttp().getRequest<Request>();
+
+    if (req.user.id === 1 && req.user.userName === 'admin') return true;
+
     const paramsId = Number(req.params.id || req.params.uid);
     // prettier-ignore
     if (paramsId != req.user.id) throw new ForbiddenException({
