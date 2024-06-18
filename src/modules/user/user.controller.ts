@@ -198,4 +198,22 @@ export class UserController {
     await this.userService.update(id, { password: newHashPwd });
     return '密码修改成功';
   }
+
+  @Patch(':id/password/reset')
+  @UseGuards(IdentityGuard)
+  @ApiOperation({ summary: '重置密码' })
+  async resetPassword(
+    @Param('id', new ParseIntParamPipe('id参数有误')) id: number
+  ) {
+    const user = await this.userService.findOneById(id);
+    // prettier-ignore
+    if (!user) throw new NotFoundException({
+      code: ApiResponseCodeEnum.NOTFOUND_USER,
+      msg: '操作失败，未找到相关用户信息',
+    });
+    const newPwd = await this.passwordService.reset();
+    console.log('newPwd ------', newPwd);
+    await this.userService.update(id, { password: newPwd });
+    return '密码重置成功';
+  }
 }

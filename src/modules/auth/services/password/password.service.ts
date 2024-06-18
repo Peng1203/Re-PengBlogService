@@ -4,8 +4,10 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 export class PasswordService {
   private readonly KEY_LENGTH = 64;
-  private readonly INITIAL_PASSWORD: '123456';
+  private readonly INITIAL_PASSWORD = '123456';
   private readonly HASH_ALGORITHM = 'sha512';
+  // 前端加密盐
+  private readonly VITE_SECRET_KEY = '114514qwer';
 
   /** 生成密码hash */
   hash(password: string): Promise<string> {
@@ -31,6 +33,28 @@ export class PasswordService {
 
       const value = hashToVerify.digest('hex');
       resolve(storedHash === value);
+    });
+  }
+
+  /** 重置密码 */
+  reset(): Promise<string> {
+    return new Promise(async resolve => {
+      const salt = crypto.randomBytes(16).toString('hex');
+      const hash = crypto.createHmac(this.HASH_ALGORITHM, salt);
+      const initPwdHash = await this.initPwdToHash();
+      hash.update(initPwdHash);
+      const value = hash.digest('hex');
+      resolve(`${salt}:${value}`);
+    });
+  }
+
+  initPwdToHash(): Promise<string> {
+    return new Promise(resolve => {
+      const hash = crypto.createHmac('sha256', this.VITE_SECRET_KEY);
+
+      hash.update(this.INITIAL_PASSWORD);
+
+      resolve(hash.digest('hex'));
     });
   }
 
