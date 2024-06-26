@@ -32,12 +32,13 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { MutexModule } from './shared/mutex/mutex.module';
 import { OpenAiModule } from './modules/open-ai/open-ai.module';
 import { AuditModule } from './modules/log/audit/audit.module';
+import { LoginAuditModule } from './modules/log/login-audit/login-audit.module';
+import { CommonModule } from './modules/common/common.module';
 import {
   DataAccessFilter,
   HttpExceptionFilter,
   UploadTooLargeFilter,
 } from './common/exceptions';
-import { LoginAuditModule } from './modules/log/login-audit/login-audit.module';
 
 @Module({
   imports: [
@@ -67,6 +68,7 @@ import { LoginAuditModule } from './modules/log/login-audit/login-audit.module';
     OpenAiModule,
     AuditModule,
     LoginAuditModule,
+    CommonModule,
   ],
   providers: [
     JwtStrategy,
