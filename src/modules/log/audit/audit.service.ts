@@ -39,12 +39,14 @@ export class AuditService {
         req.headers['x-real-ip'] || req.headers['x-forwarded-for'];
       const audit = new Audit();
 
+      const saveIp = (
+        (Array.isArray(clientIp) ? clientIp[0] : clientIp) || ip
+      ).replace('::ffff:', '');
+
       audit.method = RequestMethodEnum[method];
       // audit.router = originalUrl;
       audit.router = path;
-      audit.ip = (
-        (Array.isArray(clientIp) ? clientIp[0] : clientIp) || ip
-      ).replace('::ffff:', '');
+      audit.ip = saveIp === '::1' ? '127.0.0.1' : saveIp;
       audit.userAgent = useragent.source;
       audit.statusCode = statusCode || res.statusCode;
       audit.responseTime = responseTime;
@@ -71,6 +73,7 @@ export class AuditService {
       'oldPassword',
       'newPassword',
       'refresh_token',
+      'ip',
     ];
     const hideInfo = (obj: any) => {
       Object.keys(obj).forEach(key => {
