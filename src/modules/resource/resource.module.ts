@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ResourceService } from './resource.service';
 import { ResourceController } from './resource.controller';
-import { CommonModule } from '@/shared/common.module';
+import { SharedModule } from '@/shared/shared.module';
 
 @Module({
-  imports: [CommonModule],
+  imports: [SharedModule],
   controllers: [ResourceController],
   providers: [ResourceService],
 })

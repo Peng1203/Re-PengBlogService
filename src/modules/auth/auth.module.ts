@@ -6,7 +6,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtConfigService, PassportConfigService } from '@/config';
 import { LocalStrategy } from './strategys';
 import { UserModule } from '@/modules/user/user.module';
-import { CommonModule } from '@/shared/common.module';
+import { SharedModule } from '@/shared/shared.module';
 import { PasswordService } from './services';
 import { LoginAuditModule } from '../log/login-audit/login-audit.module';
 
@@ -15,7 +15,7 @@ import { LoginAuditModule } from '../log/login-audit/login-audit.module';
     PassportModule.registerAsync({ useClass: PassportConfigService }),
     JwtModule.registerAsync({ useClass: JwtConfigService }),
     forwardRef(() => UserModule),
-    CommonModule,
+    SharedModule,
     LoginAuditModule,
   ],
   controllers: [AuthController],

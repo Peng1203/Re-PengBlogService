@@ -17,7 +17,7 @@ import {
   LoggerMiddleware,
   ResponseHeadersMiddleware,
 } from './common/middleware';
-import { CommonModule } from './shared/common.module';
+import { SharedModule } from './shared/shared.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { RoleModule } from './modules/role/role.module';
@@ -52,7 +52,7 @@ import { LoginAuditModule } from './modules/log/login-audit/login-audit.module';
     }),
     TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService }),
     EventEmitterModule.forRoot(),
-    CommonModule,
+    SharedModule,
     MutexModule,
     AuthModule,
     UserModule,

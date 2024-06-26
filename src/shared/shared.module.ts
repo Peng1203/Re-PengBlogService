@@ -17,4 +17,4 @@ import { IpModule } from './ip/ip.module';
   providers: [CosService, IpService],
   exports: [HttpModule, RedisModule, CosService, ProxyHttpModule, IpModule],
 })
-export class CommonModule {}
+export class SharedModule {}
