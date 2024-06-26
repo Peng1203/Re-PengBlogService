@@ -1,12 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import IP2Region from 'ip2region';
+import NodeIP2Region from 'node-ip2region';
 
 @Injectable()
 export class IpService {
   private query: IP2Region;
+  private searcher: NodeIP2Region;
 
   constructor() {
     this.query = new IP2Region({ disableIpv6: true });
+    this.searcher = NodeIP2Region.create();
   }
 
   resolveIp(ip: string): {
@@ -20,5 +23,9 @@ export class IpService {
     } catch (e) {
       console.log('解析IP失败', e);
     }
+  }
+
+  resolveIp_v2(ip: string): { city: number; region: string } {
+    return this.searcher.binarySearchSync(ip);
   }
 }

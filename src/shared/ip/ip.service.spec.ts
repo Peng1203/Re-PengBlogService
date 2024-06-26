@@ -11,7 +11,9 @@ describe('IpService', () => {
 
     service = module.get<IpService>(IpService);
 
-    const paseResult = service.resolveIp('192.168.0.1');
+    const paseResult1 = service.resolveIp('183.236.7.254');
+    console.log('paseResult1 ------', paseResult1);
+    const paseResult = service.resolveIp_v2('183.236.7.254');
     console.log('paseResult ------', paseResult);
   });
 
