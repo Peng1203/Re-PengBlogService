@@ -138,7 +138,8 @@ export class AuditService {
       return {
         list: list.map(({ user, ip, ...args }) => ({
           ...args,
-          ip: this.formatIPInfo(ip, queryUserId),
+          ip,
+          // ip: this.formatIPInfo(ip, queryUserId),
           userId: user?.id || null,
           userName: user?.userName || null,
         })),
