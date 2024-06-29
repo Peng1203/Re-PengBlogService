@@ -31,10 +31,13 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     const code = exceptionRes.code || status;
     Logger.error('触发 Http 异常过滤器 ----->', exceptionRes);
-    Logger.error('触发 Http 异常过滤器 ----->', exception.message);
 
-    // 根据请求url 记录 到 审计日志或登录日志中
-    if (req.path.includes('login')) {
+    // 根据请求url 记录到审计日志或登录日志中
+    if (
+      req.path.includes('login') &&
+      req.method === 'POST' &&
+      !req.path.includes('/login/audit')
+    ) {
       this.loginAuditService.createLoginRecord(
         req,
         {

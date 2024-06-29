@@ -54,6 +54,7 @@ export class ArticleController {
   }
 
   @Get()
+  @Public()
   @ApiOperation({ summary: '获取文章列表' })
   findAll(@Query() params: FindAllArticleDto) {
     return this.articleService.findAll(params);

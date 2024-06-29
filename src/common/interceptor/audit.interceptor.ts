@@ -4,11 +4,10 @@ import {
   Injectable,
   NestInterceptor,
 } from '@nestjs/common';
-import { Observable, catchError, tap } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { Request, Response } from 'express';
 import { AuditService } from '@/modules/log/audit/audit.service';
 import { StatusEnum } from '@/helper/enums';
-import { IS_PUBLIC_KEY } from '@/common/decorators';
 import { Reflector } from '@nestjs/core';
 
 @Injectable()
