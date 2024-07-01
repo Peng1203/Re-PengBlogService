@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
-import { UpdateImageDto } from '@/common/dto';
+import { UploadImageDto } from '@/common/dto';
 
 const mkdirAsync = promisify(fs.mkdir);
 
@@ -71,7 +71,7 @@ export function UploadImageAggregation(options?: UploadOptions) {
     ApiConsumes('multipart/form-data'),
     ApiBody({
       description: '',
-      type: UpdateImageDto,
+      type: UploadImageDto,
     })
   );
 }
