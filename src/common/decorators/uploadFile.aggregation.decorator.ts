@@ -49,8 +49,6 @@ export function UploadFileAggregation(options?: UploadOptions) {
             callback(null, uploadPath);
           },
           filename(req: Request, file, callback) {
-            console.log('file ------', file);
-
             const extname =
               path.extname(file.originalname) ||
               `.${mime.extension(file.mimetype)}`;

@@ -21,7 +21,7 @@ export class ResourceController {
   }
 
   @Post()
-  @UploadFileAggregation({ maxSize: 200 })
+  @UploadFileAggregation({ maxSize: 2 })
   @ApiOperation({ summary: '上传文件' })
   upload(
     @Res({ passthrough: true }) res: Response,
