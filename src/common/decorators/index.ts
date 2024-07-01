@@ -5,3 +5,4 @@ export * from './user.decorator';
 export * from './userAgent.decorator';
 export * from './permission.decorator';
 export * from './uploadImage.aggregation.decorator';
+export * from './uploadFile.aggregation.decorator';
