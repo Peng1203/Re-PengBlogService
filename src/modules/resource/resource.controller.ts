@@ -1,10 +1,24 @@
-import { Controller, Get, Post, Body, Res, UploadedFile } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Res,
+  UploadedFile,
+  Put,
+  Req,
+  Query,
+  UseInterceptors,
+  UploadedFiles,
+} from '@nestjs/common';
 import { ResourceService } from './resource.service';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { UploadFileAggregation } from '@/common/decorators';
+import { Public, UploadFileAggregation } from '@/common/decorators';
 import { ConfigService } from '@nestjs/config';
 import path from 'path';
-import { Response } from 'express';
+import { Request, Response } from 'express';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
 
 @ApiTags('Resource')
 @ApiBearerAuth()
@@ -21,7 +35,7 @@ export class ResourceController {
   }
 
   @Post()
-  @UploadFileAggregation({ maxSize: 2 })
+  @UploadFileAggregation({ maxSize: 5 })
   @ApiOperation({ summary: '上传文件' })
   upload(
     @Res({ passthrough: true }) res: Response,
@@ -33,5 +47,34 @@ export class ResourceController {
     const fullPath = `${RESOURCE_SERVE}/${path.basename(file.path)}`;
     res.resMsg = '文件上传成功';
     return `${fullPath}`;
+  }
+
+  @Public()
+  @Put('chunk/upload')
+  @UseInterceptors(
+    FilesInterceptor('files', 10, {
+      storage: diskStorage({
+        destination: './uploads/chunks',
+        filename: (req, file, cb) => {
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          cb(
+            null,
+            `${file.originalname}.${uniqueSuffix}${path.extname(
+              file.originalname
+            )}`
+          );
+        },
+      }),
+    })
+  )
+  @ApiOperation({ summary: '上传大文件' })
+  chunkUpload(
+    @Req() req: Request,
+    @UploadedFiles() files: Express.Multer.File[]
+  ) {
+    console.log('files ------', files);
+
+    return ``;
   }
 }
