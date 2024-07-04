@@ -30,11 +30,7 @@ async function bootstrap() {
   app.use(requestIp.mw());
 
   // app.enableCors();
-  app.enableCors({
-    origin: 'http://localhost:8888',
-    // origin: 'http://localhost:8000',
-    credentials: true,
-  });
+  app.enableCors({ credentials: true });
   app.setGlobalPrefix(API_PREFIX);
 
   app.useGlobalPipes(new DtoValidatePipe());
@@ -53,7 +49,9 @@ async function bootstrap() {
   SwaggerModule.setup(SWAGGER_PREFIX, app, document);
 
   await app.listen(APP_PORT, () =>
-    Logger.debug(`server is running: http://${APP_HOST}:${APP_PORT}  --${process.env.NODE_ENV}`)
+    Logger.debug(
+      `server is running: http://${APP_HOST}:${APP_PORT}  --${process.env.NODE_ENV}`
+    )
   );
 }
 bootstrap();
