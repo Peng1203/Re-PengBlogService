@@ -14,10 +14,13 @@ RequestUrl: ${req.originalUrl}
 Method: ${req.method}
 IP: ${req.ip}
 ClientIP: ${clientIp}
+Host: ${req.headers.host}
+Referer: ${req.headers.referer || req.headers.referrer}
 StatusCode: ${statusCode}
 Params: ${JSON.stringify(req.params)}
 Query: ${JSON.stringify(req.query)}
 Body: ${JSON.stringify(req.body)}
+UserAgent: ${req.headers['user-agent']}
 ###########################################################
 `;
     Logger.log(logFormat);
