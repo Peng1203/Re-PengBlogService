@@ -10,15 +10,15 @@ import {
   Query,
   UseInterceptors,
   UploadedFiles,
-} from '@nestjs/common';
-import { ResourceService } from './resource.service';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Public, UploadFileAggregation } from '@/common/decorators';
-import { ConfigService } from '@nestjs/config';
-import path from 'path';
-import { Request, Response } from 'express';
-import { FilesInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
+} from '@nestjs/common'
+import { ResourceService } from './resource.service'
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
+import { Public, UploadFileAggregation } from '@/common/decorators'
+import { ConfigService } from '@nestjs/config'
+import path from 'path'
+import { Request, Response } from 'express'
+import { FilesInterceptor } from '@nestjs/platform-express'
+import { diskStorage } from 'multer'
 
 @ApiTags('Resource')
 @ApiBearerAuth()
@@ -31,7 +31,7 @@ export class ResourceController {
 
   @Get()
   findAll() {
-    return this.resourceService.findAll();
+    return this.resourceService.findAll()
   }
 
   @Post()
@@ -43,10 +43,10 @@ export class ResourceController {
   ) {
     const RESOURCE_SERVE = this.configService.get<string>(
       'STATIC_RESOURCE_SERVE'
-    );
-    const fullPath = `${RESOURCE_SERVE}/${path.basename(file.path)}`;
-    res.resMsg = '文件上传成功';
-    return `${fullPath}`;
+    )
+    const fullPath = `${RESOURCE_SERVE}/${path.basename(file.path)}`
+    res.resMsg = '文件上传成功'
+    return `${fullPath}`
   }
 
   @Public()
@@ -57,13 +57,13 @@ export class ResourceController {
         destination: './uploads/chunks',
         filename: (req, file, cb) => {
           const uniqueSuffix =
-            Date.now() + '-' + Math.round(Math.random() * 1e9);
+            Date.now() + '-' + Math.round(Math.random() * 1e9)
           cb(
             null,
             `${file.originalname}.${uniqueSuffix}${path.extname(
               file.originalname
             )}`
-          );
+          )
         },
       }),
     })
@@ -73,8 +73,8 @@ export class ResourceController {
     @Req() req: Request,
     @UploadedFiles() files: Express.Multer.File[]
   ) {
-    console.log('files ------', files);
+    console.log('files ------', files)
 
-    return ``;
+    return ``
   }
 }

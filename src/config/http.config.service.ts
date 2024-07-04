@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
-import { HttpModuleOptions, HttpModuleOptionsFactory } from '@nestjs/axios';
-import { ConfigService } from '@nestjs/config';
+import { Injectable } from '@nestjs/common'
+import { HttpModuleOptions, HttpModuleOptionsFactory } from '@nestjs/axios'
+import { ConfigService } from '@nestjs/config'
 
 @Injectable()
 export class HttpConfigService implements HttpModuleOptionsFactory {
@@ -10,6 +10,6 @@ export class HttpConfigService implements HttpModuleOptionsFactory {
       timeout: this.configService.get('HTTP_TIMEOUT'),
       maxRedirects: this.configService.get('HTTP_MAX_REDIRECTS'),
       headers: {},
-    };
+    }
   }
 }

@@ -76,7 +76,7 @@ export const ApiResponseMessageEnum = {
   [ApiResponseCodeEnum.NOTFOUND]: '资源不存在',
   [ApiResponseCodeEnum.NOTFOUND_USER]: '未找到相关用户信息',
   [ApiResponseCodeEnum.INTERNALSERVERERROR]: '服务器内部错误',
-};
+}
 
 export enum ResponseMessageEnum {
   TRUE = 'Success',

@@ -1,13 +1,19 @@
-import { Type } from '@nestjs/class-transformer';
-import { ArrayMaxSize, ArrayMinSize, IsArray, IsString, ValidateNested } from '@nestjs/class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { Type } from '@nestjs/class-transformer'
+import {
+  ArrayMaxSize,
+  ArrayMinSize,
+  IsArray,
+  IsString,
+  ValidateNested,
+} from '@nestjs/class-validator'
+import { ApiProperty } from '@nestjs/swagger'
 
 class MessageItem {
   @IsString()
-  role: string;
+  role: string
 
   @IsString()
-  content: string;
+  content: string
 }
 
 export class ChatDto {
@@ -17,5 +23,5 @@ export class ChatDto {
   @ArrayMaxSize(5)
   @ValidateNested({ each: true })
   @ApiProperty({ description: '聊天内容数组' })
-  messages: MessageItem[];
+  messages: MessageItem[]
 }

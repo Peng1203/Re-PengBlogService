@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
-import { AuthOptionsFactory, IAuthModuleOptions } from '@nestjs/passport';
-import { PassPortStrategyEnum } from '@/helper/enums';
+import { Injectable } from '@nestjs/common'
+import { AuthOptionsFactory, IAuthModuleOptions } from '@nestjs/passport'
+import { PassPortStrategyEnum } from '@/helper/enums'
 
 @Injectable()
 export class PassportConfigService implements AuthOptionsFactory {
@@ -9,6 +9,6 @@ export class PassportConfigService implements AuthOptionsFactory {
   createAuthOptions(): IAuthModuleOptions {
     return {
       defaultStrategy: PassPortStrategyEnum.JWT,
-    };
+    }
   }
 }

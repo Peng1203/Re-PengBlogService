@@ -4,33 +4,33 @@ import {
   Entity,
   Index,
   PrimaryGeneratedColumn,
-} from 'typeorm';
-import { DateTimeTransformer } from './common/timestamped.entity';
-import { LoginMethodEnum } from '../../helper/enums';
+} from 'typeorm'
+import { DateTimeTransformer } from './common/timestamped.entity'
+import { LoginMethodEnum } from '../../helper/enums'
 
 @Entity({ name: 'login_audit' })
 export class LoginAudit {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: number
 
   @Index('index_user_name')
   @Column({ name: 'user_name', type: 'varchar', length: 15, default: null })
-  userName: string;
+  userName: string
 
   @Column({ name: 'user_id', type: 'int', nullable: true, default: null })
-  userId: number;
+  userId: number
 
   @Column({ type: 'varchar', length: 15 })
-  ip: string;
+  ip: string
 
   @Column({ type: 'varchar' })
-  device: string;
+  device: string
 
   @Column({ type: 'varchar', nullable: true, default: null })
-  location: string;
+  location: string
 
   @Column({ name: 'login_status', type: 'int', default: null })
-  loginStatus: number;
+  loginStatus: number
 
   @Column({
     name: 'failure_reason',
@@ -39,17 +39,17 @@ export class LoginAudit {
     nullable: true,
     default: null,
   })
-  failureReason: string;
+  failureReason: string
 
   @Column({ name: 'user_agent', type: 'varchar' })
-  userAgent: string;
+  userAgent: string
 
   @Column({
     name: 'login_duration',
     type: 'bigint',
     comment: '登录耗时',
   })
-  loginDuration: number;
+  loginDuration: number
 
   @Column({
     name: 'login_method',
@@ -57,20 +57,20 @@ export class LoginAudit {
     comment: '登录方式',
     enum: LoginMethodEnum,
   })
-  loginMethod: LoginMethodEnum;
+  loginMethod: LoginMethodEnum
 
   @Column({ name: 'browser', type: 'varchar' })
-  browser: string;
+  browser: string
 
   @Column({ name: 'os', type: 'varchar' })
-  os: string;
+  os: string
 
   @CreateDateColumn({
     name: 'login_time',
     type: 'datetime',
     transformer: new DateTimeTransformer(),
   })
-  loginTime: Date | string;
+  loginTime: Date | string
 
   @Column({
     name: 'logout_time',
@@ -79,5 +79,5 @@ export class LoginAudit {
     nullable: true,
     default: null,
   })
-  logoutTime: Date | string;
+  logoutTime: Date | string
 }

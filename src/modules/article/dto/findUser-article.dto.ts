@@ -1,6 +1,6 @@
-import { ListCommonParamsDto } from '@/common/dto';
-import { IsEnum, IsOptional } from '@nestjs/class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { ListCommonParamsDto } from '@/common/dto'
+import { IsEnum, IsOptional } from '@nestjs/class-validator'
+import { ApiProperty } from '@nestjs/swagger'
 
 enum ResponseType {
   /** 文章列表 */
@@ -18,5 +18,5 @@ export class FindUserArticleDto extends ListCommonParamsDto {
     required: false,
     description: '响应类型',
   })
-  type?: ResponseType;
+  type?: ResponseType
 }

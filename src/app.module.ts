@@ -3,42 +3,42 @@ import {
   Module,
   NestModule,
   RequestMethod,
-} from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import configuration from './config/configuration';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { TypeOrmConfigService } from './config';
-import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
-import { JwtAuthGuard } from './modules/auth/guards';
-import { JwtStrategy } from './modules/auth/strategys';
-import { TransformInterceptor, AuditInterceptor } from './common/interceptor';
-import { RoleGuard, PermissionGuard } from './common/guards';
+} from '@nestjs/common'
+import { ConfigModule } from '@nestjs/config'
+import configuration from './config/configuration'
+import { TypeOrmModule } from '@nestjs/typeorm'
+import { TypeOrmConfigService } from './config'
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core'
+import { JwtAuthGuard } from './modules/auth/guards'
+import { JwtStrategy } from './modules/auth/strategys'
+import { TransformInterceptor, AuditInterceptor } from './common/interceptor'
+import { RoleGuard, PermissionGuard } from './common/guards'
 import {
   LoggerMiddleware,
   ResponseHeadersMiddleware,
-} from './common/middleware';
-import { SharedModule } from './shared/shared.module';
-import { AuthModule } from './modules/auth/auth.module';
-import { UserModule } from './modules/user/user.module';
-import { RoleModule } from './modules/role/role.module';
-import { PermissionModule } from './modules/permission/permission.module';
-import { MenuModule } from './modules/menu/menu.module';
-import { ResourceModule } from './modules/resource/resource.module';
-import { ArticleModule } from './modules/article/article.module';
-import { CategoryModule } from './modules/category/category.module';
-import { TagModule } from './modules/tag/tag.module';
-import { SystemModule } from './modules/system/system.module';
-import { EventEmitterModule } from '@nestjs/event-emitter';
-import { MutexModule } from './shared/mutex/mutex.module';
-import { OpenAiModule } from './modules/open-ai/open-ai.module';
-import { AuditModule } from './modules/log/audit/audit.module';
-import { LoginAuditModule } from './modules/log/login-audit/login-audit.module';
-import { CommonModule } from './modules/common/common.module';
+} from './common/middleware'
+import { SharedModule } from './shared/shared.module'
+import { AuthModule } from './modules/auth/auth.module'
+import { UserModule } from './modules/user/user.module'
+import { RoleModule } from './modules/role/role.module'
+import { PermissionModule } from './modules/permission/permission.module'
+import { MenuModule } from './modules/menu/menu.module'
+import { ResourceModule } from './modules/resource/resource.module'
+import { ArticleModule } from './modules/article/article.module'
+import { CategoryModule } from './modules/category/category.module'
+import { TagModule } from './modules/tag/tag.module'
+import { SystemModule } from './modules/system/system.module'
+import { EventEmitterModule } from '@nestjs/event-emitter'
+import { MutexModule } from './shared/mutex/mutex.module'
+import { OpenAiModule } from './modules/open-ai/open-ai.module'
+import { AuditModule } from './modules/log/audit/audit.module'
+import { LoginAuditModule } from './modules/log/login-audit/login-audit.module'
+import { CommonModule } from './modules/common/common.module'
 import {
   DataAccessFilter,
   HttpExceptionFilter,
   UploadTooLargeFilter,
-} from './common/exceptions';
+} from './common/exceptions'
 
 @Module({
   imports: [
@@ -118,6 +118,6 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(ResponseHeadersMiddleware, LoggerMiddleware)
-      .forRoutes({ path: '*', method: RequestMethod.ALL });
+      .forRoutes({ path: '*', method: RequestMethod.ALL })
   }
 }

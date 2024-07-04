@@ -1,5 +1,5 @@
-import { IsInt, IsNumber, IsString, MaxLength } from '@nestjs/class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsInt, IsNumber, IsString, MaxLength } from '@nestjs/class-validator'
+import { ApiProperty } from '@nestjs/swagger'
 
 export class RefreshTokenDto {
   // @IsNumber()
@@ -12,5 +12,5 @@ export class RefreshTokenDto {
 
   @IsString()
   @ApiProperty()
-  readonly refresh_token: string;
+  readonly refresh_token: string
 }

@@ -1,5 +1,5 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateUserDto } from './create-user.dto';
+import { PartialType } from '@nestjs/mapped-types'
+import { CreateUserDto } from './create-user.dto'
 import {
   ArrayMaxSize,
   ArrayMinSize,
@@ -11,9 +11,9 @@ import {
   IsString,
   MaxLength,
   MinLength,
-} from '@nestjs/class-validator';
-import { ApiProperty } from '@nestjs/swagger';
-import { UserEnabledEnum } from '@/helper/enums';
+} from '@nestjs/class-validator'
+import { ApiProperty } from '@nestjs/swagger'
+import { UserEnabledEnum } from '@/helper/enums'
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsString()
@@ -21,14 +21,17 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @MaxLength(8)
   @ApiProperty({ description: '用户名称' })
   @IsOptional()
-  readonly userName?: string;
+  readonly userName?: string
 
   @IsInt()
   @IsNumber()
   @IsEnum(UserEnabledEnum)
   @IsOptional()
-  @ApiProperty({ description: '用户状态 0禁用 1启用', default: UserEnabledEnum.Enabled })
-  readonly userEnabled?: UserEnabledEnum;
+  @ApiProperty({
+    description: '用户状态 0禁用 1启用',
+    default: UserEnabledEnum.Enabled,
+  })
+  readonly userEnabled?: UserEnabledEnum
 
   // @IsArray()
   // @Validate(IsArrayNumber)
@@ -37,20 +40,20 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @ArrayMaxSize(3)
   // @IsOptional()
   @ApiProperty({ description: '用户角色id数组', default: [] })
-  readonly roleIds?: number[];
+  readonly roleIds?: number[]
 
   @IsOptional()
   @IsEmail()
   @ApiProperty({ description: '邮箱', required: false })
-  readonly email?: string;
+  readonly email?: string
 
   @IsString()
   @IsOptional()
   @ApiProperty({ description: '昵称' })
-  readonly nickName?: string;
+  readonly nickName?: string
 
   @IsString()
   @IsOptional()
   @ApiProperty({ description: '用户头像' })
-  readonly userAvatar?: string;
+  readonly userAvatar?: string
 }

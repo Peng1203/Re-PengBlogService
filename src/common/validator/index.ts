@@ -1,1 +1,1 @@
-export * from './isArrayNumber';
+export * from './isArrayNumber'

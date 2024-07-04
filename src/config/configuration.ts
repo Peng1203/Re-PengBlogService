@@ -6,4 +6,4 @@ export default () => ({
   JWT_REFRESH_TOKEN_EXPIRES_IN: 60 * 60 * 24 * 7, // 7天
   // 网盘跟目录
   NETDISK_ROOT_DIR: 'netdisk',
-});
+})

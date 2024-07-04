@@ -1,5 +1,14 @@
-import { IsDefined, IsIn, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from '@nestjs/class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import {
+  IsDefined,
+  IsIn,
+  IsInt,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+} from '@nestjs/class-validator'
+import { ApiProperty } from '@nestjs/swagger'
 
 export class ListCommonParamsDto {
   @Min(1)
@@ -8,29 +17,29 @@ export class ListCommonParamsDto {
   @IsNotEmpty()
   @IsDefined()
   @ApiProperty({ default: 1, description: '页码' })
-  readonly page: number;
+  readonly page: number
 
   @IsNotEmpty()
   @IsNumber()
   @Min(1)
   @ApiProperty({ default: 10, description: '每页数' })
-  readonly pageSize: number;
+  readonly pageSize: number
 
   @IsString()
   @IsOptional()
   @IsDefined()
   @ApiProperty({ required: false, description: '搜索关键字' })
-  readonly queryStr?: string;
+  readonly queryStr?: string
 
   @IsString()
   @ApiProperty({ default: 'id', required: false, description: '排序字段' })
-  readonly column?: string;
+  readonly column?: string
 
   @IsString()
   @IsIn(['ASC', 'DESC', ''])
   @IsDefined()
   @ApiProperty({ default: 'ASC', required: false, description: '排序方式' })
-  readonly order?: 'ASC' | 'DESC' | '';
+  readonly order?: 'ASC' | 'DESC' | ''
 }
 
 export class NoPageListCommonParamsDto {
@@ -38,15 +47,15 @@ export class NoPageListCommonParamsDto {
   @IsOptional()
   @IsDefined()
   @ApiProperty({ required: false, description: '搜索关键字' })
-  readonly queryStr?: string;
+  readonly queryStr?: string
 
   @IsString()
   @ApiProperty({ default: 'id', required: false, description: '排序字段' })
-  readonly column?: string;
+  readonly column?: string
 
   @IsString()
   @IsIn(['ASC', 'DESC', ''])
   @IsDefined()
   @ApiProperty({ default: 'ASC', required: false, description: '排序方式' })
-  readonly order?: 'ASC' | 'DESC' | '';
+  readonly order?: 'ASC' | 'DESC' | ''
 }

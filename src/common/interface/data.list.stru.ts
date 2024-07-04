@@ -1,4 +1,4 @@
 export interface ListResponse<T> {
-  list: T[];
-  total: number;
+  list: T[]
+  total: number
 }

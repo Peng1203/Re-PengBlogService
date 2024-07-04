@@ -1,1 +1,1 @@
-export * from './captcha.aggregation.decorator';
+export * from './captcha.aggregation.decorator'

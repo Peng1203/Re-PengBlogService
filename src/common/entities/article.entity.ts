@@ -1,10 +1,10 @@
-import { Category, Tag, TimestampedEntity, User } from './';
+import { Category, Tag, TimestampedEntity, User } from './'
 import {
   ArticleTypeEnum,
   ArticleStatusEnum,
   BolEnum,
   ContentModelEnum,
-} from '../../helper/enums';
+} from '../../helper/enums'
 import {
   Column,
   Entity,
@@ -14,27 +14,27 @@ import {
   PrimaryGeneratedColumn,
   Unique,
   JoinTable,
-} from 'typeorm';
+} from 'typeorm'
 
 @Entity({ name: 'article' })
 @Unique(['title'])
 export class Article extends TimestampedEntity {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: number
 
   @Index('index_title')
   @Column({ type: 'varchar', length: 60 })
-  title: string;
+  title: string
 
   @Column({
     type: 'text',
     nullable: true,
     comment: '文章摘要',
   })
-  summary: string;
+  summary: string
 
   @Column({ type: 'longtext' })
-  content: string;
+  content: string
 
   @Column({
     type: 'enum',
@@ -42,16 +42,16 @@ export class Article extends TimestampedEntity {
     default: ContentModelEnum.MARKDOWN,
     comment: '文章内容模式',
   })
-  contentModel: ContentModelEnum;
+  contentModel: ContentModelEnum
 
   @Column({ type: 'varchar', nullable: true, length: 60, comment: '文章封面' })
-  cover: string;
+  cover: string
 
   @Column({ type: 'int', default: 0 })
-  likes: number;
+  likes: number
 
   @Column({ type: 'int', default: 0 })
-  views: number;
+  views: number
 
   @Column({
     type: 'enum',
@@ -59,7 +59,7 @@ export class Article extends TimestampedEntity {
     default: ArticleTypeEnum.ORIGINAL,
     comment: '文章类型: 1原创 2转载 3翻译',
   })
-  type: ArticleTypeEnum;
+  type: ArticleTypeEnum
 
   @Column({
     type: 'enum',
@@ -67,7 +67,7 @@ export class Article extends TimestampedEntity {
     default: ArticleStatusEnum.DRAFT,
     comment: '文章状态: 1已发布 2私密 3草稿箱 4已删除 5待审核 6已拒绝',
   })
-  status: ArticleStatusEnum;
+  status: ArticleStatusEnum
 
   @Column({
     name: 'is_top',
@@ -75,7 +75,7 @@ export class Article extends TimestampedEntity {
     enum: BolEnum,
     default: BolEnum.FALSE,
   })
-  isTop: BolEnum;
+  isTop: BolEnum
 
   @Column({
     name: 'access_password',
@@ -86,15 +86,15 @@ export class Article extends TimestampedEntity {
     select: false,
     comment: '文章状态为 私密时 他人访问需要使用该密码',
   })
-  accessPassword: string;
+  accessPassword: string
 
   @ManyToOne(() => User, User => User.articles)
-  author: User;
+  author: User
 
   @ManyToOne(() => Category, Category => Category.articles, { nullable: true })
-  category: Category | null;
+  category: Category | null
 
   @ManyToMany(() => Tag, Tag => Tag.articles)
   @JoinTable({ name: 'article_tag_relation' })
-  tags: Tag[];
+  tags: Tag[]
 }

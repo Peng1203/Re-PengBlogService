@@ -1,6 +1,9 @@
-import { RedisModuleOptions, RedisOptionsFactory } from '@liaoliaots/nestjs-redis';
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import {
+  RedisModuleOptions,
+  RedisOptionsFactory,
+} from '@liaoliaots/nestjs-redis'
+import { Injectable } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 
 @Injectable()
 export class RedisConfigService implements RedisOptionsFactory {
@@ -13,6 +16,6 @@ export class RedisConfigService implements RedisOptionsFactory {
         password: this.configService.get<string>('REDIS_PASSWORD'),
         db: this.configService.get<number>('REDIS_DB'),
       },
-    };
+    }
   }
 }

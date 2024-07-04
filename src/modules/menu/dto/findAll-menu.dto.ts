@@ -1,3 +1,3 @@
-import { NoPageListCommonParamsDto } from '@/common/dto';
+import { NoPageListCommonParamsDto } from '@/common/dto'
 
 export class FindAllMenuDto extends NoPageListCommonParamsDto {}

@@ -1,5 +1,5 @@
-import { Global, Module } from '@nestjs/common';
-import { MutexService } from './mutex.service';
+import { Global, Module } from '@nestjs/common'
+import { MutexService } from './mutex.service'
 
 @Global()
 @Module({

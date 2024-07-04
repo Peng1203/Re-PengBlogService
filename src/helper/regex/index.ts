@@ -1,2 +1,2 @@
-export * from './dateTime.regex';
-export * from './json.regex';
+export * from './dateTime.regex'
+export * from './json.regex'

@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'path'
 import {
   Controller,
   Get,
@@ -13,23 +13,23 @@ import {
   NotFoundException,
   UseGuards,
   UploadedFile,
-} from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { ArticleService } from './article.service';
-import { CreateArticleDto } from './dto/create-article.dto';
-import { UpdateArticleDto } from './dto/update-article.dto';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+} from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
+import { ArticleService } from './article.service'
+import { CreateArticleDto } from './dto/create-article.dto'
+import { UpdateArticleDto } from './dto/update-article.dto'
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 import {
   Public,
   ReqUser,
   RequirePermissions,
   UploadImageAggregation,
-} from '@/common/decorators';
-import { ApiResponseCodeEnum, PermissionEnum } from '@/helper/enums';
-import { FindAllArticleDto, FindUserArticleDto } from './dto';
-import { ParseIntParamPipe } from '@/common/pipe';
-import { Response } from 'express';
-import { DeleteArticleGuard, UpdateArticleGuard } from './guards';
+} from '@/common/decorators'
+import { ApiResponseCodeEnum, PermissionEnum } from '@/helper/enums'
+import { FindAllArticleDto, FindUserArticleDto } from './dto'
+import { ParseIntParamPipe } from '@/common/pipe'
+import { Response } from 'express'
+import { DeleteArticleGuard, UpdateArticleGuard } from './guards'
 
 @ApiTags('Article')
 @ApiBearerAuth()
@@ -48,16 +48,16 @@ export class ArticleController {
       throw new ForbiddenException({
         code: ApiResponseCodeEnum.FORBIDDEN_USER,
         msg: '身份信息有误！',
-      });
+      })
 
-    return this.articleService.create(data);
+    return this.articleService.create(data)
   }
 
   @Get()
   @Public()
   @ApiOperation({ summary: '获取文章列表' })
   findAll(@Query() params: FindAllArticleDto) {
-    return this.articleService.findAll(params);
+    return this.articleService.findAll(params)
   }
 
   @Public()
@@ -67,7 +67,7 @@ export class ArticleController {
     @Param('uid', new ParseIntParamPipe('文章id参数有误')) uid: number,
     @Query() params: FindUserArticleDto
   ) {
-    return this.articleService.findByUser(uid, params);
+    return this.articleService.findByUser(uid, params)
   }
 
   // @UseGuards(GetArticleDetailGuard)
@@ -77,7 +77,7 @@ export class ArticleController {
     @Param('uid', new ParseIntParamPipe('作者id参数有误')) uid: number,
     @Param('aid', new ParseIntParamPipe('文章id参数有误')) aid: number
   ) {
-    return this.articleService.findOne(aid);
+    return this.articleService.findOne(aid)
   }
 
   // @RequirePermissions(PermissionEnum.UPDATE_ARTICLE)
@@ -90,11 +90,11 @@ export class ArticleController {
     @Body() data: UpdateArticleDto,
     @Res({ passthrough: true }) res: Response
   ) {
-    const updateRes = await this.articleService.update(aid, data);
+    const updateRes = await this.articleService.update(aid, data)
     updateRes
       ? (res.apiResponseCode = ApiResponseCodeEnum.UPDATE)
-      : (res.resMsg = '更新文章失败!') && (res.success = false);
-    return updateRes || '操作失败!';
+      : (res.resMsg = '更新文章失败!') && (res.success = false)
+    return updateRes || '操作失败!'
   }
 
   // @RequirePermissions(PermissionEnum.DELETE_ARTICLE)
@@ -106,17 +106,17 @@ export class ArticleController {
     @Param('aid', new ParseIntParamPipe('文章id参数有误')) aid: number,
     @Res({ passthrough: true }) res: Response
   ) {
-    const article = await this.articleService.findOne(aid).catch(() => false);
+    const article = await this.articleService.findOne(aid).catch(() => false)
     if (!article)
       throw new NotFoundException({
         code: ApiResponseCodeEnum.NOTFOUND_ROLE,
         msg: '删除失败，未找到相关文章',
-      });
+      })
 
-    const delRes = await this.articleService.remove(aid);
-    if (!delRes) res.resMsg = '删除文章失败!';
-    if (!delRes) res.success = false;
-    else return '删除文章成功';
+    const delRes = await this.articleService.remove(aid)
+    if (!delRes) res.resMsg = '删除文章失败!'
+    if (!delRes) res.success = false
+    else return '删除文章成功'
   }
 
   @Post('image')
@@ -128,9 +128,9 @@ export class ArticleController {
   ) {
     const RESOURCE_SERVE = this.configService.get<string>(
       'STATIC_RESOURCE_SERVE'
-    );
-    const fullPath = `${RESOURCE_SERVE}/${path.basename(file.path)}`;
-    res.resMsg = '图片上传成功!';
-    return fullPath;
+    )
+    const fullPath = `${RESOURCE_SERVE}/${path.basename(file.path)}`
+    res.resMsg = '图片上传成功!'
+    return fullPath
   }
 }

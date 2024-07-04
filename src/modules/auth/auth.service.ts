@@ -2,18 +2,18 @@ import {
   Injectable,
   InternalServerErrorException,
   UnauthorizedException,
-} from '@nestjs/common';
-import { UserService } from '@/modules/user/user.service';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
-import { RedisService } from '@/shared/redis/redis.service';
-import * as svgCaptcha from 'svg-captcha';
-import { ApiResponseCodeEnum } from '@/helper/enums';
-import { SessionInfo } from 'express-session';
-import { JwtPayload } from 'passport-jwt';
-import { UserLogoutDto } from './dto';
-import { Request } from 'express';
-import { PasswordService } from './services';
+} from '@nestjs/common'
+import { UserService } from '@/modules/user/user.service'
+import { JwtService } from '@nestjs/jwt'
+import { ConfigService } from '@nestjs/config'
+import { RedisService } from '@/shared/redis/redis.service'
+import * as svgCaptcha from 'svg-captcha'
+import { ApiResponseCodeEnum } from '@/helper/enums'
+import { SessionInfo } from 'express-session'
+import { JwtPayload } from 'passport-jwt'
+import { UserLogoutDto } from './dto'
+import { Request } from 'express'
+import { PasswordService } from './services'
 
 @Injectable()
 export class AuthService {
@@ -31,15 +31,15 @@ export class AuthService {
   async validateUser(userName: string, pwd: string) {
     try {
       const { password, ...user } =
-        await this.userService.findLoginUserByUserName(userName);
-      const validateStatus = await this.passwordService.verify(pwd, password);
-      if (!validateStatus) throw new Error();
-      return user;
+        await this.userService.findLoginUserByUserName(userName)
+      const validateStatus = await this.passwordService.verify(pwd, password)
+      if (!validateStatus) throw new Error()
+      return user
     } catch (e) {
       throw new UnauthorizedException({
         code: ApiResponseCodeEnum.UNAUTHORIZED_UNAME_OR_PWD_NOMATCH,
         msg: '用户名或密码错误',
-      });
+      })
     }
   }
 
@@ -50,7 +50,7 @@ export class AuthService {
     return `${await this.jwtService.signAsync({
       sub: id,
       userName,
-    })}`;
+    })}`
   }
 
   /**
@@ -60,13 +60,13 @@ export class AuthService {
     try {
       return await this.jwtService.verifyAsync(token, {
         secret: this.configService.get<string>('JWT_ACCESS_TOKEN_SECRET'),
-      });
+      })
     } catch (e) {
       throw new UnauthorizedException({
         e,
         code: ApiResponseCodeEnum.UNAUTHORIZED_ACCESS_TOKEN,
         msg: '身份认证信息失效，请重新认证！',
-      });
+      })
     }
   }
 
@@ -88,7 +88,7 @@ export class AuthService {
           'JWT_REFRESH_TOKEN_EXPIRES_IN'
         ),
       }
-    );
+    )
   }
 
   /**
@@ -104,13 +104,13 @@ export class AuthService {
     try {
       return await this.jwtService.verifyAsync(token, {
         secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
-      });
+      })
     } catch (e) {
       throw new UnauthorizedException({
         e,
         code: ApiResponseCodeEnum.UNAUTHORIZED_REFRESH_TOKEN,
         msg: '登录信息已过期，请重新登录！',
-      });
+      })
     }
   }
 
@@ -126,7 +126,7 @@ export class AuthService {
   async parseToken(token: string): Promise<JwtPayload> {
     return await this.jwtService.verifyAsync(token, {
       secret: this.configService.get<string>('JWT_ACCESS_TOKEN_SECRET'),
-    });
+    })
   }
 
   /**
@@ -144,19 +144,19 @@ export class AuthService {
       key,
       token,
       this.configService.get<number>('JWT_ACCESS_TOKEN_EXPIRES_IN')
-    );
+    )
   }
 
   getClientInfo(req: Request) {
     const { os, platform, browser, version, source, isAuthoritative, ...args } =
-      req.useragent;
-    const deviceTypes: string[] = [];
+      req.useragent
+    const deviceTypes: string[] = []
     for (const key in args) {
-      if (!key.includes('is')) continue;
+      if (!key.includes('is')) continue
 
-      if (!args[key]) continue;
+      if (!args[key]) continue
 
-      deviceTypes.push(key.replace('is', ''));
+      deviceTypes.push(key.replace('is', ''))
     }
     // return req.useragent;
     return {
@@ -167,7 +167,7 @@ export class AuthService {
       deviceTypes,
       authoritative: isAuthoritative,
       userAgent: source,
-    };
+    }
   }
 
   /**
@@ -180,7 +180,7 @@ export class AuthService {
    * @returns {string}
    */
   redisTokenKeyStr(id: number, userName: string) {
-    return `user_token:${id}-${userName}`;
+    return `user_token:${id}-${userName}`
   }
 
   /**
@@ -194,18 +194,18 @@ export class AuthService {
    * @returns {Promise<string>}
    */
   async getRedisToken(id: number, userName: string): Promise<string> {
-    return await this.redis.getCache(this.redisTokenKeyStr(id, userName));
+    return await this.redis.getCache(this.redisTokenKeyStr(id, userName))
   }
 
   private rn(min, max) {
-    return parseInt(Math.random() * (max - min) + min);
+    return parseInt(Math.random() * (max - min) + min)
   }
 
   private rc(min, max, opacity?: number) {
-    const r = this.rn(min, max);
-    const g = this.rn(min, max);
-    const b = this.rn(min, max);
-    return `rgba(${r},${g},${b},${opacity || 1})`;
+    const r = this.rn(min, max)
+    const g = this.rn(min, max)
+    const b = this.rn(min, max)
+    return `rgba(${r},${g},${b},${opacity || 1})`
   }
 
   /** 生成验证码 */
@@ -220,7 +220,7 @@ export class AuthService {
       // color: false, // 验证码字符颜色
       background: this.rc(180, 230), // 验证码背景颜色
       // background: "#cc9966" // 验证码背景颜色
-    });
+    })
   }
   generateV2Captcha(phone: boolean) {
     return svgCaptcha.createMathExpr({
@@ -228,7 +228,7 @@ export class AuthService {
       height: 40,
       noise: 2, // 干扰线
       background: this.rc(230, 255), // 验证码背景颜色
-    });
+    })
   }
 
   /**
@@ -239,7 +239,7 @@ export class AuthService {
       throw new UnauthorizedException({
         code: ApiResponseCodeEnum.UNAUTHORIZED_CAPTCHA_EXPIRE,
         msg: '验证码已过期!',
-      });
+      })
     // throw new UnauthorizedException({
     //   code: ApiResponseCodeEnum.UNAUTHORIZED_NOTFOUND_SESSION,
     //   msg: '无法获取到Session信息!',
@@ -252,18 +252,18 @@ export class AuthService {
       throw new UnauthorizedException({
         code: ApiResponseCodeEnum.UNAUTHORIZED_CAPTCHA_EXPIRE,
         msg: '验证码已过期!',
-      });
+      })
 
     if (captcha.toLocaleLowerCase() !== session.captcha.toLocaleLowerCase())
       throw new UnauthorizedException({
         code: ApiResponseCodeEnum.UNAUTHORIZED_CAPTCHA_ERROR,
         msg: '验证码输入有误!',
-      });
+      })
   }
 
   /** 通过用户ID和用户名查询用户 */
   validateUserByIdAndName(id: number, userName: string) {
-    return this.userService.findOneByUserIdAndUserName(id, userName);
+    return this.userService.findOneByUserIdAndUserName(id, userName)
   }
 
   /**
@@ -272,30 +272,30 @@ export class AuthService {
   async refreshAccessToken(id: number, userName: string): Promise<string> {
     try {
       // 生成新的token
-      const token = await this.generateAccessToken(id, userName);
+      const token = await this.generateAccessToken(id, userName)
       // 将新的token 设置到 redis中
-      await this.setTokenToRedis(this.redisTokenKeyStr(id, userName), token);
-      return token;
+      await this.setTokenToRedis(this.redisTokenKeyStr(id, userName), token)
+      return token
     } catch (e) {
       throw new InternalServerErrorException({
         code: ApiResponseCodeEnum.INTERNALSERVERERROR_REDIS,
         e,
-      });
+      })
     }
   }
 
   /** 获取token的TTL */
   async getTokenTTL(key: string) {
-    return await this.redis.getTTL(key);
+    return await this.redis.getTTL(key)
   }
 
   async findUserById(id: number) {
-    return await this.userService.findOneById(id);
+    return await this.userService.findOneById(id)
   }
 
   async clearUserToken(data: UserLogoutDto) {
-    const { id, userName } = data;
-    const key = this.redisTokenKeyStr(id, userName);
-    await this.redis.clearCatch(key);
+    const { id, userName } = data
+    const key = this.redisTokenKeyStr(id, userName)
+    await this.redis.clearCatch(key)
   }
 }

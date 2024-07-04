@@ -1,35 +1,44 @@
-import { Article, Audit, TimestampedEntity } from './';
-import { UserEnabledEnum } from '../../helper/enums';
-import { Role } from './';
-import { Column, Entity, Index, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { Article, Audit, TimestampedEntity } from './'
+import { UserEnabledEnum } from '../../helper/enums'
+import { Role } from './'
+import {
+  Column,
+  Entity,
+  Index,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  Unique,
+} from 'typeorm'
 
 @Entity({ name: 'user' })
 @Unique(['userName'])
 @Unique(['email'])
 export class User extends TimestampedEntity {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: number
 
   @Index('index_user_name')
   @Column({ name: 'user_name', type: 'varchar', length: 15 })
-  userName: string;
+  userName: string
 
   @Column({ type: 'varchar', length: 255, select: false })
-  password?: string;
+  password?: string
 
   @ManyToMany(() => Role, role => role.users)
   @JoinTable({ name: 'user_role_relation' })
-  roles: Role[];
+  roles: Role[]
 
   @Index('index_email')
   @Column({ type: 'varchar', nullable: true })
-  email: string;
+  email: string
 
   @Column({ name: 'nick_name', type: 'varchar', nullable: true })
-  nickName: string;
+  nickName: string
 
   @Column({ name: 'phone_number', type: 'char', nullable: true })
-  phoneNumber: string;
+  phoneNumber: string
 
   @Column({
     name: 'user_enabled',
@@ -38,14 +47,14 @@ export class User extends TimestampedEntity {
     default: UserEnabledEnum.Enabled,
     comment: '0 禁用 1 启用',
   })
-  userEnabled: UserEnabledEnum;
+  userEnabled: UserEnabledEnum
 
   @Column({ name: 'user_avatar', type: 'varchar', nullable: true })
-  userAvatar: string;
+  userAvatar: string
 
   @OneToMany(() => Article, Article => Article.author)
-  articles: Article[];
+  articles: Article[]
 
   @OneToMany(() => Audit, Audit => Audit.user)
-  audits: Audit[];
+  audits: Audit[]
 }

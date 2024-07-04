@@ -1,1 +1,1 @@
-export * from './login-record.interceptor';
+export * from './login-record.interceptor'

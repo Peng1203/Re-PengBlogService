@@ -1,7 +1,7 @@
-import Redis from 'ioredis';
-import { InjectRedis } from '@liaoliaots/nestjs-redis';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { ApiResponseCodeEnum } from '@/helper/enums';
+import Redis from 'ioredis'
+import { InjectRedis } from '@liaoliaots/nestjs-redis'
+import { Injectable, InternalServerErrorException } from '@nestjs/common'
+import { ApiResponseCodeEnum } from '@/helper/enums'
 
 @Injectable()
 export class RedisService {
@@ -15,7 +15,7 @@ export class RedisService {
    * @returns {*}
    */
   getRedisRef() {
-    return this.redisClient;
+    return this.redisClient
   }
 
   /**
@@ -31,18 +31,18 @@ export class RedisService {
    */
   async setCache(key: string, value: any, seconds?: number): Promise<boolean> {
     try {
-      if (typeof value === 'object') value = JSON.stringify(value);
+      if (typeof value === 'object') value = JSON.stringify(value)
       const setResult =
         seconds === undefined
           ? await this.redisClient.set(key, value)
-          : await this.redisClient.setex(key, seconds, value);
-      if (setResult !== 'OK') return false;
-      return setResult === 'OK';
+          : await this.redisClient.setex(key, seconds, value)
+      if (setResult !== 'OK') return false
+      return setResult === 'OK'
     } catch (e) {
       throw new InternalServerErrorException({
         e,
         code: ApiResponseCodeEnum.INTERNALSERVERERROR_REDIS,
-      });
+      })
     }
   }
 
@@ -57,12 +57,12 @@ export class RedisService {
    */
   async getCache(key: string) {
     try {
-      return await this.redisClient.get(key);
+      return await this.redisClient.get(key)
     } catch (e) {
       throw new InternalServerErrorException({
         e,
         code: ApiResponseCodeEnum.INTERNALSERVERERROR_REDIS,
-      });
+      })
     }
   }
 
@@ -77,23 +77,23 @@ export class RedisService {
    */
   async getTTL(key: string) {
     try {
-      return await this.redisClient.ttl(key);
+      return await this.redisClient.ttl(key)
     } catch (e) {
       throw new InternalServerErrorException({
         e,
         code: ApiResponseCodeEnum.INTERNALSERVERERROR_REDIS,
-      });
+      })
     }
   }
 
   async clearCatch(key: string) {
     try {
-      return await this.redisClient.del(key);
+      return await this.redisClient.del(key)
     } catch (e) {
       throw new InternalServerErrorException({
         e,
         code: ApiResponseCodeEnum.INTERNALSERVERERROR_REDIS,
-      });
+      })
     }
   }
 }

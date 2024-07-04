@@ -1,1 +1,1 @@
-export * from './password/password.service';
+export * from './password/password.service'

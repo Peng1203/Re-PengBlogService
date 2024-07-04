@@ -2,18 +2,18 @@ import {
   ApiResponseMessageEnum,
   LoginMethodEnum,
   StatusEnum,
-} from '@/helper/enums';
-import { AuditService } from '@/modules/log/audit/audit.service';
-import { LoginAuditService } from '@/modules/log/login-audit/login-audit.service';
-import { formatDate } from '@/utils/date.util';
+} from '@/helper/enums'
+import { AuditService } from '@/modules/log/audit/audit.service'
+import { LoginAuditService } from '@/modules/log/login-audit/login-audit.service'
+import { formatDate } from '@/utils/date.util'
 import {
   ExceptionFilter,
   Catch,
   ArgumentsHost,
   HttpException,
   Logger,
-} from '@nestjs/common';
-import { Request, Response } from 'express';
+} from '@nestjs/common'
+import { Request, Response } from 'express'
 
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
@@ -23,14 +23,14 @@ export class HttpExceptionFilter implements ExceptionFilter {
   ) {}
 
   catch(exception: HttpException & unknown, host: ArgumentsHost) {
-    const exceptionRes = exception.getResponse() as any;
-    const ctx = host.switchToHttp();
-    const res = ctx.getResponse<Response>();
-    const req = ctx.getRequest<Request>();
-    const status = exception.getStatus();
+    const exceptionRes = exception.getResponse() as any
+    const ctx = host.switchToHttp()
+    const res = ctx.getResponse<Response>()
+    const req = ctx.getRequest<Request>()
+    const status = exception.getStatus()
 
-    const code = exceptionRes.code || status;
-    Logger.error('触发 Http 异常过滤器 ----->', exceptionRes);
+    const code = exceptionRes.code || status
+    Logger.error('触发 Http 异常过滤器 ----->', exceptionRes)
 
     // 根据请求url 记录到审计日志或登录日志中
     if (
@@ -50,7 +50,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
           failureReason: exceptionRes.msg,
           loginMethod: LoginMethodEnum.PASSWORD,
         }
-      );
+      )
     } else {
       this.auditService.createAuditRecord(
         req,
@@ -59,7 +59,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         0,
         exceptionRes.msg,
         status
-      );
+      )
     }
 
     res.status(status).json({
@@ -69,6 +69,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
       method: req.method,
       message: exceptionRes.msg || ApiResponseMessageEnum[exceptionRes.code],
       timestamp: formatDate(),
-    });
+    })
   }
 }

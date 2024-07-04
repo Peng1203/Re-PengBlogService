@@ -1,1 +1,1 @@
-export * from './getIPInfo.dto';
+export * from './getIPInfo.dto'

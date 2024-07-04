@@ -15,7 +15,7 @@ export function countOccurrences(str: string, chat: string): number {
   // }
   // return count;
 
-  const regex = new RegExp(chat, 'g');
-  const matches = str.match(regex);
-  return matches ? matches.length : 0;
+  const regex = new RegExp(chat, 'g')
+  const matches = str.match(regex)
+  return matches ? matches.length : 0
 }

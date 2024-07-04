@@ -1,19 +1,26 @@
-import { TimestampedEntity } from './';
+import { TimestampedEntity } from './'
 // import { ActionTypeEnum } from '@/helper/enums';
-import { Role } from './';
-import { Column, Entity, Index, ManyToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
-import { PermissionEnum, RequestMethodEnum } from '../../helper/enums';
+import { Role } from './'
+import {
+  Column,
+  Entity,
+  Index,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+  Unique,
+} from 'typeorm'
+import { PermissionEnum, RequestMethodEnum } from '../../helper/enums'
 
 @Entity({ name: 'permission' })
 @Unique(['permissionName'])
 @Unique(['permissionCode'])
 export class Permission extends TimestampedEntity {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: number
 
   @Index('index_permission_name')
   @Column({ name: 'permission_name', type: 'varchar', length: 15 })
-  permissionName: string;
+  permissionName: string
 
   @Index('index_permission_code')
   @Column({
@@ -22,7 +29,7 @@ export class Permission extends TimestampedEntity {
     enum: PermissionEnum,
     nullable: true,
   })
-  permissionCode: PermissionEnum | null;
+  permissionCode: PermissionEnum | null
 
   // @Column({ type: 'enum', enum: ActionTypeEnum })
   //  action_type: ActionTypeEnum;
@@ -34,17 +41,17 @@ export class Permission extends TimestampedEntity {
     // default: RequestMethodEnum.GET,
     nullable: true,
   })
-  resourceMethod: RequestMethodEnum | null;
+  resourceMethod: RequestMethodEnum | null
 
   @Column({ name: 'resource_url', type: 'varchar', nullable: true })
-  resourceUrl: string | null;
+  resourceUrl: string | null
 
   @Column({ name: 'parent_id', type: 'int', default: 0 })
-  parentId: number;
+  parentId: number
 
   @Column({ type: 'varchar', length: 60, nullable: true })
-  description: string;
+  description: string
 
   @ManyToMany(() => Role, Role => Role.permissions)
-  roles: Role[];
+  roles: Role[]
 }

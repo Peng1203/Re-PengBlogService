@@ -3,14 +3,14 @@
  *  执行迁移操作 需要安装以下依赖
  *  pnpm install @nestjs/cli typeorm ts-node -g
  */
-import { DataSource } from 'typeorm';
-import dotenv from 'dotenv';
-import { join } from 'path';
+import { DataSource } from 'typeorm'
+import dotenv from 'dotenv'
+import { join } from 'path'
 
-const envFile = join(process.cwd(), '.env');
-const prodEnvFile = join(process.cwd(), '.env.prod');
+const envFile = join(process.cwd(), '.env')
+const prodEnvFile = join(process.cwd(), '.env.prod')
 
-dotenv.config({ path: [envFile, prodEnvFile] });
+dotenv.config({ path: [envFile, prodEnvFile] })
 
 const {
   DATABASE_HOST,
@@ -18,7 +18,7 @@ const {
   DATABASE_NAME,
   DATABASE_USER,
   DATABASE_PASSWORD,
-} = process.env;
+} = process.env
 
 const AppDataSource = new DataSource({
   type: 'mysql',
@@ -32,6 +32,6 @@ const AppDataSource = new DataSource({
   /** 用于执行生成的迁移文件 */
   migrations: [`./src/migration/*.{j,t}s`],
   synchronize: false,
-});
+})
 
-export default AppDataSource;
+export default AppDataSource

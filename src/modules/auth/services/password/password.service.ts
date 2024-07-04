@@ -1,74 +1,74 @@
-import crypto from 'crypto';
-import { Injectable } from '@nestjs/common';
+import crypto from 'crypto'
+import { Injectable } from '@nestjs/common'
 
 @Injectable()
 export class PasswordService {
-  private readonly KEY_LENGTH = 64;
-  private readonly INITIAL_PASSWORD = '123456';
-  private readonly HASH_ALGORITHM = 'sha512';
+  private readonly KEY_LENGTH = 64
+  private readonly INITIAL_PASSWORD = '123456'
+  private readonly HASH_ALGORITHM = 'sha512'
   // 前端加密盐
-  private readonly VITE_SECRET_KEY = '114514qwer';
+  private readonly VITE_SECRET_KEY = '114514qwer'
 
   /** 生成密码hash */
   hash(password: string): Promise<string> {
     return new Promise(resolve => {
       // 生成随机盐
-      const salt = crypto.randomBytes(16).toString('hex');
-      const hash = crypto.createHmac(this.HASH_ALGORITHM, salt);
+      const salt = crypto.randomBytes(16).toString('hex')
+      const hash = crypto.createHmac(this.HASH_ALGORITHM, salt)
 
-      hash.update(password);
-      const value = hash.digest('hex');
+      hash.update(password)
+      const value = hash.digest('hex')
 
-      resolve(`${salt}:${value}`);
-    });
+      resolve(`${salt}:${value}`)
+    })
   }
 
   /** 验证密码 */
   verify(password: string, hash: string): Promise<boolean> {
     return new Promise(resolve => {
-      const [salt, storedHash] = hash.split(':');
-      const hashToVerify = crypto.createHmac(this.HASH_ALGORITHM, salt);
+      const [salt, storedHash] = hash.split(':')
+      const hashToVerify = crypto.createHmac(this.HASH_ALGORITHM, salt)
 
-      hashToVerify.update(password);
+      hashToVerify.update(password)
 
-      const value = hashToVerify.digest('hex');
-      resolve(storedHash === value);
-    });
+      const value = hashToVerify.digest('hex')
+      resolve(storedHash === value)
+    })
   }
 
   /** 重置密码 */
   reset(): Promise<string> {
     return new Promise(async resolve => {
-      const salt = crypto.randomBytes(16).toString('hex');
-      const hash = crypto.createHmac(this.HASH_ALGORITHM, salt);
-      const initPwdHash = await this.initPwdToHash();
-      hash.update(initPwdHash);
-      const value = hash.digest('hex');
-      resolve(`${salt}:${value}`);
-    });
+      const salt = crypto.randomBytes(16).toString('hex')
+      const hash = crypto.createHmac(this.HASH_ALGORITHM, salt)
+      const initPwdHash = await this.initPwdToHash()
+      hash.update(initPwdHash)
+      const value = hash.digest('hex')
+      resolve(`${salt}:${value}`)
+    })
   }
 
   initPwdToHash(): Promise<string> {
     return new Promise(resolve => {
-      const hash = crypto.createHmac('sha256', this.VITE_SECRET_KEY);
+      const hash = crypto.createHmac('sha256', this.VITE_SECRET_KEY)
 
-      hash.update(this.INITIAL_PASSWORD);
+      hash.update(this.INITIAL_PASSWORD)
 
-      resolve(hash.digest('hex'));
-    });
+      resolve(hash.digest('hex'))
+    })
   }
 
   /** 生成密码hash */
   hash_v0(password: string): Promise<string> {
     return new Promise((resolve, reject) => {
       // 生成随机盐
-      const salt = crypto.randomBytes(16).toString('hex');
+      const salt = crypto.randomBytes(16).toString('hex')
       crypto.scrypt(password, salt, this.KEY_LENGTH, (err, derivedKey) => {
-        if (err) reject(err);
-        const hashKey = derivedKey.toString('hex');
-        resolve(`${salt}:${hashKey}`);
-      });
-    });
+        if (err) reject(err)
+        const hashKey = derivedKey.toString('hex')
+        resolve(`${salt}:${hashKey}`)
+      })
+    })
   }
 
   /**
@@ -77,13 +77,13 @@ export class PasswordService {
    */
   verify_v0(password: string, hash: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      const [salt, hashKey] = hash.split(':');
-      const hashKeyBuff = Buffer.from(hashKey, 'hex');
+      const [salt, hashKey] = hash.split(':')
+      const hashKeyBuff = Buffer.from(hashKey, 'hex')
       crypto.scrypt(password, salt, this.KEY_LENGTH, (err, derivedKey) => {
-        if (err) reject(err);
-        const verifyStatus = crypto.timingSafeEqual(hashKeyBuff, derivedKey);
-        resolve(verifyStatus);
-      });
-    });
+        if (err) reject(err)
+        const verifyStatus = crypto.timingSafeEqual(hashKeyBuff, derivedKey)
+        resolve(verifyStatus)
+      })
+    })
   }
 }

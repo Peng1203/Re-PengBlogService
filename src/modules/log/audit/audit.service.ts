@@ -1,18 +1,14 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  Param,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Param } from '@nestjs/common'
 import {
   StatusEnum,
   RequestMethodEnum,
   ApiResponseCodeEnum,
-} from '@/helper/enums';
-import { Response, Request } from 'express';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Audit } from '@/common/entities';
-import { Repository } from 'typeorm';
-import { FindAllAuditDto } from './dto';
+} from '@/helper/enums'
+import { Response, Request } from 'express'
+import { InjectRepository } from '@nestjs/typeorm'
+import { Audit } from '@/common/entities'
+import { Repository } from 'typeorm'
+import { FindAllAuditDto } from './dto'
 
 @Injectable()
 export class AuditService {
@@ -29,38 +25,38 @@ export class AuditService {
     statusCode?: number
   ) {
     try {
-      const { method, originalUrl, useragent, query, body, path, ip } = req;
+      const { method, originalUrl, useragent, query, body, path, ip } = req
       // const { statusCode } = res;
 
       // 隐藏 query/body 参数中的关键信息
-      const [toBody, toQuery] = this.hideKeyInfoParams(body, query);
+      const [toBody, toQuery] = this.hideKeyInfoParams(body, query)
 
       const clientIp =
-        req.headers['x-real-ip'] || req.headers['x-forwarded-for'];
-      const audit = new Audit();
+        req.headers['x-real-ip'] || req.headers['x-forwarded-for']
+      const audit = new Audit()
 
       const saveIp = (
         (Array.isArray(clientIp) ? clientIp[0] : clientIp) || ip
-      ).replace('::ffff:', '');
+      ).replace('::ffff:', '')
 
-      audit.method = RequestMethodEnum[method];
+      audit.method = RequestMethodEnum[method]
       // audit.router = originalUrl;
-      audit.router = path;
-      audit.ip = saveIp === '::1' ? '127.0.0.1' : saveIp;
-      audit.userAgent = useragent.source;
-      audit.statusCode = statusCode || res.statusCode;
-      audit.responseTime = responseTime;
-      audit.requestQueryParams = JSON.stringify(toQuery);
-      audit.requestBodyParams = JSON.stringify(toBody);
-      audit.operationStatus = operationStatus;
-      errMessage && (audit.errMessage = errMessage);
-      audit.description = '';
-      audit.user = req.user;
+      audit.router = path
+      audit.ip = saveIp === '::1' ? '127.0.0.1' : saveIp
+      audit.userAgent = useragent.source
+      audit.statusCode = statusCode || res.statusCode
+      audit.responseTime = responseTime
+      audit.requestQueryParams = JSON.stringify(toQuery)
+      audit.requestBodyParams = JSON.stringify(toBody)
+      audit.operationStatus = operationStatus
+      errMessage && (audit.errMessage = errMessage)
+      audit.description = ''
+      audit.user = req.user
 
-      const auditRecord = await this.auditRepository.create(audit);
-      return await this.auditRepository.save(auditRecord);
+      const auditRecord = await this.auditRepository.create(audit)
+      return await this.auditRepository.save(auditRecord)
     } catch (e) {
-      console.log('审计记录创建失败 ------', e);
+      console.log('审计记录创建失败 ------', e)
     }
   }
 
@@ -74,19 +70,19 @@ export class AuditService {
       'newPassword',
       'refresh_token',
       'ip',
-    ];
+    ]
     const hideInfo = (obj: any) => {
       Object.keys(obj).forEach(key => {
         if (hidedKeys.includes(key)) {
-          obj[key] = '******';
+          obj[key] = '******'
         }
-      });
-    };
+      })
+    }
 
-    hideInfo(body);
-    hideInfo(query);
+    hideInfo(body)
+    hideInfo(query)
 
-    return [body, query];
+    return [body, query]
   }
 
   async findAll(params: FindAllAuditDto, queryUserId: number) {
@@ -100,7 +96,7 @@ export class AuditService {
         userId = 0,
         startTime,
         endTime,
-      } = params;
+      } = params
 
       // const [list, total] = await this.auditRepository.findAndCount({
       //   where: [
@@ -120,21 +116,21 @@ export class AuditService {
         // .select(['user.userName'])
         .skip((page - 1) * pageSize)
         .take(pageSize)
-        .orderBy(`audit.${column || 'createTime'}`, order || 'DESC');
+        .orderBy(`audit.${column || 'createTime'}`, order || 'DESC')
 
-      userId > 0 && queryBuilder.where('user.id = :userId', { userId });
+      userId > 0 && queryBuilder.where('user.id = :userId', { userId })
 
       // -1 查询未知用户请求
-      userId === -1 && queryBuilder.where('user.id IS NULL');
+      userId === -1 && queryBuilder.where('user.id IS NULL')
 
       startTime &&
         queryBuilder.andWhere('audit.createTime >= :startTime', {
           startTime,
-        });
+        })
       endTime &&
-        queryBuilder.andWhere('audit.createTime <= :endTime', { endTime });
+        queryBuilder.andWhere('audit.createTime <= :endTime', { endTime })
 
-      const [list, total] = await queryBuilder.getManyAndCount();
+      const [list, total] = await queryBuilder.getManyAndCount()
       return {
         list: list.map(({ user, ip, ...args }) => ({
           ...args,
@@ -144,52 +140,52 @@ export class AuditService {
           userName: user?.userName || null,
         })),
         total,
-      };
+      }
     } catch (e) {
       throw new InternalServerErrorException({
         e,
         code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
         msg: '查询审计列表失败',
-      });
+      })
     }
   }
 
   // 判断是否是 admin 用户 来展示 IP段信息
   private formatIPInfo(ip: string, userId: number): string {
-    if (userId === 1) return ip;
+    if (userId === 1) return ip
     else {
-      const ipParts = ip.split('.');
-      if (ipParts.length !== 4) return ip;
+      const ipParts = ip.split('.')
+      if (ipParts.length !== 4) return ip
       else {
-        ipParts[1] = '***';
-        ipParts[2] = '***';
-        return ipParts.join('.');
+        ipParts[1] = '***'
+        ipParts[2] = '***'
+        return ipParts.join('.')
       }
     }
   }
 
   async remove(id: number) {
     try {
-      const delResult = await this.auditRepository.delete(id);
-      return !!delResult.affected;
+      const delResult = await this.auditRepository.delete(id)
+      return !!delResult.affected
     } catch (e) {
       throw new InternalServerErrorException({
         code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
         e,
         msg: '删除审计记录失败',
-      });
+      })
     }
   }
 
   async removes(ids: number[]) {
     try {
-      return await this.auditRepository.delete(ids);
+      return await this.auditRepository.delete(ids)
     } catch (e) {
       throw new InternalServerErrorException({
         code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
         e,
         msg: '删除审计记录失败',
-      });
+      })
     }
   }
 }

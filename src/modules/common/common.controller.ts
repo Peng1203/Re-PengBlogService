@@ -1,8 +1,8 @@
-import { Controller, Get, Query } from '@nestjs/common';
-import { CommonService } from './common.service';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { GetIPInfoDto } from './dto';
-import { IpService } from '@/shared/ip/ip.service';
+import { Controller, Get, Query } from '@nestjs/common'
+import { CommonService } from './common.service'
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
+import { GetIPInfoDto } from './dto'
+import { IpService } from '@/shared/ip/ip.service'
 
 @ApiTags('Common')
 @ApiBearerAuth()
@@ -16,6 +16,6 @@ export class CommonController {
   @Get('ipParse')
   @ApiOperation({ summary: 'ip解析' })
   ipParse(@Query() { ip }: GetIPInfoDto) {
-    return this.ipService.resolveIp_v2(ip);
+    return this.ipService.resolveIp_v2(ip)
   }
 }

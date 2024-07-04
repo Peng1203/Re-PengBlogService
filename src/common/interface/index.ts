@@ -1,1 +1,1 @@
-export * from './data.list.stru';
+export * from './data.list.stru'
