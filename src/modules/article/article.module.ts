@@ -8,12 +8,7 @@ import { TagModule } from '@/modules/tag/tag.module'
 import { CategoryModule } from '@/modules/category/category.module'
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Article]),
-    UserModule,
-    TagModule,
-    CategoryModule,
-  ],
+  imports: [TypeOrmModule.forFeature([Article]), UserModule, TagModule, CategoryModule],
   controllers: [ArticleController],
   providers: [ArticleService],
 })

@@ -17,12 +17,7 @@ import {
   BadRequestException,
 } from '@nestjs/common'
 import { UserService } from './user.service'
-import {
-  CreateUserDto,
-  DeleteUsersDto,
-  FindAllUserDto,
-  UpdatePasswordDto,
-} from './dto'
+import { CreateUserDto, DeleteUsersDto, FindAllUserDto, UpdatePasswordDto } from './dto'
 import { UpdateUserDto } from './dto'
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { RequirePermissions, UploadImageAggregation } from '@/common/decorators'
@@ -132,9 +127,7 @@ export class UserController {
     @Res({ passthrough: true }) res: Response,
     @UploadedFile() file: Express.Multer.File
   ) {
-    const RESOURCE_SERVE = this.configService.get<string>(
-      'STATIC_RESOURCE_SERVE'
-    )
+    const RESOURCE_SERVE = this.configService.get<string>('STATIC_RESOURCE_SERVE')
     const fullPath = `${RESOURCE_SERVE}/${path.basename(file.path)}`
 
     res.resMsg = '头像上传成功!'
@@ -150,9 +143,7 @@ export class UserController {
     @UploadedFile() file: Express.Multer.File,
     @Param('id', new ParseIntParamPipe('id参数有误')) id: number
   ) {
-    const RESOURCE_SERVE = this.configService.get<string>(
-      'STATIC_RESOURCE_SERVE'
-    )
+    const RESOURCE_SERVE = this.configService.get<string>('STATIC_RESOURCE_SERVE')
     const fullPath = `${RESOURCE_SERVE}/${path.basename(file.path)}`
 
     await this.userService.update(id, { userAvatar: fullPath })
@@ -164,10 +155,7 @@ export class UserController {
   @Put(':id/password')
   @UseGuards(IdentityGuard)
   @ApiOperation({ summary: '修改密码' })
-  async changePassword(
-    @Body() data: UpdatePasswordDto,
-    @Param('id', new ParseIntParamPipe('id参数有误')) id: number
-  ) {
+  async changePassword(@Body() data: UpdatePasswordDto, @Param('id', new ParseIntParamPipe('id参数有误')) id: number) {
     /**
      *  1.校验输入的旧密码是否正确
      *  2.校验新旧密码是否一致
@@ -199,9 +187,7 @@ export class UserController {
   @Patch(':id/password/reset')
   @UseGuards(IdentityGuard)
   @ApiOperation({ summary: '重置密码' })
-  async resetPassword(
-    @Param('id', new ParseIntParamPipe('id参数有误')) id: number
-  ) {
+  async resetPassword(@Param('id', new ParseIntParamPipe('id参数有误')) id: number) {
     const user = await this.userService.findOneById(id)
     // prettier-ignore
     if (!user) throw new NotFoundException({

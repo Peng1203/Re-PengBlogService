@@ -1,11 +1,4 @@
-import {
-  IsInt,
-  IsNumber,
-  IsString,
-  MaxLength,
-  Min,
-  MinLength,
-} from '@nestjs/class-validator'
+import { IsInt, IsNumber, IsString, MaxLength, Min, MinLength } from '@nestjs/class-validator'
 import { ApiProperty } from '@nestjs/swagger'
 
 export class UserLogoutDto {

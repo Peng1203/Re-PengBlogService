@@ -1,14 +1,7 @@
 import { TimestampedEntity } from './'
 // import { ActionTypeEnum } from '@/helper/enums';
 import { Role } from './'
-import {
-  Column,
-  Entity,
-  Index,
-  ManyToMany,
-  PrimaryGeneratedColumn,
-  Unique,
-} from 'typeorm'
+import { Column, Entity, Index, ManyToMany, PrimaryGeneratedColumn, Unique } from 'typeorm'
 import { PermissionEnum, RequestMethodEnum } from '../../helper/enums'
 
 @Entity({ name: 'permission' })

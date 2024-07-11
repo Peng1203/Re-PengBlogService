@@ -10,9 +10,7 @@ import { BatchAddMenuItemInstance, MenuItem } from './types'
 
 @Injectable()
 export class MenuService {
-  constructor(
-    @InjectRepository(Menu) private readonly menuRepository: Repository<Menu>
-  ) {}
+  constructor(@InjectRepository(Menu) private readonly menuRepository: Repository<Menu>) {}
 
   async create(data: CreateMenuDto) {
     try {
@@ -32,10 +30,7 @@ export class MenuService {
       const { queryStr = '', column, order } = query
 
       const [list, total] = await this.menuRepository.findAndCount({
-        where: [
-          { menuName: Like(`%${queryStr}%`) },
-          { menuPath: Like(`%${queryStr}%`) },
-        ],
+        where: [{ menuName: Like(`%${queryStr}%`) }, { menuPath: Like(`%${queryStr}%`) }],
         order: { [column || 'id']: order || 'ASC' },
       })
       return { list, total }
@@ -59,9 +54,7 @@ export class MenuService {
     return ary
       .filter(item =>
         // 如果没有父id（第一次递归的时候）将所有父级查询出来
-        parentId === undefined
-          ? item.parentId === 0
-          : item.parentId === parentId
+        parentId === undefined ? item.parentId === 0 : item.parentId === parentId
       )
       .map(item => {
         // 通过父节点ID查询所有子节点
@@ -141,27 +134,19 @@ export class MenuService {
   async batchInitMenu({ parentMenus, subMenus }: BatchCreateMenuDto) {
     try {
       // menuData.parentMenus.map();
-      const parentData = await Promise.all(
-        parentMenus.map(menu => this.findOrCreateParentMenu(menu))
-      )
+      const parentData = await Promise.all(parentMenus.map(menu => this.findOrCreateParentMenu(menu)))
 
       // console.log('parentData ------', parentData);
       // 创建菜单实例
-      const createdParentMenus = await this.menuRepository.create(
-        parentData.filter(item => item !== null)
-      )
+      const createdParentMenus = await this.menuRepository.create(parentData.filter(item => item !== null))
       // 写库
       await this.menuRepository.save(createdParentMenus)
       // 查询一创建的所有菜单数据
       const [findAllMenu] = await this.menuRepository.findAndCount()
 
-      const subData = await Promise.all(
-        subMenus.map(menu => this.findOrCreateSubMenu(menu, findAllMenu))
-      )
+      const subData = await Promise.all(subMenus.map(menu => this.findOrCreateSubMenu(menu, findAllMenu)))
 
-      const createdSubMenus = await this.menuRepository.create(
-        subData.filter(item => item !== null)
-      )
+      const createdSubMenus = await this.menuRepository.create(subData.filter(item => item !== null))
       // 写库
       await this.menuRepository.save(createdSubMenus)
 
@@ -188,10 +173,7 @@ export class MenuService {
     }
   }
 
-  private async findOrCreateSubMenu(
-    { parentUri, ...item }: BatchAddMenuItemInstance,
-    allMenus: Menu[]
-  ) {
+  private async findOrCreateSubMenu({ parentUri, ...item }: BatchAddMenuItemInstance, allMenus: Menu[]) {
     try {
       const menu = await this.menuRepository.findOneBy({
         menuUri: item.menuUri,

@@ -1,15 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  Query,
-  Res,
-  ConflictException,
-} from '@nestjs/common'
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Res, ConflictException } from '@nestjs/common'
 import { PermissionService } from './permission.service'
 import { CreatePermissionDto } from './dto/create-permission.dto'
 import { UpdatePermissionDto } from './dto/update-permission.dto'
@@ -37,9 +26,7 @@ export class PermissionController {
   @ApiOperation({ summary: '获取权限' })
   async findAll(@Query() query: FindAllPermissionDto) {
     const { list: data, total } = await this.permissionService.findAll(query)
-    const list = query.queryStr
-      ? data
-      : this.permissionService.handlePermissionResponse(data)
+    const list = query.queryStr ? data : this.permissionService.handlePermissionResponse(data)
     return { list, total }
   }
 
@@ -72,9 +59,7 @@ export class PermissionController {
     @Res({ passthrough: true }) res: Response
   ) {
     const permission = await this.permissionService.findOne(id)
-    const isHave = await this.permissionService.permissionHasChildren(
-      permission.id
-    )
+    const isHave = await this.permissionService.permissionHasChildren(permission.id)
     if (isHave)
       throw new ConflictException({
         code: ApiResponseCodeEnum.CONFLICT,

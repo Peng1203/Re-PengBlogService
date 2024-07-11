@@ -1,11 +1,5 @@
 import { Type } from '@nestjs/class-transformer'
-import {
-  ArrayMaxSize,
-  ArrayMinSize,
-  IsArray,
-  IsString,
-  ValidateNested,
-} from '@nestjs/class-validator'
+import { ArrayMaxSize, ArrayMinSize, IsArray, IsString, ValidateNested } from '@nestjs/class-validator'
 import { ApiProperty } from '@nestjs/swagger'
 
 class MessageItem {

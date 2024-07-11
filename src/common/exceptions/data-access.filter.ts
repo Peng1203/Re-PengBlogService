@@ -2,13 +2,7 @@ import { ServerError } from '@/common/errors/server.error'
 import { StatusEnum } from '@/helper/enums'
 import { AuditService } from '@/modules/log/audit/audit.service'
 import { formatDate } from '@/utils/date.util'
-import {
-  ArgumentsHost,
-  Catch,
-  ExceptionFilter,
-  InternalServerErrorException,
-  HttpException,
-} from '@nestjs/common'
+import { ArgumentsHost, Catch, ExceptionFilter, InternalServerErrorException, HttpException } from '@nestjs/common'
 import { Request, Response } from 'express'
 
 // 处理 TypeORM 抛出错误
@@ -51,14 +45,7 @@ export class DataAccessFilter implements ExceptionFilter {
 
     const message = `${exceptionRes.msg}，${reason}`
 
-    this.auditService.createAuditRecord(
-      req,
-      res,
-      StatusEnum.FALSE,
-      0,
-      message,
-      status
-    )
+    this.auditService.createAuditRecord(req, res, StatusEnum.FALSE, 0, message, status)
 
     // 写入错误的logger日志
 

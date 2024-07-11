@@ -16,11 +16,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     })
   }
 
-  async validate(
-    req: Request,
-    userName: string,
-    password: string
-  ): Promise<User> {
+  async validate(req: Request, userName: string, password: string): Promise<User> {
     this.authService.verifyCaptcha(req.body.captcha, req.session)
     return await this.authService.validateUser(userName, password)
   }

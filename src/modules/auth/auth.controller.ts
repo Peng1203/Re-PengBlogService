@@ -49,9 +49,7 @@ export class AuthController {
     const isPhone = ['Android', 'iPhone'].includes(ua.platform)
     const { text, data } = this.authService.generateCaptcha(isPhone)
     session.captcha = text
-    const CAPTCHA_EXPIRES = Number(
-      this.configService.get<string>('CAPTCHA_EXPIRES')
-    )
+    const CAPTCHA_EXPIRES = Number(this.configService.get<string>('CAPTCHA_EXPIRES'))
 
     // 方案1 设置一个 setTimeout 到时自动删除 session对象的验证码字段
     // 方案2 在生成验证码时记录一个过期时间戳 登录时进行时间戳对比
@@ -66,9 +64,7 @@ export class AuthController {
     const isPhone = ['Android', 'iPhone'].includes(ua.platform)
     const { text, data } = this.authService.generateV2Captcha(isPhone)
     session.captcha = text
-    const CAPTCHA_EXPIRES = Number(
-      this.configService.get<string>('CAPTCHA_EXPIRES')
-    )
+    const CAPTCHA_EXPIRES = Number(this.configService.get<string>('CAPTCHA_EXPIRES'))
     session.expirationTimestamp = Date.now() + CAPTCHA_EXPIRES
     return data
   }
@@ -92,18 +88,12 @@ export class AuthController {
         msg: '账号已被禁用!请联系管理员',
       })
 
-    const access_token = await this.authService.generateAccessToken(
-      user.id,
-      user.userName
-    )
+    const access_token = await this.authService.generateAccessToken(user.id, user.userName)
     const refresh_token = await this.authService.generateRefreshToken(user.id)
     const clientInfo = await this.authService.getClientInfo(req)
 
     // redis 设置token
-    await this.authService.setTokenToRedis(
-      this.authService.redisTokenKeyStr(user.id, user.userName),
-      access_token
-    )
+    await this.authService.setTokenToRedis(this.authService.redisTokenKeyStr(user.id, user.userName), access_token)
 
     // 登录成功 删除 session 设置的验证码和 过期日期
     delete session.captcha
@@ -138,17 +128,11 @@ export class AuthController {
         msg: '账号已被禁用!请联系管理员',
       })
 
-    const access_token = await this.authService.generateAccessToken(
-      user.id,
-      user.userName
-    )
+    const access_token = await this.authService.generateAccessToken(user.id, user.userName)
     const refresh_token = await this.authService.generateRefreshToken(user.id)
 
     // redis 设置token
-    await this.authService.setTokenToRedis(
-      this.authService.redisTokenKeyStr(user.id, user.userName),
-      access_token
-    )
+    await this.authService.setTokenToRedis(this.authService.redisTokenKeyStr(user.id, user.userName), access_token)
 
     return {
       access_token,
@@ -159,11 +143,7 @@ export class AuthController {
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '退出登录' })
-  async logout(
-    @ReqUser() user: User,
-    @Body() data: UserLogoutDto,
-    @Res({ passthrough: true }) res: Response
-  ) {
+  async logout(@ReqUser() user: User, @Body() data: UserLogoutDto, @Res({ passthrough: true }) res: Response) {
     if (data.id !== user.id || data.userName !== user.userName)
       throw new ForbiddenException({
         code: ApiResponseCodeEnum.FORBIDDEN_USER,
@@ -187,9 +167,7 @@ export class AuthController {
   @Public()
   @Get('auth/permissions/:id')
   @ApiOperation({ summary: '获取用户权限标识' })
-  async userPermissions(
-    @Param('id', new ParseIntParamPipe('id参数有误')) id: number
-  ) {
+  async userPermissions(@Param('id', new ParseIntParamPipe('id参数有误')) id: number) {
     return this.userService.findUserPermissions(id)
   }
 

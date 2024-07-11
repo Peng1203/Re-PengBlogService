@@ -1,10 +1,5 @@
 import { LoginAuditService } from '@/modules/log/login-audit/login-audit.service'
-import {
-  CallHandler,
-  ExecutionContext,
-  Injectable,
-  NestInterceptor,
-} from '@nestjs/common'
+import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common'
 import { Observable, tap } from 'rxjs'
 import { Request } from 'express'
 import { LoginMethodEnum, LoginStatusEnum } from '@/helper/enums'

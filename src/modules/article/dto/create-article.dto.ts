@@ -1,9 +1,4 @@
-import {
-  ArticleStatusEnum,
-  ArticleTypeEnum,
-  BolEnum,
-  ContentModelEnum,
-} from '@/helper/enums'
+import { ArticleStatusEnum, ArticleTypeEnum, BolEnum, ContentModelEnum } from '@/helper/enums'
 import {
   ArrayMaxSize,
   IsDefined,

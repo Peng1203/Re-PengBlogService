@@ -23,13 +23,9 @@ export class RoleService {
     try {
       const { permissions: pIds, menus: menuIds, ...roleInfo } = data
 
-      const permissions = await Promise.all(
-        pIds.map(id => this.permissionService.findOne(id))
-      )
+      const permissions = await Promise.all(pIds.map(id => this.permissionService.findOne(id)))
 
-      const menus = await Promise.all(
-        menuIds.map(id => this.menuService.findOne(id))
-      )
+      const menus = await Promise.all(menuIds.map(id => this.menuService.findOne(id)))
 
       const role = await this.roleRepository.create({
         permissions,
@@ -87,13 +83,9 @@ export class RoleService {
         role[key] = roleInfo[key]
       }
 
-      const menus = menuIds.length
-        ? await Promise.all(menuIds.map(id => this.menuService.findOne(id)))
-        : []
+      const menus = menuIds.length ? await Promise.all(menuIds.map(id => this.menuService.findOne(id))) : []
 
-      const permissions = pIds.length
-        ? await Promise.all(pIds.map(id => this.permissionService.findOne(id)))
-        : []
+      const permissions = pIds.length ? await Promise.all(pIds.map(id => this.permissionService.findOne(id))) : []
 
       role.menus = menus
       role.permissions = permissions

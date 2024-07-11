@@ -24,10 +24,7 @@ import { diskStorage } from 'multer'
 @ApiBearerAuth()
 @Controller('resource')
 export class ResourceController {
-  constructor(
-    private readonly resourceService: ResourceService,
-    private readonly configService: ConfigService
-  ) {}
+  constructor(private readonly resourceService: ResourceService, private readonly configService: ConfigService) {}
 
   @Get()
   findAll() {
@@ -37,13 +34,8 @@ export class ResourceController {
   @Post()
   @UploadFileAggregation({ maxSize: 5 })
   @ApiOperation({ summary: '上传文件' })
-  upload(
-    @Res({ passthrough: true }) res: Response,
-    @UploadedFile() file: Express.Multer.File
-  ) {
-    const RESOURCE_SERVE = this.configService.get<string>(
-      'STATIC_RESOURCE_SERVE'
-    )
+  upload(@Res({ passthrough: true }) res: Response, @UploadedFile() file: Express.Multer.File) {
+    const RESOURCE_SERVE = this.configService.get<string>('STATIC_RESOURCE_SERVE')
     const fullPath = `${RESOURCE_SERVE}/${path.basename(file.path)}`
     res.resMsg = '文件上传成功'
     return `${fullPath}`
@@ -56,25 +48,19 @@ export class ResourceController {
       storage: diskStorage({
         destination: './uploads/chunks',
         filename: (req, file, cb) => {
-          const uniqueSuffix =
-            Date.now() + '-' + Math.round(Math.random() * 1e9)
-          cb(
-            null,
-            `${file.originalname}.${uniqueSuffix}${path.extname(
-              file.originalname
-            )}`
-          )
+          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9)
+          cb(null, `${file.originalname}.${uniqueSuffix}${path.extname(file.originalname)}`)
         },
       }),
     })
   )
   @ApiOperation({ summary: '上传大文件' })
-  chunkUpload(
-    @Req() req: Request,
-    @UploadedFiles() files: Express.Multer.File[]
-  ) {
+  chunkUpload(@Req() req: Request, @UploadedFiles() files: Express.Multer.File[]) {
     console.log('files ------', files)
 
-    return ``
+    return {
+      message: '成功',
+      success: true,
+    }
   }
 }

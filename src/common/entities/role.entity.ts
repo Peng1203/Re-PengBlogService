@@ -1,15 +1,7 @@
 import { TimestampedEntity } from './'
 import { Menu, User, Permission } from './'
 
-import {
-  Column,
-  Entity,
-  Index,
-  JoinTable,
-  ManyToMany,
-  PrimaryGeneratedColumn,
-  Unique,
-} from 'typeorm'
+import { Column, Entity, Index, JoinTable, ManyToMany, PrimaryGeneratedColumn, Unique } from 'typeorm'
 
 @Entity({ name: 'role' })
 @Unique(['roleName'])

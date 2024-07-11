@@ -1,16 +1,7 @@
 import { Article, Audit, TimestampedEntity } from './'
 import { UserEnabledEnum } from '../../helper/enums'
 import { Role } from './'
-import {
-  Column,
-  Entity,
-  Index,
-  JoinTable,
-  ManyToMany,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  Unique,
-} from 'typeorm'
+import { Column, Entity, Index, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm'
 
 @Entity({ name: 'user' })
 @Unique(['userName'])

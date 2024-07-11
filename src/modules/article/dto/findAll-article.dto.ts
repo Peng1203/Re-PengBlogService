@@ -2,16 +2,7 @@ import { ListCommonParamsDto } from '@/common/dto'
 import { ArticleStatusStateEnum, ArticleTypeStateEnum } from '@/helper/enums'
 import { DATE_TIME_REGEX } from '@/helper/regex'
 import { IsDateTimeString } from '@/helper/validate'
-import {
-  IsDefined,
-  IsEnum,
-  IsInt,
-  IsNumber,
-  IsOptional,
-  IsString,
-  Matches,
-  Validate,
-} from '@nestjs/class-validator'
+import { IsDefined, IsEnum, IsInt, IsNumber, IsOptional, IsString, Matches, Validate } from '@nestjs/class-validator'
 import { ApiProperty } from '@nestjs/swagger'
 
 export class FindAllArticleDto extends ListCommonParamsDto {

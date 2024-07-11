@@ -1,16 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types'
 import { CreateMenuDto } from './create-menu.dto'
-import {
-  IsEnum,
-  IsInt,
-  IsNumber,
-  IsOptional,
-  IsString,
-  Max,
-  MaxLength,
-  Min,
-  MinLength,
-} from '@nestjs/class-validator'
+import { IsEnum, IsInt, IsNumber, IsOptional, IsString, Max, MaxLength, Min, MinLength } from '@nestjs/class-validator'
 import { ApiProperty } from '@nestjs/swagger'
 import { StatusEnum } from '@/helper/enums'
 import { Type } from '@nestjs/class-transformer'

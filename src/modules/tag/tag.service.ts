@@ -8,9 +8,7 @@ import { formatDate } from '@/utils/date.util'
 
 @Injectable()
 export class TagService {
-  constructor(
-    @InjectRepository(Tag) private readonly tagRepository: Repository<Tag>
-  ) {}
+  constructor(@InjectRepository(Tag) private readonly tagRepository: Repository<Tag>) {}
 
   async create(data: CreateTagDto) {
     try {

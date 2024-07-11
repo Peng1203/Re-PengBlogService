@@ -1,10 +1,4 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  Index,
-  PrimaryGeneratedColumn,
-} from 'typeorm'
+import { Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn } from 'typeorm'
 import { DateTimeTransformer } from './common/timestamped.entity'
 import { LoginMethodEnum } from '../../helper/enums'
 

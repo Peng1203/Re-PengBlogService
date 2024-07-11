@@ -6,10 +6,7 @@ import { Response } from 'express'
 
 @Controller('openai')
 export class OpenAiController {
-  constructor(
-    private readonly openAiService: OpenAiService,
-    private readonly proxyHttpService: ProxyHttpService
-  ) {}
+  constructor(private readonly openAiService: OpenAiService, private readonly proxyHttpService: ProxyHttpService) {}
 
   @Post('chat')
   async chartGpt(@Body() data: ChatDto, @Res() res: Response) {

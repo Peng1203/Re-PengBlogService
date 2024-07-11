@@ -97,9 +97,7 @@ export class PermissionService {
     return ary
       .filter(item =>
         // 如果没有父id（第一次递归的时候）将所有父级查询出来
-        parentId === undefined
-          ? item.parentId === 0
-          : item.parentId === parentId
+        parentId === undefined ? item.parentId === 0 : item.parentId === parentId
       )
       .map(item => {
         // 通过父节点ID查询所有子节点

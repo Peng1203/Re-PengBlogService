@@ -1,10 +1,4 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  Inject,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common'
+import { CanActivate, ExecutionContext, Inject, Injectable, UnauthorizedException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { Request } from 'express'
 import { IS_PUBLIC_KEY } from '@/common/decorators'
@@ -42,14 +36,10 @@ export class JwtAuthGuard extends AuthGuard(PassPortStrategyEnum.JWT) {
         code: ApiResponseCodeEnum.UNAUTHORIZED,
         msg: 'Token cannot be empty',
       })
-    const { sub: id, userName } = await this.authService.verifyAccessToken(
-      token
-    )
+    const { sub: id, userName } = await this.authService.verifyAccessToken(token)
 
     // 判断当前token 和 redis中存放的token是否一致
-    const redisToken = await this.redis.getCache(
-      this.authService.redisTokenKeyStr(id, userName)
-    )
+    const redisToken = await this.redis.getCache(this.authService.redisTokenKeyStr(id, userName))
     if (token !== redisToken)
       throw new UnauthorizedException({
         code: ApiResponseCodeEnum.UNAUTHORIZED_ACCESS_TOKEN,

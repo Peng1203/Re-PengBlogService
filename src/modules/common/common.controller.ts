@@ -8,10 +8,7 @@ import { IpService } from '@/shared/ip/ip.service'
 @ApiBearerAuth()
 @Controller('common')
 export class CommonController {
-  constructor(
-    private readonly commonService: CommonService,
-    private readonly ipService: IpService
-  ) {}
+  constructor(private readonly commonService: CommonService, private readonly ipService: IpService) {}
 
   @Get('ipParse')
   @ApiOperation({ summary: 'ip解析' })

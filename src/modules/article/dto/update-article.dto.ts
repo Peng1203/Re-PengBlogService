@@ -12,12 +12,7 @@ import {
   MaxLength,
 } from '@nestjs/class-validator'
 import { ApiProperty } from '@nestjs/swagger'
-import {
-  ArticleStatusEnum,
-  ArticleTypeEnum,
-  BolEnum,
-  ContentModelEnum,
-} from '@/helper/enums'
+import { ArticleStatusEnum, ArticleTypeEnum, BolEnum, ContentModelEnum } from '@/helper/enums'
 
 export class UpdateArticleDto extends PartialType(CreateArticleDto) {
   @IsString()

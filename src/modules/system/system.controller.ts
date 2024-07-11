@@ -9,10 +9,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 @Controller('system')
 export class SystemController {
   // 更新计数器
-  constructor(
-    private readonly systemService: SystemService,
-    private readonly mutexService: MutexService
-  ) {}
+  constructor(private readonly systemService: SystemService, private readonly mutexService: MutexService) {}
 
   @Get()
   @Public()

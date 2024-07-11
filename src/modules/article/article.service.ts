@@ -1,9 +1,4 @@
-import {
-  ForbiddenException,
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common'
+import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common'
 import { CreateArticleDto } from './dto/create-article.dto'
 import { UpdateArticleDto } from './dto/update-article.dto'
 import { ApiResponseCodeEnum } from '@/helper/enums'
@@ -32,13 +27,9 @@ export class ArticleService {
 
       const author = await this.userService.findOneById(authorId)
       const tags = tagIds.length
-        ? (
-            await Promise.all(tagIds.map(id => this.tagService.findOne(id)))
-          ).filter(tag => tag)
+        ? (await Promise.all(tagIds.map(id => this.tagService.findOne(id)))).filter(tag => tag)
         : []
-      const category = categoryId
-        ? await this.categoryService.findOne(categoryId)
-        : null
+      const category = categoryId ? await this.categoryService.findOne(categoryId) : null
 
       const article = await this.articleRepository.create({
         author,
@@ -98,8 +89,7 @@ export class ArticleService {
       type && queryBuilder.andWhere('article.type = :type', { type })
       tagId && queryBuilder.andWhere('tags.id = :tagId', { tagId })
       status && queryBuilder.andWhere('article.status = :status', { status })
-      authorId &&
-        queryBuilder.andWhere('article.authorId = :authorId', { authorId })
+      authorId && queryBuilder.andWhere('article.authorId = :authorId', { authorId })
       categoryId &&
         queryBuilder.andWhere('article.categoryId = :categoryId', {
           categoryId,
@@ -108,8 +98,7 @@ export class ArticleService {
         queryBuilder.andWhere('article.createTime >= :startTime', {
           startTime,
         })
-      endTime &&
-        queryBuilder.andWhere('article.createTime <= :endTime', { endTime })
+      endTime && queryBuilder.andWhere('article.createTime <= :endTime', { endTime })
 
       const [list, total] = await queryBuilder.getManyAndCount()
 
@@ -204,14 +193,10 @@ export class ArticleService {
       }
 
       article.tags = tagIds.length
-        ? (
-            await Promise.all(tagIds.map(id => this.tagService.findOne(id)))
-          ).filter(tag => tag)
+        ? (await Promise.all(tagIds.map(id => this.tagService.findOne(id)))).filter(tag => tag)
         : []
 
-      article.category = category
-        ? await this.categoryService.findOne(category)
-        : null
+      article.category = category ? await this.categoryService.findOne(category) : null
 
       article.updateTime = formatDate()
       return await this.articleRepository.save(article)

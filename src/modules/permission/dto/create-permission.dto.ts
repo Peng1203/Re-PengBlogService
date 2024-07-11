@@ -1,13 +1,4 @@
-import {
-  IsString,
-  MaxLength,
-  MinLength,
-  IsEnum,
-  IsOptional,
-  IsNumber,
-  IsInt,
-  Min,
-} from '@nestjs/class-validator'
+import { IsString, MaxLength, MinLength, IsEnum, IsOptional, IsNumber, IsInt, Min } from '@nestjs/class-validator'
 import { PermissionEnum } from '@/helper/enums/permission'
 import { ApiProperty } from '@nestjs/swagger'
 import { RequestMethodEnum } from '@/helper/enums/request.method'

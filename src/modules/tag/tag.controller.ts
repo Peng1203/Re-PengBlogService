@@ -1,15 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  Query,
-  Res,
-  NotFoundException,
-} from '@nestjs/common'
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Res, NotFoundException } from '@nestjs/common'
 import { TagService } from './tag.service'
 import { CreateTagDto, UpdateTagDto, FindAllTagDto, DeleteTagsDto } from './dto'
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
@@ -75,10 +64,7 @@ export class TagController {
   @Delete()
   @ApiOperation({ summary: '批量删除文章标签' })
   @RequirePermissions(PermissionEnum.DELETE_TAG)
-  async batchRemove(
-    @Body() { tagIds }: DeleteTagsDto,
-    @Res({ passthrough: true }) res: Response
-  ) {
+  async batchRemove(@Body() { tagIds }: DeleteTagsDto, @Res({ passthrough: true }) res: Response) {
     const delRes = await this.tagService.removes(tagIds)
     if (!delRes) res.resMsg = '批量删除标签失败!'
     if (!delRes) res.success = false

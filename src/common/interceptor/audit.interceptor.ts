@@ -1,9 +1,4 @@
-import {
-  CallHandler,
-  ExecutionContext,
-  Injectable,
-  NestInterceptor,
-} from '@nestjs/common'
+import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common'
 import { Observable, tap } from 'rxjs'
 import { Request, Response } from 'express'
 import { AuditService } from '@/modules/log/audit/audit.service'
@@ -12,10 +7,7 @@ import { Reflector } from '@nestjs/core'
 
 @Injectable()
 export class AuditInterceptor implements NestInterceptor {
-  constructor(
-    private readonly reflector: Reflector,
-    private readonly auditService: AuditService
-  ) {}
+  constructor(private readonly reflector: Reflector, private readonly auditService: AuditService) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     // const isPublic = this.reflector.getAllAndOverride(IS_PUBLIC_KEY, [
@@ -37,12 +29,7 @@ export class AuditInterceptor implements NestInterceptor {
       tap(data => {
         const responseTime = Date.now()
 
-        this.auditService.createAuditRecord(
-          req,
-          res,
-          StatusEnum.TRUE,
-          responseTime - requestTime
-        )
+        this.auditService.createAuditRecord(req, res, StatusEnum.TRUE, responseTime - requestTime)
       })
     )
   }

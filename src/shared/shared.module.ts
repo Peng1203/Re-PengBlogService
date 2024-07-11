@@ -8,12 +8,7 @@ import { IpService } from './ip/ip.service'
 import { IpModule } from './ip/ip.module'
 
 @Module({
-  imports: [
-    HttpModule.registerAsync({ useClass: HttpConfigService }),
-    ProxyHttpModule,
-    RedisModule,
-    IpModule,
-  ],
+  imports: [HttpModule.registerAsync({ useClass: HttpConfigService }), ProxyHttpModule, RedisModule, IpModule],
   providers: [CosService, IpService],
   exports: [HttpModule, RedisModule, CosService, ProxyHttpModule, IpModule],
 })

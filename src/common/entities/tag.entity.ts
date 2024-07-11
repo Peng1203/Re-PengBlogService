@@ -1,12 +1,5 @@
 import { Article, TimestampedEntity } from './'
-import {
-  Column,
-  Entity,
-  Index,
-  ManyToMany,
-  PrimaryGeneratedColumn,
-  Unique,
-} from 'typeorm'
+import { Column, Entity, Index, ManyToMany, PrimaryGeneratedColumn, Unique } from 'typeorm'
 
 @Entity({ name: 'tag' })
 @Unique(['tagName'])

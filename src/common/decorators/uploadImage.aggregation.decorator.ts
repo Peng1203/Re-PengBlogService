@@ -6,11 +6,7 @@ import { nanoid } from 'nanoid'
 import { Request } from 'express'
 import { diskStorage } from 'multer'
 // import { Public } from '@/common/decorators';
-import {
-  MethodNotAllowedException,
-  UseInterceptors,
-  applyDecorators,
-} from '@nestjs/common'
+import { MethodNotAllowedException, UseInterceptors, applyDecorators } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { ApiBody, ApiConsumes } from '@nestjs/swagger'
 import { UploadImageDto } from '@/common/dto'
@@ -34,8 +30,7 @@ export function UploadImageAggregation(options?: UploadOptions) {
   const maxSize = options?.maxSize || 2
   // 这里无法读取process.env中的变量
   const savePath = options?.savePath || ''
-  const tooLargeErrMsg =
-    options?.tooLargeErrMsg || `请选择小于${maxSize}MB大小的文件`
+  const tooLargeErrMsg = options?.tooLargeErrMsg || `请选择小于${maxSize}MB大小的文件`
   return applyDecorators(
     UseInterceptors(
       FileInterceptor('file', {
@@ -59,11 +54,7 @@ export function UploadImageAggregation(options?: UploadOptions) {
           fileSize: Math.pow(1024, 2) * (maxSize || 2),
         },
         fileFilter(req, file, callback) {
-          if (!file.mimetype.includes('image'))
-            callback(
-              new MethodNotAllowedException('请选择图片类型的文件'),
-              false
-            )
+          if (!file.mimetype.includes('image')) callback(new MethodNotAllowedException('请选择图片类型的文件'), false)
           else callback(null, true)
         },
       })

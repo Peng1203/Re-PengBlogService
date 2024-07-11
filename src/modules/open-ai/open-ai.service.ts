@@ -10,10 +10,7 @@ export class OpenAiService {
   private readonly MAX_TOKENS: 1024
   private readonly TEMPERATURE: 0.8
 
-  constructor(
-    private readonly proxyHttpService: ProxyHttpService,
-    private readonly configService: ConfigService
-  ) {
+  constructor(private readonly proxyHttpService: ProxyHttpService, private readonly configService: ConfigService) {
     const OPENAI_API_KEY = this.configService.get('OPENAI_API_KEY')
 
     this.openai = new OpenAI({

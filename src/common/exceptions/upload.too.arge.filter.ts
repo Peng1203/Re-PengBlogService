@@ -1,12 +1,7 @@
 import { ApiResponseCodeEnum, StatusEnum } from '@/helper/enums'
 import { AuditService } from '@/modules/log/audit/audit.service'
 import { formatDate } from '@/utils/date.util'
-import {
-  ArgumentsHost,
-  Catch,
-  ExceptionFilter,
-  PayloadTooLargeException,
-} from '@nestjs/common'
+import { ArgumentsHost, Catch, ExceptionFilter, PayloadTooLargeException } from '@nestjs/common'
 import { Request, Response } from 'express'
 
 /** 上传文件过大异常处理 */
@@ -22,14 +17,7 @@ export class UploadTooLargeFilter implements ExceptionFilter {
 
     console.log('上传异常过滤器触发 ------', exceptionRes)
 
-    this.auditService.createAuditRecord(
-      req,
-      res,
-      StatusEnum.FALSE,
-      0,
-      req.resErrMsg,
-      status
-    )
+    this.auditService.createAuditRecord(req, res, StatusEnum.FALSE, 0, req.resErrMsg, status)
 
     res.status(status).json({
       code: ApiResponseCodeEnum.FILE_TOO_LARGE,

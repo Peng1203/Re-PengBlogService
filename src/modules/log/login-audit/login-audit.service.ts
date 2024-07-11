@@ -31,18 +31,9 @@ export class LoginAuditService {
     const record = new LoginAudit()
 
     const { userId, userName } = userInfo
-    const {
-      ip,
-      location,
-      loginStatus,
-      failureReason,
-      loginDuration,
-      loginMethod,
-      loginTime,
-    } = options
+    const { ip, location, loginStatus, failureReason, loginDuration, loginMethod, loginTime } = options
     const ipAddr = ip || this.getClientIp(req)
-    const { browser, version, userAgent, os, deviceTypes } =
-      this.getClientInfo(req)
+    const { browser, version, userAgent, os, deviceTypes } = this.getClientInfo(req)
 
     record.userId = userId
     record.userName = userName
@@ -65,9 +56,7 @@ export class LoginAuditService {
   getClientIp(req: Request) {
     const clientIp = req.headers['x-real-ip'] || req.headers['x-forwarded-for']
     const localIp = req.ip === '::1' ? '127.0.0.1' : req.ip
-    return (
-      Array.isArray(clientIp) ? clientIp[0] : clientIp || localIp
-    ).replace('::ffff:', '')
+    return (Array.isArray(clientIp) ? clientIp[0] : clientIp || localIp).replace('::ffff:', '')
   }
 
   getLocationInfo(ip: string) {
@@ -75,8 +64,7 @@ export class LoginAuditService {
   }
 
   getClientInfo(req: Request) {
-    const { os, platform, browser, version, source, isAuthoritative, ...args } =
-      req.useragent
+    const { os, platform, browser, version, source, isAuthoritative, ...args } = req.useragent
     const deviceTypes: string[] = []
     for (const key in args) {
       if (!key.includes('is')) continue
@@ -105,16 +93,7 @@ export class LoginAuditService {
 
   async findAll(params: FindAllLoginAuditDto, queryUserId: number) {
     try {
-      const {
-        page,
-        pageSize,
-        queryStr = '',
-        column,
-        order,
-        userId = 0,
-        startTime,
-        endTime,
-      } = params
+      const { page, pageSize, queryStr = '', column, order, userId = 0, startTime, endTime } = params
 
       const filter: any = {}
 

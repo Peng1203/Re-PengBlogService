@@ -1,9 +1,5 @@
 import { Injectable, InternalServerErrorException, Param } from '@nestjs/common'
-import {
-  StatusEnum,
-  RequestMethodEnum,
-  ApiResponseCodeEnum,
-} from '@/helper/enums'
+import { StatusEnum, RequestMethodEnum, ApiResponseCodeEnum } from '@/helper/enums'
 import { Response, Request } from 'express'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Audit } from '@/common/entities'
@@ -12,9 +8,7 @@ import { FindAllAuditDto } from './dto'
 
 @Injectable()
 export class AuditService {
-  constructor(
-    @InjectRepository(Audit) private readonly auditRepository: Repository<Audit>
-  ) {}
+  constructor(@InjectRepository(Audit) private readonly auditRepository: Repository<Audit>) {}
 
   async createAuditRecord(
     req: Request,
@@ -31,13 +25,10 @@ export class AuditService {
       // 隐藏 query/body 参数中的关键信息
       const [toBody, toQuery] = this.hideKeyInfoParams(body, query)
 
-      const clientIp =
-        req.headers['x-real-ip'] || req.headers['x-forwarded-for']
+      const clientIp = req.headers['x-real-ip'] || req.headers['x-forwarded-for']
       const audit = new Audit()
 
-      const saveIp = (
-        (Array.isArray(clientIp) ? clientIp[0] : clientIp) || ip
-      ).replace('::ffff:', '')
+      const saveIp = ((Array.isArray(clientIp) ? clientIp[0] : clientIp) || ip).replace('::ffff:', '')
 
       audit.method = RequestMethodEnum[method]
       // audit.router = originalUrl;
@@ -87,16 +78,7 @@ export class AuditService {
 
   async findAll(params: FindAllAuditDto, queryUserId: number) {
     try {
-      const {
-        page,
-        pageSize,
-        queryStr = '',
-        column,
-        order,
-        userId = 0,
-        startTime,
-        endTime,
-      } = params
+      const { page, pageSize, queryStr = '', column, order, userId = 0, startTime, endTime } = params
 
       // const [list, total] = await this.auditRepository.findAndCount({
       //   where: [
@@ -127,8 +109,7 @@ export class AuditService {
         queryBuilder.andWhere('audit.createTime >= :startTime', {
           startTime,
         })
-      endTime &&
-        queryBuilder.andWhere('audit.createTime <= :endTime', { endTime })
+      endTime && queryBuilder.andWhere('audit.createTime <= :endTime', { endTime })
 
       const [list, total] = await queryBuilder.getManyAndCount()
       return {

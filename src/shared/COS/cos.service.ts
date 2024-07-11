@@ -65,10 +65,7 @@ export class CosService {
 
   // 处理目录查询响应的结构
   private handleDirData(result: GetBucketResult): ExtendBucketResult {
-    const prefixPath =
-      (result as any).Prefix === this.rootDir
-        ? `${this.rootDir}/`
-        : (result as any).Prefix
+    const prefixPath = (result as any).Prefix === this.rootDir ? `${this.rootDir}/` : (result as any).Prefix
     if (!result.Contents.length) return { ...result, data: [] }
     // 排除自身文件夹结果 并排除 其其它子目录中的内容
     const data = result.Contents.slice(1).filter(item => {

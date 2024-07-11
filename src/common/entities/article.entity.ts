@@ -1,20 +1,6 @@
 import { Category, Tag, TimestampedEntity, User } from './'
-import {
-  ArticleTypeEnum,
-  ArticleStatusEnum,
-  BolEnum,
-  ContentModelEnum,
-} from '../../helper/enums'
-import {
-  Column,
-  Entity,
-  Index,
-  ManyToOne,
-  ManyToMany,
-  PrimaryGeneratedColumn,
-  Unique,
-  JoinTable,
-} from 'typeorm'
+import { ArticleTypeEnum, ArticleStatusEnum, BolEnum, ContentModelEnum } from '../../helper/enums'
+import { Column, Entity, Index, ManyToOne, ManyToMany, PrimaryGeneratedColumn, Unique, JoinTable } from 'typeorm'
 
 @Entity({ name: 'article' })
 @Unique(['title'])

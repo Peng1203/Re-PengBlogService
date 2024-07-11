@@ -1,10 +1,4 @@
-import {
-  IsNumber,
-  IsOptional,
-  IsString,
-  MaxLength,
-  MinLength,
-} from '@nestjs/class-validator'
+import { IsNumber, IsOptional, IsString, MaxLength, MinLength } from '@nestjs/class-validator'
 import { ApiProperty } from '@nestjs/swagger'
 
 export class CreateRoleDto {

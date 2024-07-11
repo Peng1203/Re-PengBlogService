@@ -19,12 +19,7 @@ import { ArticleService } from './article.service'
 import { CreateArticleDto } from './dto/create-article.dto'
 import { UpdateArticleDto } from './dto/update-article.dto'
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
-import {
-  Public,
-  ReqUser,
-  RequirePermissions,
-  UploadImageAggregation,
-} from '@/common/decorators'
+import { Public, ReqUser, RequirePermissions, UploadImageAggregation } from '@/common/decorators'
 import { ApiResponseCodeEnum, PermissionEnum } from '@/helper/enums'
 import { FindAllArticleDto, FindUserArticleDto } from './dto'
 import { ParseIntParamPipe } from '@/common/pipe'
@@ -35,10 +30,7 @@ import { DeleteArticleGuard, UpdateArticleGuard } from './guards'
 @ApiBearerAuth()
 @Controller('article')
 export class ArticleController {
-  constructor(
-    private readonly articleService: ArticleService,
-    private readonly configService: ConfigService
-  ) {}
+  constructor(private readonly articleService: ArticleService, private readonly configService: ConfigService) {}
 
   @Post()
   @RequirePermissions(PermissionEnum.CREATE_ARTICLE)
@@ -63,10 +55,7 @@ export class ArticleController {
   @Public()
   @Get(':uid')
   @ApiOperation({ summary: '获取用户文章列表' })
-  findByUser(
-    @Param('uid', new ParseIntParamPipe('文章id参数有误')) uid: number,
-    @Query() params: FindUserArticleDto
-  ) {
+  findByUser(@Param('uid', new ParseIntParamPipe('文章id参数有误')) uid: number, @Query() params: FindUserArticleDto) {
     return this.articleService.findByUser(uid, params)
   }
 
@@ -122,13 +111,8 @@ export class ArticleController {
   @Post('image')
   @UploadImageAggregation()
   @ApiOperation({ summary: '上传文章图片资源' })
-  async upload(
-    @Res({ passthrough: true }) res: Response,
-    @UploadedFile() file: Express.Multer.File
-  ) {
-    const RESOURCE_SERVE = this.configService.get<string>(
-      'STATIC_RESOURCE_SERVE'
-    )
+  async upload(@Res({ passthrough: true }) res: Response, @UploadedFile() file: Express.Multer.File) {
+    const RESOURCE_SERVE = this.configService.get<string>('STATIC_RESOURCE_SERVE')
     const fullPath = `${RESOURCE_SERVE}/${path.basename(file.path)}`
     res.resMsg = '图片上传成功!'
     return fullPath

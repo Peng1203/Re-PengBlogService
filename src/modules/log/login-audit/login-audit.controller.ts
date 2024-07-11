@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Query,
-  Res,
-} from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Query, Res } from '@nestjs/common'
 import { LoginAuditService } from './login-audit.service'
 import { PermissionEnum } from '@/helper/enums'
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
@@ -45,10 +37,7 @@ export class LoginAuditController {
   @Delete()
   @RequirePermissions(PermissionEnum.DELETE_LOGIN_LOG)
   @ApiOperation({ summary: '批量删除登录日志' })
-  async batchRemove(
-    @Body() { ids }: DeleteLoginAuditLogsDto,
-    @Res({ passthrough: true }) res: Response
-  ) {
+  async batchRemove(@Body() { ids }: DeleteLoginAuditLogsDto, @Res({ passthrough: true }) res: Response) {
     const delRes = await this.loginAuditService.removes(ids)
     if (!delRes) res.resMsg = '批量删除登录日志失败!'
     if (!delRes) res.success = false

@@ -11,8 +11,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
     const DATABASE_PORT = this.configService.get<string>('DATABASE_PORT')
     const DATABASE_NAME = this.configService.get<string>('DATABASE_NAME')
     const DATABASE_USER = this.configService.get<string>('DATABASE_USER')
-    const DATABASE_PASSWORD =
-      this.configService.get<string>('DATABASE_PASSWORD')
+    const DATABASE_PASSWORD = this.configService.get<string>('DATABASE_PASSWORD')
 
     const synchronize = NODE_ENV === 'development'
 

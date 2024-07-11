@@ -1,9 +1,4 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  ForbiddenException,
-  Injectable,
-} from '@nestjs/common'
+import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common'
 import { Observable } from 'rxjs'
 import { Request } from 'express'
 import { ApiResponseCodeEnum } from '@/helper/enums'
@@ -11,9 +6,7 @@ import { ApiResponseCodeEnum } from '@/helper/enums'
 /** 用于校验 执行敏感操作 是否越权 */
 @Injectable()
 export class IdentityGuard implements CanActivate {
-  canActivate(
-    context: ExecutionContext
-  ): boolean | Promise<boolean> | Observable<boolean> {
+  canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
     const req = context.switchToHttp().getRequest<Request>()
 
     if (req.user.id === 1 && req.user.userName === 'admin') return true

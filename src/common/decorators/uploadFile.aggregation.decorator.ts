@@ -6,11 +6,7 @@ import { nanoid } from 'nanoid'
 import { Request } from 'express'
 import { diskStorage } from 'multer'
 // import { Public } from '@/common/decorators';
-import {
-  PayloadTooLargeException,
-  UseInterceptors,
-  applyDecorators,
-} from '@nestjs/common'
+import { PayloadTooLargeException, UseInterceptors, applyDecorators } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { ApiBody, ApiConsumes } from '@nestjs/swagger'
 import { UploadFileDto } from '@/common/dto'
@@ -39,8 +35,7 @@ export function UploadFileAggregation(options?: UploadOptions) {
       FileInterceptor('file', {
         storage: diskStorage({
           async destination(req: Request, file, callback) {
-            req.resErrMsg =
-              options?.tooLargeErrMsg || `请选择小于${maxSize}MB大小的文件`
+            req.resErrMsg = options?.tooLargeErrMsg || `请选择小于${maxSize}MB大小的文件`
             const { STATIC_RESOURCE_PATH } = process.env
             const uploadPath = path.resolve(savePath || STATIC_RESOURCE_PATH)
             const hasDir = fs.existsSync(uploadPath)
@@ -49,9 +44,7 @@ export function UploadFileAggregation(options?: UploadOptions) {
             callback(null, uploadPath)
           },
           filename(req: Request, file, callback) {
-            const extname =
-              path.extname(file.originalname) ||
-              `.${mime.extension(file.mimetype)}`
+            const extname = path.extname(file.originalname) || `.${mime.extension(file.mimetype)}`
             // const extname =
             const fileName = `${nanoid(10)}${extname}`
             // handleLimitFileSize(req, maxSize, file, callback);
@@ -85,6 +78,5 @@ const handleLimitFileSize = (
   // 当上传用户为 admin 时 无视文件大小限制
   if (req.user.userName === 'admin' && req.user.id === 1) return
 
-  if (file.size > Math.pow(1024, 2) * (maxSize || 2))
-    cb(new PayloadTooLargeException(), '')
+  if (file.size > Math.pow(1024, 2) * (maxSize || 2)) cb(new PayloadTooLargeException(), '')
 }
