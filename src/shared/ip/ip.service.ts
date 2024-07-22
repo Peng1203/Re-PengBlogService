@@ -9,8 +9,8 @@ export class IpService {
   private searcher: NodeIP2Region
 
   constructor() {
-    const IPV4_DB_1 = path.resolve(process.cwd(), 'src', 'db', 'ip2region.db')
-    const IPV4_DB_2 = path.resolve(process.cwd(), 'src', 'db', 'ip_2region.db')
+    const IPV4_DB_1 = path.resolve(process.cwd(), 'db', 'ip2region.db')
+    const IPV4_DB_2 = path.resolve(process.cwd(), 'db', 'ip_2region.db')
 
     this.query = new IP2Region({ disableIpv6: true, ipv4db: IPV4_DB_1 })
     this.searcher = NodeIP2Region.create(IPV4_DB_2)
