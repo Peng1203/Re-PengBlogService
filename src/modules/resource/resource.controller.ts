@@ -24,6 +24,8 @@ import { diskStorage } from 'multer'
 @ApiBearerAuth()
 @Controller('resource')
 export class ResourceController {
+  private readonly MAX_SIZE: number = 5
+
   constructor(private readonly resourceService: ResourceService, private readonly configService: ConfigService) {}
 
   @Get()
@@ -39,6 +41,17 @@ export class ResourceController {
     const fullPath = `${RESOURCE_SERVE}/${path.basename(file.path)}`
     res.resMsg = '文件上传成功'
     return `${fullPath}`
+  }
+
+  @Public()
+  @Post('chunk/upload')
+  @ApiOperation({ summary: '上传大文件前创建一个合成分片的目录' })
+  createChunkDir(@Body() data: { dirName: string }) {
+    console.log('data.dirName ------', data.dirName)
+    return {
+      message: '合成目录创建成功',
+      success: true,
+    }
   }
 
   @Public()
@@ -59,7 +72,7 @@ export class ResourceController {
     console.log('files ------', files)
 
     return {
-      message: '成功',
+      message: '分片上传成功',
       success: true,
     }
   }
