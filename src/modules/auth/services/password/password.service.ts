@@ -5,7 +5,7 @@ import { Injectable } from '@nestjs/common'
 export class PasswordService {
   private readonly KEY_LENGTH = 64
   private readonly INITIAL_PASSWORD = '123456'
-  private readonly HASH_ALGORITHM = 'sha512'
+  private readonly HASH_ALGORITHM = 'sha256'
   // 前端加密盐
   private readonly VITE_SECRET_KEY = '114514qwer'
 
@@ -50,10 +50,8 @@ export class PasswordService {
 
   initPwdToHash(): Promise<string> {
     return new Promise(resolve => {
-      const hash = crypto.createHmac('sha256', this.VITE_SECRET_KEY)
-
+      const hash = crypto.createHmac(this.HASH_ALGORITHM, this.VITE_SECRET_KEY)
       hash.update(this.INITIAL_PASSWORD)
-
       resolve(hash.digest('hex'))
     })
   }
