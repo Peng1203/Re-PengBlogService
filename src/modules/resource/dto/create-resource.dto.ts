@@ -6,7 +6,7 @@ export class CreateResourceDto {}
 export class CreateFileDirDto {
   @IsString()
   @ApiProperty({ description: '目录名称由文件 hash + 用户id 组成' })
-  dirName: string
+  uploadId: string
 }
 
 export class UploadChunkDto {
@@ -35,6 +35,10 @@ export class MergeFileChunksDto {
   @IsString()
   @ApiProperty({ description: '合成目录' })
   uploadId: string
+
+  @IsString()
+  @ApiProperty({ description: '文件名' })
+  fileName: string
 
   @IsString()
   @ApiProperty({ description: '文件扩展名' })

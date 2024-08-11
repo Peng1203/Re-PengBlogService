@@ -5,6 +5,9 @@ import { Request, Response, NextFunction } from 'express'
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
+    // 取消打印日志
+    if (req.headers['x-log'] === 'false') return next()
+
     const statusCode = res.statusCode
     const clientIp = req.headers['x-real-ip'] || req.headers['x-forwarded-for']
     const logFormat = `
@@ -27,6 +30,6 @@ UserAgent: ${req.headers['user-agent']}
     this.writeLog(logFormat)
     next()
   }
-
+  /** 写入 本地日志 */
   private writeLog(logInfo: string) {}
 }

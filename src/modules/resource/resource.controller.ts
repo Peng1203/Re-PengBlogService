@@ -23,7 +23,7 @@ import { FilesInterceptor } from '@nestjs/platform-express'
 import { diskStorage } from 'multer'
 import { CreateFileDirDto, MergeFileChunksDto, UploadChunkDto } from './dto'
 import { nanoid } from 'nanoid'
-import { createWriteStream, unlinkSync } from 'fs'
+import { createReadStream, createWriteStream } from 'fs'
 @ApiTags('Resource')
 @ApiBearerAuth()
 @Controller('resource')
@@ -31,9 +31,7 @@ export class ResourceController {
   private readonly MAX_SIZE: number = 5
   private readonly UPLOAD_ROOT_DIR: string = path.join(process.cwd(), 'uploads')
 
-  constructor(private readonly resourceService: ResourceService, private readonly configService: ConfigService) {
-    console.log('this.UPLOAD_ROOT_DIR ------', this.UPLOAD_ROOT_DIR)
-  }
+  constructor(private readonly resourceService: ResourceService, private readonly configService: ConfigService) {}
 
   @Get()
   findAll() {
@@ -56,9 +54,7 @@ export class ResourceController {
     summary: '创建或检查分片上传目录，并支持断点续传',
   })
   async createChunkDir(@Body() data: CreateFileDirDto) {
-    console.log('data.dirName ------', data.dirName)
-
-    const UPLOAD_DIR = path.join(process.cwd(), 'uploads', data.dirName)
+    const UPLOAD_DIR = path.join(process.cwd(), 'uploads', data.uploadId)
     const existingChunks = await fs.readdir(UPLOAD_DIR).catch(() => false)
     if (existingChunks) {
       // 过滤出已经上传过的分片进行返回
@@ -88,15 +84,36 @@ export class ResourceController {
     })
   )
   @ApiOperation({ summary: '上传大文件' })
-  chunkUpload(@Req() req: Request, @Query() params: UploadChunkDto, @UploadedFiles() files: Express.Multer.File[]) {
-    console.log('params ------', params)
-    console.log('files ------', files)
-
+  chunkUpload() {
     return {
       message: '分片上传成功',
       success: true,
     }
   }
+
+  // @Public()
+  // @Post('chunk/merge')
+  // @ApiOperation({
+  //   summary: '合并文件切片',
+  // })
+  // async mergeFileChunks(@Body() data: MergeFileChunksDto) {
+  //   const targetDir = path.join(this.UPLOAD_ROOT_DIR, data.uploadId)
+  //   const dirResult = await fs.readdir(targetDir)
+  //   const outputPath = path.join(this.configService.get<string>('STATIC_RESOURCE_PATH'), `${nanoid(5)}.${data.extName}`)
+  //   const writeStream = createWriteStream(outputPath)
+  //   try {
+  //     for (const fileName of dirResult) {
+  //       const chunkPath = path.join(targetDir, fileName)
+  //       const chunk = await fs.readFile(chunkPath)
+  //       writeStream.write(chunk)
+  //       // await fs.unlink(chunkPath) // 删除已合并的切片
+  //     }
+  //     writeStream.end()
+  //     return { success: true, filePath: outputPath }
+  //   } catch (error) {
+  //     throw new InternalServerErrorException('Failed to merge file chunks')
+  //   }
+  // }
 
   @Public()
   @Post('chunk/merge')
@@ -104,22 +121,51 @@ export class ResourceController {
     summary: '合并文件切片',
   })
   async mergeFileChunks(@Body() data: MergeFileChunksDto) {
-    const targetDir = path.join(this.UPLOAD_ROOT_DIR, data.uploadId)
-    const dirResult = await fs.readdir(targetDir)
-    const outputPath = path.join(this.configService.get<string>('STATIC_RESOURCE_PATH'), `${nanoid(5)}.${data.extName}`)
-
-    const writeStream = createWriteStream(outputPath)
-
     try {
+      const targetDir = path.join(this.UPLOAD_ROOT_DIR, data.uploadId)
+      const dirResult = await fs.readdir(targetDir)
+
+      // 判断是否有同样的文件名
+      const fileExists = await fs
+        .access(path.join(this.configService.get<string>('STATIC_RESOURCE_PATH'), data.fileName))
+        .then(() => true)
+        .catch(() => false)
+      // 如果有同样的文件名，则生成新的文件名
+      const fileName = fileExists ? `${nanoid(5)}.${data.extName}` : data.fileName
+
+      const outputPath = path.join(this.configService.get<string>('STATIC_RESOURCE_PATH'), fileName)
+      const fullPath = path.join(this.configService.get<string>('STATIC_RESOURCE_SERVE'), fileName)
+
+      // 按文件名顺序排序，确保分片按正确顺序合并
+      dirResult.sort((a, b) => parseInt(a) - parseInt(b))
+      const writeStream = createWriteStream(outputPath)
       for (const fileName of dirResult) {
         const chunkPath = path.join(targetDir, fileName)
-        const chunk = await fs.readFile(chunkPath)
-        writeStream.write(chunk)
-        // await fs.unlink(chunkPath) // 删除已合并的切片
+
+        // 读取并写入流
+        await new Promise((resolve, reject) => {
+          const readStream = createReadStream(chunkPath)
+          readStream.pipe(writeStream, { end: false })
+          readStream.on('end', resolve)
+          readStream.on('error', reject)
+        })
+
+        // 删除已合并的切片
+        await fs.unlink(chunkPath)
       }
+
       writeStream.end()
 
-      return { success: true, filePath: outputPath }
+      // 确保写入完成
+      await new Promise((resolve, reject) => {
+        writeStream.on('finish', resolve)
+        writeStream.on('error', reject)
+      })
+
+      // 合并完成后删除临时目录
+      fs.rmdir(targetDir)
+
+      return fullPath
     } catch (error) {
       throw new InternalServerErrorException('Failed to merge file chunks')
     }
