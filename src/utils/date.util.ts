@@ -1,8 +1,10 @@
 import day from 'dayjs'
 
-export function formatDate(data?: number | string | Date): string {
-  if (data) day(data).format('YYYY-MM-DD HH:mm:ss')
-  else return day().format('YYYY-MM-DD HH:mm:ss')
+export function formatDate(date?: number | string | Date): string {
+  // prettier-ignore
+  return date
+    ? day(date).format('YYYY-MM-DD HH:mm:ss')
+    : day().format('YYYY-MM-DD HH:mm:ss')
 }
 
 export default day
