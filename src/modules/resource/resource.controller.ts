@@ -6,10 +6,7 @@ import {
   Res,
   UploadedFile,
   Put,
-  Req,
-  Query,
   UseInterceptors,
-  UploadedFiles,
   InternalServerErrorException,
 } from '@nestjs/common'
 import { ResourceService } from './resource.service'
@@ -18,37 +15,58 @@ import { Public, UploadFileAggregation } from '@/common/decorators'
 import { ConfigService } from '@nestjs/config'
 import path from 'path'
 import fs from 'fs/promises'
-import { Request, Response } from 'express'
+import { Response } from 'express'
 import { FilesInterceptor } from '@nestjs/platform-express'
 import { diskStorage } from 'multer'
 import { CreateFileDirDto, MergeFileChunksDto, UploadChunkDto } from './dto'
 import { nanoid } from 'nanoid'
 import { createReadStream, createWriteStream } from 'fs'
+import { formatDate } from '@/utils/date.util'
+import dayjs from 'dayjs'
 @ApiTags('Resource')
 @ApiBearerAuth()
 @Controller('resource')
 export class ResourceController {
-  private readonly MAX_SIZE: number = 5
-  private readonly UPLOAD_ROOT_DIR: string = path.join(process.cwd(), 'uploads')
-
   constructor(private readonly resourceService: ResourceService, private readonly configService: ConfigService) {}
 
+  private readonly MAX_SIZE: number = 5
+  private readonly UPLOAD_ROOT_DIR: string = path.join(process.cwd(), 'uploads')
+  private readonly STATIC_RESOURCE_PATH: string = this.configService.get<string>('STATIC_RESOURCE_PATH')
+  private readonly STATIC_RESOURCE_SERVE: string = this.configService.get<string>('STATIC_RESOURCE_SERVE')
+
   @Get()
-  findAll() {
-    return this.resourceService.findAll()
+  @Public()
+  @ApiOperation({ summary: '获取文件列表' })
+  async findAll() {
+    const fileNames = await fs.readdir(this.STATIC_RESOURCE_PATH)
+    const data = await Promise.all(
+      fileNames.map(async name => {
+        const { atime, mtime, ctime, birthtime, ...args } = await fs.stat(path.join(this.STATIC_RESOURCE_PATH, name))
+
+        return {
+          ...args,
+          name,
+          atime: formatDate(atime),
+          mtime: formatDate(mtime),
+          ctime: formatDate(ctime),
+          birthtime: formatDate(birthtime),
+          url: `${this.STATIC_RESOURCE_SERVE}/${name}`,
+        }
+      })
+    )
+
+    return data
   }
 
   @Post()
   @UploadFileAggregation({ maxSize: 5 })
   @ApiOperation({ summary: '上传文件' })
   upload(@Res({ passthrough: true }) res: Response, @UploadedFile() file: Express.Multer.File) {
-    const RESOURCE_SERVE = this.configService.get<string>('STATIC_RESOURCE_SERVE')
-    const fullPath = `${RESOURCE_SERVE}/${path.basename(file.path)}`
+    const fullPath = `${this.STATIC_RESOURCE_SERVE}/${path.basename(file.path)}`
     res.resMsg = '文件上传成功'
     return `${fullPath}`
   }
 
-  @Public()
   @Post('chunk/upload')
   @ApiOperation({
     summary: '创建或检查分片上传目录，并支持断点续传',
@@ -68,7 +86,6 @@ export class ResourceController {
     }
   }
 
-  @Public()
   @Put('chunk/upload')
   @UseInterceptors(
     FilesInterceptor('files', 10, {
@@ -99,7 +116,7 @@ export class ResourceController {
   // async mergeFileChunks(@Body() data: MergeFileChunksDto) {
   //   const targetDir = path.join(this.UPLOAD_ROOT_DIR, data.uploadId)
   //   const dirResult = await fs.readdir(targetDir)
-  //   const outputPath = path.join(this.configService.get<string>('STATIC_RESOURCE_PATH'), `${nanoid(5)}.${data.extName}`)
+  //   const outputPath = path.join(this.STATIC_RESOURCE_PATH, `${nanoid(5)}.${data.extName}`)
   //   const writeStream = createWriteStream(outputPath)
   //   try {
   //     for (const fileName of dirResult) {
@@ -115,7 +132,6 @@ export class ResourceController {
   //   }
   // }
 
-  @Public()
   @Post('chunk/merge')
   @ApiOperation({
     summary: '合并文件切片',
@@ -127,14 +143,14 @@ export class ResourceController {
 
       // 判断是否有同样的文件名
       const fileExists = await fs
-        .access(path.join(this.configService.get<string>('STATIC_RESOURCE_PATH'), data.fileName))
+        .access(path.join(this.STATIC_RESOURCE_PATH, data.fileName))
         .then(() => true)
         .catch(() => false)
       // 如果有同样的文件名，则生成新的文件名
       const fileName = fileExists ? `${nanoid(5)}.${data.extName}` : data.fileName
 
-      const outputPath = path.join(this.configService.get<string>('STATIC_RESOURCE_PATH'), fileName)
-      const fullPath = path.join(this.configService.get<string>('STATIC_RESOURCE_SERVE'), fileName)
+      const outputPath = path.join(this.STATIC_RESOURCE_PATH, fileName)
+      const fullPath = path.join(this.STATIC_RESOURCE_SERVE, fileName)
 
       // 按文件名顺序排序，确保分片按正确顺序合并
       dirResult.sort((a, b) => parseInt(a) - parseInt(b))
