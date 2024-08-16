@@ -22,7 +22,6 @@ import { CreateFileDirDto, MergeFileChunksDto, UploadChunkDto } from './dto'
 import { nanoid } from 'nanoid'
 import { createReadStream, createWriteStream } from 'fs'
 import { formatDate } from '@/utils/date.util'
-import dayjs from 'dayjs'
 @ApiTags('Resource')
 @ApiBearerAuth()
 @Controller('resource')
@@ -179,7 +178,7 @@ export class ResourceController {
       })
 
       // 合并完成后删除临时目录
-      fs.rmdir(targetDir)
+      await fs.rm(targetDir, { recursive: true, force: true })
 
       return fullPath
     } catch (error) {
