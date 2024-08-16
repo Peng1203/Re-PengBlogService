@@ -1,13 +1,15 @@
 import crypto from 'crypto'
 import { Injectable } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 
 @Injectable()
 export class PasswordService {
+  constructor(private readonly configService: ConfigService) {}
   private readonly KEY_LENGTH = 64
-  private readonly INITIAL_PASSWORD = '123456'
+  private readonly INITIAL_PASSWORD = '20240820WK'
   private readonly HASH_ALGORITHM = 'sha256'
   // 前端加密盐
-  private readonly VITE_SECRET_KEY = '114514qwer'
+  private readonly VITE_SECRET_KEY = this.configService.get<string>('VITE_SECRET_KEY') || '114514qwer'
 
   /** 生成密码hash */
   hash(password: string): Promise<string> {
@@ -48,7 +50,7 @@ export class PasswordService {
     })
   }
 
-  initPwdToHash(): Promise<string> {
+  private initPwdToHash(): Promise<string> {
     return new Promise(resolve => {
       const hash = crypto.createHmac(this.HASH_ALGORITHM, this.VITE_SECRET_KEY)
       hash.update(this.INITIAL_PASSWORD)
