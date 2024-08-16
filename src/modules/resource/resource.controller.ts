@@ -149,7 +149,6 @@ export class ResourceController {
       const fileName = fileExists ? `${nanoid(5)}.${data.extName}` : data.fileName
 
       const outputPath = path.join(this.STATIC_RESOURCE_PATH, fileName)
-      const fullPath = path.join(this.STATIC_RESOURCE_SERVE, fileName)
 
       // 按文件名顺序排序，确保分片按正确顺序合并
       dirResult.sort((a, b) => parseInt(a) - parseInt(b))
@@ -180,7 +179,7 @@ export class ResourceController {
       // 合并完成后删除临时目录
       await fs.rm(targetDir, { recursive: true, force: true })
 
-      return fullPath
+      return `${this.STATIC_RESOURCE_SERVE}/${fileName}`
     } catch (error) {
       throw new InternalServerErrorException('Failed to merge file chunks')
     }
