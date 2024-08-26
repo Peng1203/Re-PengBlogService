@@ -16,6 +16,7 @@ import { ConfigService } from '@nestjs/config'
 import path from 'path'
 import fs from 'fs/promises'
 import { Response } from 'express'
+import mime from 'mime-types'
 import { FilesInterceptor } from '@nestjs/platform-express'
 import { diskStorage } from 'multer'
 import { CreateFileDirDto, MergeFileChunksDto, UploadChunkDto } from './dto'
@@ -45,6 +46,8 @@ export class ResourceController {
         return {
           ...args,
           name,
+          type: path.extname(name).replace('.', ''),
+          mimeType: mime.lookup(name),
           atime: formatDate(atime),
           mtime: formatDate(mtime),
           ctime: formatDate(ctime),
