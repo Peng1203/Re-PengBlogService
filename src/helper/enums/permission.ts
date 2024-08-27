@@ -48,4 +48,8 @@ export enum PermissionEnum {
   // 登录日志
   GET_LOGIN_LOG = 'get_login_log',
   DELETE_LOGIN_LOG = 'delete_login_log',
+
+  /** 资源管理 */
+  UPLOAD_RESOURCE = 'upload_resource',
+  DELETE_RESOURCE = 'delete_resource',
 }

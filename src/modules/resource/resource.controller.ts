@@ -8,10 +8,13 @@ import {
   Put,
   UseInterceptors,
   InternalServerErrorException,
+  Delete,
+  Param,
+  NotFoundException,
 } from '@nestjs/common'
 import { ResourceService } from './resource.service'
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
-import { Public, UploadFileAggregation } from '@/common/decorators'
+import { Public, RequirePermissions, UploadFileAggregation } from '@/common/decorators'
 import { ConfigService } from '@nestjs/config'
 import path from 'path'
 import fs from 'fs/promises'
@@ -23,6 +26,7 @@ import { CreateFileDirDto, MergeFileChunksDto, UploadChunkDto } from './dto'
 import { nanoid } from 'nanoid'
 import { createReadStream, createWriteStream } from 'fs'
 import { formatDate } from '@/utils/date.util'
+import { PermissionEnum } from '@/helper/enums'
 @ApiTags('Resource')
 @ApiBearerAuth()
 @Controller('resource')
@@ -62,6 +66,7 @@ export class ResourceController {
 
   @Post()
   @UploadFileAggregation({ maxSize: 5 })
+  @RequirePermissions(PermissionEnum.UPLOAD_RESOURCE)
   @ApiOperation({ summary: '上传文件' })
   upload(@Res({ passthrough: true }) res: Response, @UploadedFile() file: Express.Multer.File) {
     const fullPath = `${this.STATIC_RESOURCE_SERVE}/${path.basename(file.path)}`
@@ -70,9 +75,8 @@ export class ResourceController {
   }
 
   @Post('chunk/upload')
-  @ApiOperation({
-    summary: '创建或检查分片上传目录，并支持断点续传',
-  })
+  @RequirePermissions(PermissionEnum.UPLOAD_RESOURCE)
+  @ApiOperation({ summary: '创建或检查分片上传目录，并支持断点续传' })
   async createChunkDir(@Body() data: CreateFileDirDto) {
     const UPLOAD_DIR = path.join(process.cwd(), 'uploads', data.uploadId)
     const existingChunks = await fs.readdir(UPLOAD_DIR).catch(() => false)
@@ -109,30 +113,6 @@ export class ResourceController {
       success: true,
     }
   }
-
-  // @Public()
-  // @Post('chunk/merge')
-  // @ApiOperation({
-  //   summary: '合并文件切片',
-  // })
-  // async mergeFileChunks(@Body() data: MergeFileChunksDto) {
-  //   const targetDir = path.join(this.UPLOAD_ROOT_DIR, data.uploadId)
-  //   const dirResult = await fs.readdir(targetDir)
-  //   const outputPath = path.join(this.STATIC_RESOURCE_PATH, `${nanoid(5)}.${data.extName}`)
-  //   const writeStream = createWriteStream(outputPath)
-  //   try {
-  //     for (const fileName of dirResult) {
-  //       const chunkPath = path.join(targetDir, fileName)
-  //       const chunk = await fs.readFile(chunkPath)
-  //       writeStream.write(chunk)
-  //       // await fs.unlink(chunkPath) // 删除已合并的切片
-  //     }
-  //     writeStream.end()
-  //     return { success: true, filePath: outputPath }
-  //   } catch (error) {
-  //     throw new InternalServerErrorException('Failed to merge file chunks')
-  //   }
-  // }
 
   @Post('chunk/merge')
   @ApiOperation({
@@ -186,5 +166,21 @@ export class ResourceController {
     } catch (error) {
       throw new InternalServerErrorException('Failed to merge file chunks')
     }
+  }
+
+  @Delete(':fileName')
+  @RequirePermissions(PermissionEnum.DELETE_RESOURCE)
+  @ApiOperation({ summary: '删除文件' })
+  async deleteFile(@Param('fileName') fileName: string) {
+    const fullPath = path.join(this.STATIC_RESOURCE_PATH, fileName)
+    const fileExists = await fs
+      .access(fullPath)
+      .then(() => true)
+      .catch(() => false)
+
+    if (!fileExists) throw new NotFoundException('文件不存在')
+    await fs.unlink(fullPath)
+
+    return '文件删除成功'
   }
 }
