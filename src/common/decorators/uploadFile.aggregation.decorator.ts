@@ -42,16 +42,19 @@ export function UploadFileAggregation(options?: UploadOptions) {
             callback(null, uploadPath)
           },
           async filename(req: Request, file, callback) {
+            // 解决中文文件名乱码
+            const decodedName = decodeURIComponent(Buffer.from(file.originalname, 'latin1').toString('utf8'))
+
             const { STATIC_RESOURCE_PATH } = process.env
             // 判断是否有同样的文件名
             const fileExists = await fs
-              .access(path.join(STATIC_RESOURCE_PATH, file.originalname))
+              .access(path.join(STATIC_RESOURCE_PATH, decodedName))
               .then(() => true)
               .catch(() => false)
 
             const extname = path.extname(file.originalname) || `.${mime.extension(file.mimetype)}`
             // const extname =
-            const fileName = fileExists ? `${nanoid(10)}${extname}` : file.originalname
+            const fileName = fileExists ? `${nanoid(10)}${extname}` : decodedName
             // handleLimitFileSize(req, maxSize, file, callback);
 
             callback(null, fileName)
