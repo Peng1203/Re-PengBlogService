@@ -27,6 +27,8 @@ import { nanoid } from 'nanoid'
 import { createReadStream, createWriteStream } from 'fs'
 import { formatDate } from '@/utils/date.util'
 import { PermissionEnum } from '@/helper/enums'
+
+mime.types['ts'] = 'application/typescript'
 @ApiTags('Resource')
 @ApiBearerAuth()
 @Controller('resource')
@@ -39,7 +41,6 @@ export class ResourceController {
   private readonly STATIC_RESOURCE_SERVE: string = this.configService.get<string>('STATIC_RESOURCE_SERVE')
 
   @Get()
-  @Public()
   @ApiOperation({ summary: '获取文件列表' })
   async findAll() {
     const fileNames = await fs.readdir(this.STATIC_RESOURCE_PATH)
