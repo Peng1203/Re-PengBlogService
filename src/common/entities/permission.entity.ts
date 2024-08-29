@@ -21,6 +21,7 @@ export class Permission extends TimestampedEntity {
     type: 'enum',
     enum: PermissionEnum,
     nullable: true,
+    length: 30,
   })
   permissionCode: PermissionEnum | null
 
