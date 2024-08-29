@@ -30,7 +30,7 @@ async function bootstrap() {
   app.use(requestIp.mw())
 
   // app.enableCors();
-  app.enableCors({ credentials: true, origin: 'http://127.0.0.1:8000' })
+  app.enableCors({ credentials: true })
   app.setGlobalPrefix(API_PREFIX)
 
   app.useGlobalPipes(new DtoValidatePipe())
