@@ -123,22 +123,28 @@ export class ResourceController {
     try {
       const targetDir = path.join(this.UPLOAD_ROOT_DIR, data.uploadId)
       const dirResult = await fs.readdir(targetDir)
+      const { fileName, extName } = data
+
+      const EXT_NAME = `.${extName}`
+      const BASE_NAME = fileName.replace(EXT_NAME, '')
+      const FULL_FILE_NAME = `${BASE_NAME}${EXT_NAME}`
 
       // 判断是否有同样的文件名
       const fileExists = await fs
-        .access(path.join(this.STATIC_RESOURCE_PATH, data.fileName))
+        .access(path.join(this.STATIC_RESOURCE_PATH, FULL_FILE_NAME))
         .then(() => true)
         .catch(() => false)
-      // 如果有同样的文件名，则生成新的文件名
-      const fileName = fileExists ? `${nanoid(5)}.${data.extName}` : data.fileName
 
-      const outputPath = path.join(this.STATIC_RESOURCE_PATH, fileName)
+      // 如果有同样的文件名，则生成新的文件名
+      const fullFileName = fileExists ? `${nanoid(5)}.${extName}` : FULL_FILE_NAME
+
+      const outputPath = path.join(this.STATIC_RESOURCE_PATH, fullFileName)
 
       // 按文件名顺序排序，确保分片按正确顺序合并
       dirResult.sort((a, b) => parseInt(a) - parseInt(b))
       const writeStream = createWriteStream(outputPath)
-      for (const fileName of dirResult) {
-        const chunkPath = path.join(targetDir, fileName)
+      for (const fullFileName of dirResult) {
+        const chunkPath = path.join(targetDir, fullFileName)
 
         // 读取并写入流
         await new Promise((resolve, reject) => {
