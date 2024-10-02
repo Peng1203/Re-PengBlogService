@@ -24,7 +24,7 @@ export class Menu extends TimestampedEntity {
   @Column({ name: 'menu_uri', type: 'varchar', length: 20, nullable: true })
   menuUri: string
 
-  @Column({ name: 'menu_icon', type: 'varchar', length: 60, nullable: true })
+  @Column({ name: 'menu_icon', type: 'varchar', length: 60, nullable: true, default: '' })
   menuIcon: string
 
   @Column({ name: 'order_num', type: 'int', nullable: true })
