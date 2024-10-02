@@ -9,4 +9,10 @@ export class UpdateCategoryDto extends PartialType(CreateCategoryDto) {
   @ApiProperty({ description: '分类名' })
   @IsOptional()
   categoryName?: string
+
+  @IsString()
+  @MaxLength(255)
+  @ApiProperty({ description: '分类描述' })
+  @IsOptional()
+  description?: string
 }
