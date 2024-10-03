@@ -122,7 +122,7 @@ export class ArticleService {
           where,
           skip: (page - 1) * pageSize,
           take: pageSize,
-          order: { [column || 'id']: order || 'ASC' },
+          order: { isTop: 'DESC' },
           relations: ['author', 'tags', 'category'],
         })
         data.list = list
