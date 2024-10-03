@@ -52,11 +52,30 @@ export class ArticleController {
     return this.articleService.findAll(params)
   }
 
-  @Public()
   @Get(':uid')
   @ApiOperation({ summary: '获取用户文章列表' })
-  findByUser(@Param('uid', new ParseIntParamPipe('文章id参数有误')) uid: number, @Query() params: FindUserArticleDto) {
+  findByUser(@Param('uid', new ParseIntParamPipe('作者id参数有误')) uid: number, @Query() params: FindUserArticleDto) {
     return this.articleService.findByUser(uid, params)
+  }
+
+  @Public()
+  @Get('user/:uid/articles')
+  @ApiOperation({ summary: '获取用户文章列表' })
+  findByUser_v2(
+    @Param('uid', new ParseIntParamPipe('作者id参数有误')) uid: number,
+    @Query() params: FindUserArticleDto
+  ) {
+    return this.articleService.findByUser(uid, params)
+  }
+
+  @Public()
+  @Get('user/:uid/articles/:aid')
+  @ApiOperation({ summary: '获取文章详情' })
+  findOneByUser(
+    @Param('uid', new ParseIntParamPipe('作者id参数有误')) uid: number,
+    @Param('aid', new ParseIntParamPipe('文章id参数有误')) aid: number
+  ) {
+    return this.articleService.findOne(aid)
   }
 
   // @UseGuards(GetArticleDetailGuard)

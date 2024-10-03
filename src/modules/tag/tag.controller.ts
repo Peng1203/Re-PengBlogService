@@ -3,7 +3,7 @@ import { TagService } from './tag.service'
 import { CreateTagDto, UpdateTagDto, FindAllTagDto, DeleteTagsDto } from './dto'
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { ApiResponseCodeEnum, PermissionEnum } from '@/helper/enums'
-import { RequirePermissions } from '@/common/decorators'
+import { Public, RequirePermissions } from '@/common/decorators'
 import { ParseIntParamPipe } from '@/common/pipe'
 import { Response } from 'express'
 
@@ -24,6 +24,13 @@ export class TagController {
   @ApiOperation({ summary: '查询文章标签' })
   findAll(@Query() params: FindAllTagDto) {
     return this.tagService.findAll(params)
+  }
+
+  @Public()
+  @Get('user/:uid/tags')
+  @ApiOperation({ summary: '查询用户文章标签' })
+  findAllByUser(@Param('uid', new ParseIntParamPipe('用户id参数有误')) uid: number) {
+    return this.tagService.findAllByUser(uid)
   }
 
   @Patch(':id')

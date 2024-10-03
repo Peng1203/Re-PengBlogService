@@ -46,6 +46,29 @@ export class TagService {
     }
   }
 
+  async findAllByUser(uid: number) {
+    try {
+      // const { page, pageSize, queryStr = '', column, order } = query
+      const [list, total] = await this.tagRepository.findAndCount({
+        // where: [{ tagName: Like(`%${queryStr}%`) }],
+        // skip: (page - 1) * pageSize,
+        // take: pageSize,
+        // order: { [column || 'id']: order || 'ASC' },
+        relations: ['articles'],
+      })
+      return {
+        list: list.map(item => ({ ...item, articles: item.articles.length })),
+        total,
+      }
+    } catch (e) {
+      throw new InternalServerErrorException({
+        e,
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
+        msg: '查询标签列表失败!',
+      })
+    }
+  }
+
   async findOne(id: number): Promise<Tag> {
     try {
       return await this.tagRepository.findOne({ where: { id } })

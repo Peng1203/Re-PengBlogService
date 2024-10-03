@@ -3,7 +3,7 @@ import { CategoryService } from './category.service'
 import { CreateCategoryDto, UpdateCategoryDto, FindAllCategoryDto, DeleteCategorysDto } from './dto'
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { ApiResponseCodeEnum, PermissionEnum } from '@/helper/enums'
-import { RequirePermissions } from '@/common/decorators'
+import { Public, RequirePermissions } from '@/common/decorators'
 import { ParseIntParamPipe } from '@/common/pipe'
 import { Response } from 'express'
 
@@ -24,6 +24,13 @@ export class CategoryController {
   @ApiOperation({ summary: '查询文章分类' })
   findAll(@Query() params: FindAllCategoryDto) {
     return this.categoryService.findAll(params)
+  }
+
+  @Public()
+  @Get('user/:uid/categorys')
+  @ApiOperation({ summary: '查询用户文章分类' })
+  findAllByUser(@Param('uid', new ParseIntParamPipe('用户id参数有误')) uid: number) {
+    return this.categoryService.findAllByUser(uid)
   }
 
   @Patch(':id')
