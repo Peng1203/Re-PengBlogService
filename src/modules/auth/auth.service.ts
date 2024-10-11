@@ -200,7 +200,7 @@ export class AuthService {
   generateCaptcha(phone: boolean) {
     // createMathExpr 创建一个 简单加法的 svg 验证码
     return svgCaptcha.create({
-      width: phone ? 80 : 135,
+      width: phone ? 92 : 135,
       height: 40,
       size: 4, // 验证码长度
       ignoreChars: '0OlI', // 排除字符
@@ -212,7 +212,7 @@ export class AuthService {
   }
   generateV2Captcha(phone: boolean) {
     return svgCaptcha.createMathExpr({
-      width: phone ? 80 : 135,
+      width: phone ? 92 : 135,
       height: 40,
       noise: 2, // 干扰线
       background: this.rc(230, 255), // 验证码背景颜色
