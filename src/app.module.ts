@@ -27,6 +27,7 @@ import { AuditModule } from './modules/log/audit/audit.module'
 import { LoginAuditModule } from './modules/log/login-audit/login-audit.module'
 import { CommonModule } from './modules/common/common.module'
 import { DataAccessFilter, HttpExceptionFilter, UploadTooLargeFilter } from './common/exceptions'
+import { MomentModule } from './modules/moment/moment.module'
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { DataAccessFilter, HttpExceptionFilter, UploadTooLargeFilter } from './c
     AuditModule,
     LoginAuditModule,
     CommonModule,
+    MomentModule,
   ],
   providers: [
     JwtStrategy,
