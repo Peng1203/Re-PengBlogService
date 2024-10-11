@@ -9,6 +9,7 @@ const convertProps: string[] = [
   'pageSize',
   'roleId',
   'authorId',
+  'userId',
   'categoryId',
   'tagId',
   'type',
