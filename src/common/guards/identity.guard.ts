@@ -11,7 +11,7 @@ export class IdentityGuard implements CanActivate {
 
     if (req.user.id === 1 && req.user.userName === 'admin') return true
 
-    const paramsId = Number(req.params.id || req.params.uid)
+    const paramsId = Number(req.params.id || req.params.uid || req.body.userId || req.body.uid)
     // prettier-ignore
     if (paramsId != req.user.id) throw new ForbiddenException({
       code: ApiResponseCodeEnum.FORBIDDEN_USER,
