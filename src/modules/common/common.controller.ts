@@ -25,7 +25,7 @@ export class CommonController {
   }
 
   @Post('upload/image')
-  @UploadImageAggregation()
+  @UploadImageAggregation({ maxSize: 10 })
   @ApiOperation({ summary: '上传图片资源' })
   async upload(@Res({ passthrough: true }) res: Response, @UploadedFile() file: Express.Multer.File) {
     const RESOURCE_SERVE = this.configService.get<string>('STATIC_RESOURCE_SERVE')
