@@ -53,17 +53,12 @@ export class MomentService {
   async findByUser(userId: number, query: FindUserMomentDto) {
     try {
       const { page, pageSize, queryStr = '' } = query
-      const user = await this.userService.findOneById(userId)
 
       const [list, total] = await this.momentRepository.findAndCount({
-        where: [
-          { user }, //
-          { content: Like(`%${queryStr}%`) },
-          { status: MomentStatusEnum.PUBLIC },
-        ],
+        where: { user: { id: userId }, content: Like(`%${queryStr}%`), status: MomentStatusEnum.PUBLIC },
         skip: (page - 1) * pageSize,
         take: pageSize,
-        order: { createTime: 'ASC' },
+        order: { createTime: 'DESC' },
         // relations: ['user'],
       })
 
@@ -72,6 +67,7 @@ export class MomentService {
         total,
       }
     } catch (e) {
+      console.log('e ------', e)
       throw new InternalServerErrorException({
         e,
         code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,

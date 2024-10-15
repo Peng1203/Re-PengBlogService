@@ -1,16 +1,17 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common'
 import { MomentService } from './moment.service'
-import { CreateMomentDto, UpdateMomentDto, FindAllMomentDto,FindUserMomentDto } from './dto'
+import { CreateMomentDto, UpdateMomentDto, FindAllMomentDto, FindUserMomentDto } from './dto'
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { IdentityGuard } from '@/common/guards'
 import { Public } from '@/common/decorators'
 import { ParseIntParamPipe } from '@/common/pipe'
+import { UserService } from '../user/user.service'
 
 @ApiTags('Moment')
 @ApiBearerAuth()
 @Controller('moment')
 export class MomentController {
-  constructor(private readonly momentService: MomentService) {}
+  constructor(private readonly momentService: MomentService, private readonly userService: UserService) {}
 
   @Post()
   @UseGuards(IdentityGuard)
@@ -29,12 +30,13 @@ export class MomentController {
   @Public()
   @Get('user/:uid/moments')
   @ApiOperation({ summary: '获取用户动态列表' })
-  findByUser(
+  async findByUser(
     @Param('uid', new ParseIntParamPipe('用户id参数有误')) uid: number,
 
     @Query() params: FindUserMomentDto
   ) {
-    return this.momentService.findByUser(uid,params)
+    await this.userService.findOneById(uid)
+    return this.momentService.findByUser(uid, params)
   }
 
   @Get(':id')
