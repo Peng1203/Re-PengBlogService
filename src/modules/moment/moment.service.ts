@@ -1,9 +1,9 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common'
-import { CreateMomentDto, UpdateMomentDto, FindAllMomentDto } from './dto'
+import { CreateMomentDto, UpdateMomentDto, FindAllMomentDto, FindUserMomentDto } from './dto'
 import { Moment } from '@/common/entities'
 import { Like, Repository } from 'typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
-import { ApiResponseCodeEnum } from '@/helper/enums'
+import { ApiResponseCodeEnum, MomentStatusEnum } from '@/helper/enums'
 import { UserService } from '../user/user.service'
 
 @Injectable()
@@ -45,7 +45,37 @@ export class MomentService {
       throw new InternalServerErrorException({
         e,
         code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
-        msg: '查询标签列表失败!',
+        msg: '查询动态列表失败!',
+      })
+    }
+  }
+
+  async findByUser(userId: number, query: FindUserMomentDto) {
+    try {
+      const { page, pageSize, queryStr = '' } = query
+      const user = await this.userService.findOneById(userId)
+
+      const [list, total] = await this.momentRepository.findAndCount({
+        where: [
+          { user }, //
+          { content: Like(`%${queryStr}%`) },
+          { status: MomentStatusEnum.PUBLIC },
+        ],
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+        order: { createTime: 'ASC' },
+        // relations: ['user'],
+      })
+
+      return {
+        list,
+        total,
+      }
+    } catch (e) {
+      throw new InternalServerErrorException({
+        e,
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
+        msg: '查询用户动态列表失败!',
       })
     }
   }
