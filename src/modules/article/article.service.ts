@@ -122,9 +122,10 @@ export class ArticleService {
           where,
           skip: (page - 1) * pageSize,
           take: pageSize,
-          order: { isTop: 'DESC' },
+          order: { isTop: 'DESC', createTime: 'DESC' },
           relations: ['author', 'tags', 'category'],
         })
+
         data.list = list
         data.total = total
       } else {
