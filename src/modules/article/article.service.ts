@@ -1,7 +1,7 @@
 import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common'
 import { CreateArticleDto } from './dto/create-article.dto'
 import { UpdateArticleDto } from './dto/update-article.dto'
-import { ApiResponseCodeEnum } from '@/helper/enums'
+import { ApiResponseCodeEnum, ArticleStatusEnum } from '@/helper/enums'
 import { TagService } from '@/modules/tag/tag.service'
 import { CategoryService } from './../category/category.service'
 import { InjectRepository } from '@nestjs/typeorm'
@@ -115,11 +115,14 @@ export class ArticleService {
   async findByUser(uid: number, params: FindUserArticleDto) {
     try {
       const { page, pageSize, column, order, type = 1 } = params
-      const where = { author: { id: uid } }
+
       const data = { list: [], total: 0 }
       if (type === 1) {
         const [list, total] = await this.articleRepository.findAndCount({
-          where,
+          where: [
+            { author: { id: uid } }, //
+            { status: ArticleStatusEnum.PUBLISHED },
+          ],
           skip: (page - 1) * pageSize,
           take: pageSize,
           order: { isTop: 'DESC', createTime: 'DESC' },
@@ -130,7 +133,7 @@ export class ArticleService {
         data.total = total
       } else {
         const [list, total] = await this.articleRepository.findAndCount({
-          where,
+          where: { author: { id: uid } },
           order: { [column || 'id']: order || 'ASC' },
         })
         data.list = list.map(item => ({ label: item.title, value: item.id }))
