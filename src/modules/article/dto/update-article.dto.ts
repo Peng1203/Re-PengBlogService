@@ -67,6 +67,7 @@ export class UpdateArticleDto extends PartialType(CreateArticleDto) {
   isTop?: BolEnum
 
   @IsEnum(ContentModelEnum)
+  @IsOptional()
   @ApiProperty({
     default: ContentModelEnum.MARKDOWN,
     description: '文章内容模式: 0Markdown 1富文本',

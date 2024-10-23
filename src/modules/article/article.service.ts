@@ -189,7 +189,7 @@ export class ArticleService {
 
   async update(articleId: number, data: UpdateArticleDto) {
     try {
-      const { category, tags: tagIds, ...args } = data
+      const { category, tags: tagIds = [], ...args } = data
       const article = await this.findOne(articleId)
 
       for (const key in args) {
