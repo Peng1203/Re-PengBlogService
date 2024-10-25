@@ -29,15 +29,13 @@ export class PermissionService {
 
   async findAll(params: FindAllPermissionDto) {
     try {
-      const { page, pageSize, queryStr = '', column, order } = params
+      const {  queryStr = '', column, order } = params
 
       const [list, total] = await this.permissionRepository.findAndCount({
         where: [
           { permissionName: Like(`%${queryStr}%`) },
           // { permissionCode: Like(`%${queryStr}%`) },
         ],
-        skip: (page - 1) * pageSize,
-        take: pageSize,
         order: { [column || 'id']: order || 'ASC' },
       })
       return { list, total }

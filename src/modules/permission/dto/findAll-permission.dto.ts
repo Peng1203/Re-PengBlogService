@@ -1,3 +1,3 @@
-import { ListCommonParamsDto } from '@/common/dto'
+import { NoPageListCommonParamsDto } from '@/common/dto'
 
-export class FindAllPermissionDto extends ListCommonParamsDto {}
+export class FindAllPermissionDto extends NoPageListCommonParamsDto {}
