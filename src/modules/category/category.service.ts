@@ -1,44 +1,47 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common'
+import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common'
 import { CreateCategoryDto, UpdateCategoryDto, FindAllCategoryDto } from './dto'
 import { Category } from '@/common/entities'
 import { Like, Repository } from 'typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
 import { ApiResponseCodeEnum } from '@/helper/enums'
 import { formatDate } from '@/utils/date.util'
+import { UserService } from '../user/user.service'
 
 @Injectable()
 export class CategoryService {
   constructor(
     @InjectRepository(Category)
-    private readonly categoryRepository: Repository<Category>
+    private readonly categoryRepository: Repository<Category>,
+    private readonly userService: UserService
   ) {}
 
   async create(data: CreateCategoryDto) {
-    try {
-      const category = await this.categoryRepository.create(data)
-      return await this.categoryRepository.save(category)
-    } catch (e) {
-      throw new InternalServerErrorException({
-        e,
-        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_CREATED,
-        msg: '添加分类失败',
-      })
-    }
+    const { userId, ...args } = data
+    const hasTag = await this.categoryRepository.findOneBy({ user: { id: userId }, categoryName: args.categoryName })
+    if (hasTag) throw new ConflictException('该分类已存在')
+    const user = await this.userService.findOneById(userId)
+    const category = await this.categoryRepository.create({ user, ...args })
+    return await this.categoryRepository.save(category)
   }
 
   async findAll(query: FindAllCategoryDto) {
     try {
-      const { page, pageSize, queryStr = '', column, order } = query
+      const { page, pageSize, queryStr = '', column, order, userId } = query
       const [list, total] = await this.categoryRepository.findAndCount({
-        where: [{ categoryName: Like(`%${queryStr}%`) }],
+        where: { categoryName: Like(`%${queryStr}%`), user: { id: userId ? userId : undefined } },
         skip: (page - 1) * pageSize,
         take: pageSize,
         order: { [column || 'id']: order || 'ASC' },
-        relations: ['articles'],
+        relations: ['articles', 'user'],
       })
 
       return {
-        list: list.map(item => ({ ...item, articles: item.articles.length })),
+        list: list.map(({ user, articles, ...args }) => ({
+          ...args,
+          articles: articles.length,
+          userId: user?.id || null,
+          userName: user?.userName || null,
+        })),
         total,
       }
     } catch (e) {
@@ -52,12 +55,12 @@ export class CategoryService {
 
   async findAllByUser(uid: number) {
     try {
-      // const { page, pageSize, queryStr = '', column, order } = query
       const [list, total] = await this.categoryRepository.findAndCount({
-        // where: [{ categoryName: Like(`%${queryStr}%`) }],
-        // skip: (page - 1) * pageSize,
-        // take: pageSize,
-        // order: { [column || 'id']: order || 'ASC' },
+        where: {
+          user: {
+            id: uid,
+          },
+        },
         relations: ['articles'],
       })
 
@@ -69,7 +72,7 @@ export class CategoryService {
       throw new InternalServerErrorException({
         e,
         code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
-        msg: '查询分类列表失败!',
+        msg: '查询用户分类列表失败!',
       })
     }
   }

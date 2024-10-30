@@ -1,20 +1,31 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common'
+import { ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common'
 import { CreateTagDto, UpdateTagDto, FindAllTagDto } from './dto'
 import { Tag } from '@/common/entities'
 import { Like, Repository } from 'typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
 import { ApiResponseCodeEnum } from '@/helper/enums'
 import { formatDate } from '@/utils/date.util'
+import { UserService } from '../user/user.service'
 
 @Injectable()
 export class TagService {
-  constructor(@InjectRepository(Tag) private readonly tagRepository: Repository<Tag>) {}
+  constructor(
+    @InjectRepository(Tag) private readonly tagRepository: Repository<Tag>,
+    private readonly userService: UserService
+  ) {}
 
   async create(data: CreateTagDto) {
     try {
-      const tag = await this.tagRepository.create(data)
+      const { userId, ...args } = data
+      const hasTag = await this.tagRepository.findOneBy({ user: { id: userId }, tagName: args.tagName })
+      if (hasTag) throw new ConflictException('该标签已存在')
+
+      const user = await this.userService.findOneById(userId)
+      // 判断创建用户是否创建过当前标签
+      const tag = await this.tagRepository.create({ user, ...args })
       return await this.tagRepository.save(tag)
     } catch (e) {
+      if (e instanceof ConflictException) throw e
       throw new InternalServerErrorException({
         e,
         code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_CREATED,
@@ -25,16 +36,21 @@ export class TagService {
 
   async findAll(query: FindAllTagDto) {
     try {
-      const { page, pageSize, queryStr = '', column, order } = query
+      const { page, pageSize, queryStr = '', column, order, userId } = query
       const [list, total] = await this.tagRepository.findAndCount({
-        where: [{ tagName: Like(`%${queryStr}%`) }],
+        where: { tagName: Like(`%${queryStr}%`), user: { id: userId ? userId : undefined } },
         skip: (page - 1) * pageSize,
         take: pageSize,
         order: { [column || 'id']: order || 'ASC' },
-        relations: ['articles'],
+        relations: ['articles', 'user'],
       })
       return {
-        list: list.map(item => ({ ...item, articles: item.articles.length })),
+        list: list.map(({ user, articles, ...args }) => ({
+          ...args,
+          articles: articles.length,
+          userId: user?.id || null,
+          userName: user?.userName || null,
+        })),
         total,
       }
     } catch (e) {
@@ -48,12 +64,12 @@ export class TagService {
 
   async findAllByUser(uid: number) {
     try {
-      // const { page, pageSize, queryStr = '', column, order } = query
       const [list, total] = await this.tagRepository.findAndCount({
-        // where: [{ tagName: Like(`%${queryStr}%`) }],
-        // skip: (page - 1) * pageSize,
-        // take: pageSize,
-        // order: { [column || 'id']: order || 'ASC' },
+        where: {
+          user: {
+            id: uid,
+          },
+        },
         relations: ['articles'],
       })
       return {

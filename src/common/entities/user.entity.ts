@@ -1,4 +1,4 @@
-import { Article, Audit, TimestampedEntity } from './'
+import { Article, Audit, Tag,Category, TimestampedEntity } from './'
 import { UserEnabledEnum } from '../../helper/enums'
 import { Role, Moment } from './'
 import { Column, Entity, Index, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm'
@@ -51,4 +51,10 @@ export class User extends TimestampedEntity {
 
   @OneToMany(() => Moment, Moment => Moment.user)
   moments: Moment[]
+
+  @OneToMany(() => Tag, Tag => Tag.user)
+  tags: Tag[]
+
+  @OneToMany(() => Category, Category => Category.user)
+  categorys: Category[]
 }

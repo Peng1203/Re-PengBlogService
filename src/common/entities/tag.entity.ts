@@ -1,8 +1,8 @@
-import { Article, TimestampedEntity } from './'
-import { Column, Entity, Index, ManyToMany, PrimaryGeneratedColumn, Unique } from 'typeorm'
+import { Article, TimestampedEntity, User } from './'
+import { Column, Entity, Index, ManyToMany, ManyToOne, PrimaryGeneratedColumn, Unique } from 'typeorm'
 
+// @Unique(['tagName'])
 @Entity({ name: 'tag' })
-@Unique(['tagName'])
 export class Tag extends TimestampedEntity {
   @PrimaryGeneratedColumn()
   id: number
@@ -16,4 +16,7 @@ export class Tag extends TimestampedEntity {
 
   @ManyToMany(() => Article, Article => Article.tags)
   articles: Article[]
+
+  @ManyToOne(() => User, User => User.tags, { nullable: true })
+  user: User
 }

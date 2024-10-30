@@ -1,8 +1,8 @@
-import { Article, TimestampedEntity } from './'
-import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm'
+import { Article, User, TimestampedEntity } from './'
+import { Column, Entity, Index, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm'
 
+// @Unique(['categoryName'])
 @Entity({ name: 'category' })
-@Unique(['categoryName'])
 export class Category extends TimestampedEntity {
   @PrimaryGeneratedColumn()
   id: number
@@ -16,4 +16,7 @@ export class Category extends TimestampedEntity {
 
   @OneToMany(() => Article, Article => Article.category)
   articles: Article[]
+
+  @ManyToOne(() => User, User => User.categorys, { nullable: true })
+  user: User
 }
