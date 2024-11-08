@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Res, NotFoundException } from '@nestjs/common'
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  Res,
+  NotFoundException,
+  UseGuards,
+} from '@nestjs/common'
 import { CategoryService } from './category.service'
 import { CreateCategoryDto, UpdateCategoryDto, FindAllCategoryDto, DeleteCategorysDto } from './dto'
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
@@ -6,6 +18,7 @@ import { ApiResponseCodeEnum, PermissionEnum } from '@/helper/enums'
 import { Public, RequirePermissions } from '@/common/decorators'
 import { ParseIntParamPipe } from '@/common/pipe'
 import { Response } from 'express'
+import { IdentityGuard } from '@/common/guards'
 
 @ApiTags('Category')
 @ApiBearerAuth()
@@ -49,6 +62,7 @@ export class CategoryController {
   }
 
   @Delete(':id')
+  @UseGuards(IdentityGuard)
   @ApiOperation({ summary: '删除文章分类' })
   @RequirePermissions(PermissionEnum.DELETE_CATEGORY)
   async remove(

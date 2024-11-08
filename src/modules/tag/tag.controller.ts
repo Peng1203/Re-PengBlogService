@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Res, NotFoundException } from '@nestjs/common'
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Res, NotFoundException, UseGuards } from '@nestjs/common'
 import { TagService } from './tag.service'
 import { CreateTagDto, UpdateTagDto, FindAllTagDto, DeleteTagsDto } from './dto'
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
@@ -6,6 +6,7 @@ import { ApiResponseCodeEnum, PermissionEnum } from '@/helper/enums'
 import { Public, RequirePermissions } from '@/common/decorators'
 import { ParseIntParamPipe } from '@/common/pipe'
 import { Response } from 'express'
+import { IdentityGuard } from '@/common/guards'
 
 @ApiTags('Tag')
 @ApiBearerAuth()
@@ -49,6 +50,7 @@ export class TagController {
   }
 
   @Delete(':id')
+  @UseGuards(IdentityGuard)
   @ApiOperation({ summary: '删除文章标签' })
   @RequirePermissions(PermissionEnum.DELETE_TAG)
   async remove(
