@@ -18,10 +18,11 @@ import { UpdateArticleDto } from './dto/update-article.dto'
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { Public, ReqUser, RequirePermissions } from '@/common/decorators'
 import { ApiResponseCodeEnum, PermissionEnum } from '@/helper/enums'
-import { FindAllArticleDto, FindUserArticleDto } from './dto'
+import { FindAllArticleDto, FindPublicUserArticleDto, FindUserArticleDto } from './dto'
 import { ParseIntParamPipe } from '@/common/pipe'
 import { Response } from 'express'
 import { DeleteArticleGuard, UpdateArticleGuard } from './guards'
+import { NoOrderListCommonParamsDto } from '@/common/dto'
 
 @ApiTags('Article')
 @ApiBearerAuth()
@@ -50,9 +51,9 @@ export class ArticleController {
   }
 
   @Get(':uid')
-  @ApiOperation({ summary: '获取用户文章列表' })
+  @ApiOperation({ summary: '获取用户文章列表或者文章下拉数据' })
   findByUser(@Param('uid', new ParseIntParamPipe('作者id参数有误')) uid: number, @Query() params: FindUserArticleDto) {
-    return this.articleService.findByUser(uid, params)
+    return this.articleService.findByUserOrOptions(uid, params)
   }
 
   @Public()
@@ -60,7 +61,7 @@ export class ArticleController {
   @ApiOperation({ summary: '获取用户文章列表' })
   findByUser_v2(
     @Param('uid', new ParseIntParamPipe('作者id参数有误')) uid: number,
-    @Query() params: FindUserArticleDto
+    @Query() params: FindPublicUserArticleDto
   ) {
     return this.articleService.findByUser(uid, params)
   }

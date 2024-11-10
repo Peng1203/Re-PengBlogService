@@ -5,11 +5,12 @@ import { ApiResponseCodeEnum, ArticleStatusEnum } from '@/helper/enums'
 import { TagService } from '@/modules/tag/tag.service'
 import { CategoryService } from './../category/category.service'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Brackets, Repository } from 'typeorm'
+import { Brackets, Like, Repository } from 'typeorm'
 import { Article } from '@/common/entities'
 import { UserService } from '@/modules/user/user.service'
-import { FindAllArticleDto, FindUserArticleDto } from './dto'
+import { FindAllArticleDto, FindPublicUserArticleDto, FindUserArticleDto } from './dto'
 import { formatDate } from '@/utils/date.util'
+import { NoOrderListCommonParamsDto } from '@/common/dto'
 
 @Injectable()
 export class ArticleService {
@@ -112,7 +113,7 @@ export class ArticleService {
     }
   }
 
-  async findByUser(uid: number, params: FindUserArticleDto) {
+  async findByUserOrOptions(uid: number, params: FindUserArticleDto) {
     try {
       const { page, pageSize, column, order, type = 1 } = params
 
@@ -139,6 +140,80 @@ export class ArticleService {
         data.list = list.map(item => ({ label: item.title, value: item.id }))
         data.total = total
       }
+
+      return data
+    } catch (e) {
+      throw new InternalServerErrorException({
+        e,
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
+        msg: '查询文章列表失败',
+      })
+    }
+  }
+
+  async findByUser(uid: number, params: FindPublicUserArticleDto) {
+    try {
+      const { page, pageSize, queryStr, tagId, categoryId } = params
+
+      const data = { list: [], total: 0 }
+
+      // const [list, total] = await this.articleRepository.findAndCount({
+      //   where: [
+      //     {
+      //       author: { id: uid },
+      //       status: ArticleStatusEnum.PUBLISHED,
+      //       ...(queryStr && { title: Like(`%${queryStr}%`) }),
+      //       ...(categoryId && { category: { id: categoryId } }),
+      //       ...(tagId && { tags: { id: tagId } }),
+      //     },
+      //     {
+      //       author: { id: uid },
+      //       status: ArticleStatusEnum.PUBLISHED,
+      //       ...(queryStr && { content: Like(`%${queryStr}%`) }),
+      //       ...(categoryId && { category: { id: categoryId } }),
+      //       ...(tagId && { tags: { id: tagId } }),
+      //     },
+      //   ],
+      //   skip: (page - 1) * pageSize,
+      //   take: pageSize,
+      //   order: { isTop: 'DESC', createTime: 'DESC' },
+      //   relations: ['tags', 'category'],
+      // })
+
+      const queryBuilder = this.articleRepository
+        .createQueryBuilder('article')
+        .leftJoinAndSelect('article.author', 'author')
+        .leftJoinAndSelect('article.tags', 'tag')
+        .leftJoinAndSelect('article.category', 'category')
+        .where('article.author.id = :uid', { uid })
+        .andWhere('article.status = :status', { status: ArticleStatusEnum.PUBLISHED })
+
+      // prettier-ignore
+      queryStr &&  queryBuilder.andWhere(
+          new Brackets(qb => {
+            qb.where('article.title LIKE :queryStr', { queryStr: `%${queryStr}%` }).orWhere(
+              'article.content LIKE :queryStr',
+              { queryStr: `%${queryStr}%` }
+            )
+          })
+        )
+
+      // 过滤指定的 tag
+      tagId && queryBuilder.andWhere('tag.id = :tagId', { tagId })
+
+      // 过滤指定的 category
+
+      categoryId && queryBuilder.andWhere('category.id = :categoryId', { categoryId })
+
+      const [list, total] = await queryBuilder
+        .skip((page - 1) * pageSize)
+        .take(pageSize)
+        .orderBy('article.isTop', 'DESC')
+        .addOrderBy('article.createTime', 'DESC')
+        .getManyAndCount()
+
+      data.list = list
+      data.total = total
 
       return data
     } catch (e) {

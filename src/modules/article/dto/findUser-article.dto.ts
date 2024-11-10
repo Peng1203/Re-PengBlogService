@@ -1,5 +1,5 @@
-import { ListCommonParamsDto } from '@/common/dto'
-import { IsEnum, IsOptional } from '@nestjs/class-validator'
+import { ListCommonParamsDto, NoOrderListCommonParamsDto } from '@/common/dto'
+import { IsEnum, IsInt, IsNumber, IsOptional } from '@nestjs/class-validator'
 import { ApiProperty } from '@nestjs/swagger'
 
 enum ResponseType {
@@ -19,4 +19,18 @@ export class FindUserArticleDto extends ListCommonParamsDto {
     description: '响应类型',
   })
   type?: ResponseType
+}
+
+export class FindPublicUserArticleDto extends NoOrderListCommonParamsDto {
+  @IsNumber()
+  @IsInt()
+  @IsOptional()
+  @ApiProperty({ description: '分类ID', default: 0 })
+  categoryId: number
+
+  @IsNumber()
+  @IsInt()
+  @IsOptional()
+  @ApiProperty({ description: '标签ID', default: 0 })
+  tagId: number
 }
