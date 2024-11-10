@@ -17,7 +17,7 @@ export class Audit {
   @Column({ type: 'varchar', length: 15 })
   ip: string
 
-  @Column({ name: 'user_agent', type: 'varchar' })
+  @Column({ name: 'user_agent', type: 'text' })
   userAgent: string
 
   @Column({ name: 'status_code', type: 'int' })

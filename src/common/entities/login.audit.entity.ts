@@ -35,7 +35,7 @@ export class LoginAudit {
   })
   failureReason: string
 
-  @Column({ name: 'user_agent', type: 'varchar' })
+  @Column({ name: 'user_agent', type: 'text' })
   userAgent: string
 
   @Column({
