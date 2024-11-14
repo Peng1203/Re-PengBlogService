@@ -358,4 +358,11 @@ export class UserService {
       this.handleFindOneError(e)
     }
   }
+
+  async findUserArticleInfo(id: number) {
+    return await this.userRepository.findOne({
+      where: { id },
+      relations: ['articles', 'tags', 'categorys'],
+    })
+  }
 }
