@@ -1,5 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common'
-import { CreatePersonalDto } from './dto/create-personal.dto'
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common'
 import { UpdatePersonalDto } from './dto/update-personal.dto'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Personal } from '@/common/entities'
@@ -44,12 +43,36 @@ export class PersonalService {
 
   private async create(userId: number) {
     const personal = await this.personalRepository.create({ userId })
-    console.log('personal ------', personal)
     await this.personalRepository.save(personal)
     return personal
   }
 
-  update(id: number, updatePersonalDto: UpdatePersonalDto) {
-    return `This action updates a #${id} personal`
+  async update(userId: number, data: UpdatePersonalDto) {
+    try {
+      const updateRes = await this.personalRepository.update({ userId }, data)
+      return !!updateRes.affected
+    } catch (e) {
+      throw new InternalServerErrorException({
+        e,
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
+        msg: '更新用户个人信息失败',
+      })
+    }
+  }
+
+  async addUV(userId: number) {
+    const personal = await this.personalRepository.findOne({ where: { userId } })
+    if (!personal) throw new NotFoundException({ code: ApiResponseCodeEnum.NOTFOUND_USER })
+    personal.uv += 1
+    await this.personalRepository.save(personal)
+    return 'ok'
+  }
+
+  async addPV(userId: number) {
+    const personal = await this.personalRepository.findOne({ where: { userId } })
+    if (!personal) throw new NotFoundException({ code: ApiResponseCodeEnum.NOTFOUND_USER })
+    personal.pv += 1
+    await this.personalRepository.save(personal)
+    return 'ok'
   }
 }
