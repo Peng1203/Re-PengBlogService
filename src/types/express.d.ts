@@ -22,5 +22,6 @@ declare module 'express' {
     clientIp: any
     // 响应错误信息
     resErrMsg: string
+    rawBody: Buffer
   }
 }

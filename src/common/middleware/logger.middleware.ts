@@ -7,7 +7,6 @@ export class LoggerMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     // 取消打印日志
     if (req.headers['x-log'] === 'false') return next()
-
     const statusCode = res.statusCode
     const clientIp = req.headers['x-real-ip'] || req.headers['x-forwarded-for']
     const logFormat = `
@@ -20,6 +19,7 @@ ClientIP: ${clientIp}
 Host: ${req.headers.host}
 Referer: ${req.headers.referer || req.headers.referrer}
 StatusCode: ${statusCode}
+ContentType: ${req.headers['content-type']}
 Params: ${JSON.stringify(req.params)}
 Query: ${JSON.stringify(req.query)}
 Body: ${JSON.stringify(req.body)}

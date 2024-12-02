@@ -1,12 +1,13 @@
 import path from 'path'
 import { Response } from 'express'
-import { Controller, Get, Post, Query, Res, UploadedFile } from '@nestjs/common'
+import { Body, Controller, Get, Post, Query, Req, Res, UploadedFile } from '@nestjs/common'
 import { CommonService } from './common.service'
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { GetIPInfoDto } from './dto'
 import { IpService } from '@/shared/ip/ip.service'
 import { ConfigService } from '@nestjs/config'
-import { UploadImageAggregation } from '@/common/decorators'
+import { Public, UploadImageAggregation } from '@/common/decorators'
+import { Request } from 'express'
 
 @ApiTags('Common')
 @ApiBearerAuth()
@@ -32,5 +33,14 @@ export class CommonController {
     const fullPath = `${RESOURCE_SERVE}/${path.basename(file.path)}`
     res.resMsg = '图片上传成功!'
     return fullPath
+  }
+
+  @Public()
+  @Post('test')
+  @ApiOperation({ summary: '测试' })
+  test(@Body() data: GetIPInfoDto, @Req() req: Request) {
+    console.log('req ------', req.rawBody.toString('utf-8'))
+    console.log('data ------', data)
+    return '测试接口'
   }
 }
