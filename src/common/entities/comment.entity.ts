@@ -23,7 +23,7 @@ export class Comment extends TimestampedEntity {
   type: CommentType
 
   @Column({ name: 'target_id', type: 'int', comment: '关联的文章ID或动态ID' })
-  target_id: number
+  targetId: number
 
   @Column({ type: 'varchar', length: 15 })
   ip: string
