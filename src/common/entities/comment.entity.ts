@@ -1,6 +1,6 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
 import { TimestampedEntity } from './'
-import { CommentType } from '../../helper/enums'
+import { BolEnum, CommentType } from '../../helper/enums'
 
 @Entity({ name: 'comment' })
 export class Comment extends TimestampedEntity {
@@ -12,6 +12,9 @@ export class Comment extends TimestampedEntity {
 
   @Column({ type: 'varchar' })
   name: string
+
+  @Column({ name: 'user_id', type: 'int', nullable: true, default: null })
+  userId: number
 
   @Column({ type: 'varchar' })
   email: string
@@ -40,6 +43,9 @@ export class Comment extends TimestampedEntity {
   @Column({ name: 'parent_id', type: 'int', nullable: true, default: null })
   parentId: number | null
 
+  @Column({ name: 'replay_id', type: 'int', nullable: true, default: null })
+  replyId: number | null
+
   @Column({ type: 'int', default: 0 })
   likes: number
 
@@ -48,4 +54,12 @@ export class Comment extends TimestampedEntity {
 
   @Column({ name: 'is_deleted', type: 'boolean', default: false })
   isDeleted: boolean
+
+  @Column({
+    name: 'is_top',
+    type: 'enum',
+    enum: BolEnum,
+    default: BolEnum.FALSE,
+  })
+  isTop: BolEnum
 }

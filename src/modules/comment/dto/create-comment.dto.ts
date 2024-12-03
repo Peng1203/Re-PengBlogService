@@ -1,11 +1,28 @@
 import { CommentType } from '@/helper/enums'
-import { IsEmail, IsEnum, IsInt, IsNumber, IsOptional, IsString, Min } from '@nestjs/class-validator'
+import {
+  IsDefined,
+  IsEmail,
+  IsEnum,
+  IsInt,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+} from '@nestjs/class-validator'
 import { ApiProperty } from '@nestjs/swagger'
 
 export class CreateCommentDto {
   @IsString()
   @ApiProperty({ description: '名称' })
   userName: string
+
+  @IsNumber()
+  @IsInt()
+  @IsDefined()
+  @IsNotEmpty()
+  @ApiProperty({ description: '用户ID', default: null })
+  userId: number
 
   @IsString()
   @ApiProperty({ description: '评论内容' })
@@ -31,6 +48,12 @@ export class CreateCommentDto {
   @IsNumber()
   @ApiProperty({ description: '关联的文章ID或动态ID' })
   targetId: number
+
+  @Min(0)
+  @IsInt()
+  @IsNumber()
+  @ApiProperty({ description: '关联的文章ID或动态ID' })
+  replyId: number
 
   @Min(0)
   @IsInt()

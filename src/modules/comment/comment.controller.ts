@@ -1,28 +1,24 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common'
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req } from '@nestjs/common'
 import { CommentService } from './comment.service'
 import { CreateCommentDto } from './dto/create-comment.dto'
 import { UpdateCommentDto } from './dto/update-comment.dto'
-import { Public } from '@/common/decorators'
-import { SensitiveWordsService } from '@/common/service'
+import { ClientIp, Public, UserAgent } from '@/common/decorators'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
+import { Request } from 'express'
+import { Details } from 'express-useragent'
 
 @ApiTags('Comment')
 @ApiBearerAuth()
 @Controller('comment')
 export class CommentController {
-  constructor(
-    private readonly commentService: CommentService,
-    private readonly sensitiveWordsService: SensitiveWordsService
-  ) {}
+  constructor(private readonly commentService: CommentService) {}
 
   @Public()
   @Post()
-  create(@Body() data: CreateCommentDto) {
-    // 判断发言是否为敏感发言
-    const { text } = this.sensitiveWordsService.getMint().filter(data.content, { replace: true })
-    data.content = text
-
-    return data
+  create(@Req() req: Request, @Body() data: CreateCommentDto, @UserAgent() ua: Details, @ClientIp() ip: string) {
+    console.log('ua ------', ua)
+    console.log('ip ------', ip)
+    return this.commentService.create(data, ua, ip)
   }
 
   @Get()
