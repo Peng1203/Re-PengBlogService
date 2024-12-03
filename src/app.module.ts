@@ -29,6 +29,7 @@ import { CommonModule } from './modules/common/common.module'
 import { DataAccessFilter, HttpExceptionFilter, UploadTooLargeFilter } from './common/exceptions'
 import { MomentModule } from './modules/moment/moment.module'
 import { PersonalModule } from './modules/personal/personal.module'
+import { CommentModule } from './modules/comment/comment.module'
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { PersonalModule } from './modules/personal/personal.module'
     CommonModule,
     MomentModule,
     PersonalModule,
+    CommentModule,
   ],
   providers: [
     JwtStrategy,

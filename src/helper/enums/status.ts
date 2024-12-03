@@ -26,3 +26,8 @@ export enum LoginStatusEnum {
   /** 验证码错误 */
   CAPTCHA_ERROR = 8,
 }
+
+export enum CommentType {
+  ARTICLE = 1,
+  MOMENT = 2,
+}

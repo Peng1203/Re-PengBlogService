@@ -14,3 +14,5 @@ export * from './audit.entity'
 export * from './login.audit.entity'
 
 export * from './moment.entity'
+
+export * from './comment.entity'
