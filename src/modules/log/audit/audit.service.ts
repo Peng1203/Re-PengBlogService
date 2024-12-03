@@ -8,6 +8,8 @@ import { FindAllAuditDto } from './dto'
 
 @Injectable()
 export class AuditService {
+  // 无需记录内容的字段
+  HIDEDK_EYS: string[] = ['summary', 'password', 'accessPassword', 'oldPassword', 'newPassword', 'refresh_token', 'ip']
   constructor(@InjectRepository(Audit) private readonly auditRepository: Repository<Audit>) {}
 
   async createAuditRecord(
@@ -24,6 +26,8 @@ export class AuditService {
 
       // 隐藏 query/body 参数中的关键信息
       const [toBody, toQuery] = this.hideKeyInfoParams(body, query)
+
+      if (originalUrl.includes('article')) this.HIDEDK_EYS.push('content')
 
       const clientIp = req.headers['x-real-ip'] || req.headers['x-forwarded-for']
       const audit = new Audit()
@@ -52,19 +56,9 @@ export class AuditService {
   }
 
   private hideKeyInfoParams(body: any, query: any) {
-    const hidedKeys = [
-      'content',
-      'summary',
-      'password',
-      'accessPassword',
-      'oldPassword',
-      'newPassword',
-      'refresh_token',
-      'ip',
-    ]
     const hideInfo = (obj: any) => {
       Object.keys(obj).forEach(key => {
-        if (hidedKeys.includes(key)) {
+        if (this.HIDEDK_EYS.includes(key)) {
           obj[key] = '******'
         }
       })
