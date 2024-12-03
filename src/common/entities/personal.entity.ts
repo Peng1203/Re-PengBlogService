@@ -9,7 +9,7 @@ export class Personal extends TimestampedEntity {
   @Column({ type: 'varchar', default: '', comment: '个性签名' })
   sign: string
 
-  @Column({ type: 'varchar', default: '', comment: '备案IPC地址' })
+  @Column({ type: 'varchar', default: '', comment: '备案ICP地址' })
   icp: string
 
   @Column({ type: 'int', default: 0, comment: '网站访问数' })
