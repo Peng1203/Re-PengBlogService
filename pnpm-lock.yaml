@@ -83,6 +83,9 @@ dependencies:
   mime-types:
     specifier: ^2.1.35
     version: 2.1.35
+  mint-filter:
+    specifier: ^4.0.3
+    version: 4.0.3
   multer:
     specifier: 1.4.5-lts.1
     version: 1.4.5-lts.1
@@ -4784,6 +4787,10 @@ packages:
   /minipass@7.1.2:
     resolution: {integrity: sha512-qOOzS1cBTWYF4BH8fVePDBOO9iptMnGUEZwNc/cMWnTV2nVLZ7VoNWEPHkYczZA0pdoA7dl6e7FL659nX9S2aw==}
     engines: {node: '>=16 || 14 >=14.17'}
+
+  /mint-filter@4.0.3:
+    resolution: {integrity: sha512-CKh2zKv9oFHEmYCXFk5REG2480FBNYixK+hw0mlRd/TgDJVhPpRhHPNhWa3Q6zF1tpE2q7w7y+Ylu1YJusXDpA==}
+    dev: false
 
   /mkdirp@0.5.6:
     resolution: {integrity: sha512-FP+p8RB8OWpF3YZBCrP5gtADmtXApB5AMLn+vdyA+PyxCjrCs00mjyUozssO33cwDeT3wNGdLxJ5M//YqtHAJw==}
