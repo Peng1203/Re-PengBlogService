@@ -7,7 +7,7 @@ export class Moment extends TimestampedEntity {
   @PrimaryGeneratedColumn()
   id: number
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'text' })
   content: string
 
   @Column({ type: 'json', nullable: true })
