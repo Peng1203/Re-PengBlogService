@@ -31,3 +31,9 @@ export enum CommentType {
   ARTICLE = 1,
   MOMENT = 2,
 }
+
+export enum FindCommentType {
+  ALL = 0,
+  ARTICLE = 1,
+  MOMENT = 2,
+}

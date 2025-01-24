@@ -40,11 +40,26 @@ export class Comment extends TimestampedEntity {
   @Column({ type: 'json' })
   device: string
 
-  @Column({ name: 'parent_id', type: 'int', nullable: true, default: null })
+  @Column({
+    name: 'parent_id',
+    type: 'int',
+    nullable: true,
+    default: null,
+    comment: '父评论的 ID 用于表示评论的层级结构',
+  })
   parentId: number | null
 
-  @Column({ name: 'replay_id', type: 'int', nullable: true, default: null })
+  @Column({
+    name: 'replay_id',
+    type: 'int',
+    nullable: true,
+    default: null,
+    comment: '直接回复的评论 ID 用于引用特定评论',
+  })
   replyId: number | null
+
+  @Column({ type: 'varchar', nullable: true })
+  blogUrl: string | null
 
   @Column({ type: 'int', default: 0 })
   likes: number

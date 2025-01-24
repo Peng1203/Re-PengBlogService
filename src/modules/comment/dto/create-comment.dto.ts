@@ -9,13 +9,14 @@ import {
   IsOptional,
   IsString,
   Min,
+  IsUrl,
 } from '@nestjs/class-validator'
 import { ApiProperty } from '@nestjs/swagger'
 
 export class CreateCommentDto {
   @IsString()
   @ApiProperty({ description: '名称' })
-  userName: string
+  name: string
 
   @IsNumber()
   @IsInt()
@@ -60,4 +61,9 @@ export class CreateCommentDto {
   @IsNumber()
   @ApiProperty({ description: 'id 0或者null 为父级评论', default: 0 })
   parentId: number
+
+  @IsUrl()
+  @IsOptional()
+  @ApiProperty({ description: '博客链接', required: false })
+  blogUrl?: string
 }
