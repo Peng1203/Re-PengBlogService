@@ -16,7 +16,7 @@ export class Comment extends TimestampedEntity {
   @Column({ name: 'user_id', type: 'int', nullable: true, default: null })
   userId: number
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   email: string
 
   @Column({ type: 'varchar', nullable: true })

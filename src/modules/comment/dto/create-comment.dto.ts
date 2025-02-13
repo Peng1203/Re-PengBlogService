@@ -10,6 +10,7 @@ import {
   IsString,
   Min,
   IsUrl,
+  ValidateIf,
 } from '@nestjs/class-validator'
 import { ApiProperty } from '@nestjs/swagger'
 
@@ -30,8 +31,10 @@ export class CreateCommentDto {
   content: string
 
   @IsEmail()
-  @ApiProperty({ description: '邮箱' })
-  email: string
+  @ValidateIf(o => o.email !== '')
+  @IsOptional()
+  @ApiProperty({ description: '邮箱', required: false })
+  email?: string
 
   @IsString()
   @IsOptional()
@@ -64,6 +67,7 @@ export class CreateCommentDto {
 
   @IsUrl()
   @IsOptional()
+  @ValidateIf(o => o.blogUrl !== '')
   @ApiProperty({ description: '博客链接', required: false })
   blogUrl?: string
 }

@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common'
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common'
 import { CreateCommentDto } from './dto/create-comment.dto'
 import { UpdateCommentDto } from './dto/update-comment.dto'
 import { SensitiveWordsService } from '@/common/service'
@@ -108,13 +108,13 @@ export class CommentService {
         .andWhere('comment.type = :type', { type })
         .andWhere('comment.isDeleted = :isDeleted', { isDeleted: false })
         .andWhere(new Brackets(qb => qb.where('comment.parentId IS NULL').orWhere('comment.parentId = 0')))
-        .addSelect(
-          subQuery =>
-            subQuery.select('COUNT(*)', 'replyCount').from(Comment, 'reply').where('reply.parentId = comment.id'),
-          'replyCount' // 添加子查询统计回复数量
-        )
+        // .addSelect(
+        //   subQuery =>
+        //     subQuery.select('COUNT(*)', 'replyCount').from(Comment, 'reply').where('reply.parentId = comment.id'),
+        //   'replyCount' // 添加子查询统计回复数量
+        // )
         .orderBy('comment.isTop', 'DESC')
-        .addOrderBy('comment.likes', 'ASC')
+        .addOrderBy('comment.likes', 'DESC')
         .skip((page - 1) * pageSize)
         .take(pageSize)
       const [list, total] = await queryBuilder.getManyAndCount()
@@ -127,6 +127,54 @@ export class CommentService {
         msg: '查询评论列表失败',
       })
     }
+  }
+
+  async findByTargetReply(
+    type: CommentType,
+    targetId: number,
+    params: FindCommentByTargetDto,
+    parentId: number
+  ): Promise<ListResponse<Comment>> {
+    try {
+      const { page, pageSize } = params
+      const queryBuilder = this.commentRepository
+        .createQueryBuilder('comment')
+        .andWhere('comment.targetId = :targetId', { targetId })
+        .andWhere('comment.type = :type', { type })
+        .andWhere('comment.isDeleted = :isDeleted', { isDeleted: false })
+        .andWhere('comment.parentId = :parentId', { parentId })
+        .addOrderBy('comment.likes', 'DESC')
+        .skip((page - 1) * pageSize)
+        .take(pageSize)
+      const [list, total] = await queryBuilder.getManyAndCount()
+
+      return { list, total }
+    } catch (e) {
+      throw new InternalServerErrorException({
+        e,
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_FIND,
+        msg: '查询评论列表失败',
+      })
+    }
+  }
+
+  async likeComment(id: number) {
+    const comment = await this.commentRepository.findOne({ where: { id } })
+    if (!comment) throw new NotFoundException('评论不存在')
+
+    comment.likes = (comment.likes || 0) + 1
+    await this.commentRepository.save(comment)
+    return '操作成功'
+  }
+
+  async unlikeComment(id: number) {
+    const comment = await this.commentRepository.findOne({ where: { id } })
+    if (!comment) throw new NotFoundException('评论不存在')
+
+    if (comment.likes <= 0) return '点赞不能小于0'
+    comment.likes -= 1
+    await this.commentRepository.save(comment)
+    return '操作成功'
   }
 
   update(id: number, updateCommentDto: UpdateCommentDto) {
