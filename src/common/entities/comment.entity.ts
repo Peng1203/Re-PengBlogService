@@ -58,7 +58,7 @@ export class Comment extends TimestampedEntity {
   })
   replyId: number | null
 
-  @Column({ type: 'varchar', nullable: true })
+  @Column({ name: 'blog_url', type: 'varchar', nullable: true })
   blogUrl: string | null
 
   @Column({ type: 'int', default: 0 })
