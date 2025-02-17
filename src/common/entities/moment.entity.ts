@@ -21,6 +21,9 @@ export class Moment extends TimestampedEntity {
   })
   isTop: BolEnum
 
+  @Column({ type: 'int', default: 0 })
+  likes: number
+
   @Column({
     type: 'enum',
     enum: MomentStatusEnum,

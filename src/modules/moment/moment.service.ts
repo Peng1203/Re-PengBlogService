@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common'
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common'
 import { CreateMomentDto, UpdateMomentDto, FindAllMomentDto, FindUserMomentDto } from './dto'
 import { Moment } from '@/common/entities'
 import { Like, Repository } from 'typeorm'
@@ -86,5 +86,50 @@ export class MomentService {
 
   remove(id: number) {
     return `This action removes a #${id} moment`
+  }
+
+  async like(id: number) {
+    try {
+      const moment = await this.momentRepository.findOne({ where: { id } })
+      if (!moment) {
+        throw new NotFoundException({
+          code: ApiResponseCodeEnum.NOTFOUND,
+          msg: '动态不存在',
+        })
+      }
+      moment.likes += 1
+
+      await this.momentRepository.save(moment)
+      return '点赞成功'
+    } catch (e) {
+      throw new InternalServerErrorException({
+        e,
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_UPDATE,
+        msg: '点赞失败',
+      })
+    }
+  }
+
+  async unlike(id: number) {
+    try {
+      const moment = await this.momentRepository.findOne({ where: { id } })
+      if (!moment) {
+        throw new NotFoundException({
+          code: ApiResponseCodeEnum.NOTFOUND,
+          msg: '动态不存在',
+        })
+      }
+      if (moment.likes > 0) {
+        moment.likes -= 1
+      }
+      await this.momentRepository.save(moment)
+      return '操作成功'
+    } catch (e) {
+      throw new InternalServerErrorException({
+        e,
+        code: ApiResponseCodeEnum.INTERNALSERVERERROR_SQL_UPDATE,
+        msg: '取消点赞失败',
+      })
+    }
   }
 }

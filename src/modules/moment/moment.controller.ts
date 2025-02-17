@@ -53,4 +53,18 @@ export class MomentController {
   remove(@Param('id') id: string) {
     return this.momentService.remove(+id)
   }
+
+  @Public()
+  @Post(':id/like')
+  @ApiOperation({ summary: '点赞动态' })
+  like(@Param('id', new ParseIntParamPipe('动态id参数有误')) id: number) {
+    return this.momentService.like(id)
+  }
+
+  @Public()
+  @Delete(':id/like')
+  @ApiOperation({ summary: '取消点赞动态' })
+  unlike(@Param('id', new ParseIntParamPipe('动态id参数有误')) id: number) {
+    return this.momentService.unlike(id)
+  }
 }
